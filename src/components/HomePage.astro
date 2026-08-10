@@ -1,0 +1,308 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import arrowDownRightIcon from '@phosphor-icons/core/assets/regular/arrow-down-right.svg?raw';
+import menuIcon from '@phosphor-icons/core/assets/regular/list.svg?raw';
+import closeIcon from '@phosphor-icons/core/assets/regular/x.svg?raw';
+
+interface Props { lang: 'cs' | 'en' }
+const { lang } = Astro.props;
+const isCs = lang === 'cs';
+
+const t = isCs ? {
+  title: 'Jonas Rech — Brand & digital partner',
+  description: 'Pomáhám dobrým firmám jasně ukázat jejich hodnotu — od značky přes web až po obraz.',
+  nav: ['Práce', 'Služby', 'O mně', 'Kontakt'],
+  eyebrow: 'Brand & digital partner',
+  heroA: 'Váš byznys už má kvalitu.',
+  heroBefore: 'Já ji pomáhám lidem ',
+  heroWord: 'uvidět.',
+  heroText: 'Strategie, značka a web navržené jako jeden celek — aby lidé rychleji pochopili vaši hodnotu a snáz udělali další krok.',
+  heroCta: 'Prohlédnout práci',
+  workLabel: 'Vybraná práce',
+  workTitle: 'Nejen hezčí web. Jasnější důvod vybrat si právě vás.',
+  projects: [
+    { name: 'Prádelna Krkonoše', type: 'Strategie · Webdesign · Copy', note: 'Proměna tradiční služby v důvěryhodnou digitální zkušenost.', class: 'laundry' },
+    { name: 'Proelectrica', type: 'Struktura · UI/UX · Webdesign', note: 'Komplexní nabídka přeložená do srozumitelné cesty pro zákazníka.', class: 'electric' },
+    { name: 'cink', type: 'SaaS · Landing page · Brand direction', note: 'Nový produkt vysvětlený bez technického šumu.', class: 'cink' },
+  ],
+  projectCta: 'Prohlédnout projekt',
+  servicesLabel: 'Co přináším ke stolu',
+  servicesTitle: 'Od obchodního problému k webu, který umí dělat svoji práci.',
+  servicesIntro: 'Nezačínám barvami ani komponentami. Nejdřív potřebuji pochopit, proč si vás mají lidé vybrat — a teprve potom tomu dám správný tvar.',
+  services: [
+    ['01', 'Jasno ve značce', 'Pozice, sdělení a vizuální směr. Pojmenujeme, co je na vašem byznysu cenné a jak to ukázat bez prázdných frází.'],
+    ['02', 'Web, který vede k akci', 'Informační architektura, UX, design a vývoj v Astro. Každá stránka má jasný úkol a měřitelný další krok.'],
+    ['03', 'Obsah a obraz', 'Copy a fotografie nejsou výplň. Jsou důkaz. Společně vytvoříme materiál, který působí pravdivě a zapamatovatelně.'],
+    ['04', 'Partnerství po spuštění', 'Web není jednorázový soubor. Sledujeme, co lidé dělají, upravujeme a postupně z něj děláme lepší obchodní nástroj.'],
+  ],
+  methodLabel: 'Jak se dostaneme k výsledku',
+  methodTitle: 'Nejdřív pochopit. Pak udělat věci, které pohnou byznysem.',
+  method: ['Rozhovor bez briefu', 'Najít skutečný problém', 'Dát hodnotě tvar', 'Spustit a sledovat', 'Zlepšovat spolu'],
+  aboutLabel: 'O mně',
+  aboutTitle: 'Jsem Jonas. Designer, stavitel a člověk, který se ptá dřív, než kreslí.',
+  aboutText: 'Pracuji přímo s majiteli a týmy, kterým záleží na tom, co budují. Spojuji strategické myšlení, webdesign, vývoj a fotografii, takže mezi myšlenkou a výsledkem nevznikají zbytečné mezery.',
+  photosLabel: 'Mimo plátno',
+  photosTitle: 'Fotografie mě učí dívat se. V práci pak pomáhá vidět to podstatné.',
+  contactLabel: 'Začněme rozhovorem',
+  contactTitle: 'Máte kvalitní byznys, který zatím nevypadá tak dobře, jak funguje?',
+  contactText: 'Napište mi, co se má změnit. Ozvu se osobně a bez prodejního kolečka.',
+  contactCta: 'hello@jonasrech.com',
+  footer: 'Nezávislý brand & digital partner',
+} : {
+  title: 'Jonas Rech — Brand & digital partner',
+  description: 'I help good businesses make their value clear — through brand, digital and image.',
+  nav: ['Work', 'Services', 'About', 'Contact'],
+  eyebrow: 'Brand & digital partner',
+  heroA: 'Your business already has quality.',
+  heroBefore: 'I help people ',
+  heroWord: 'see it.',
+  heroText: 'Strategy, brand and web designed as one system — so people understand your value faster and find it easier to take the next step.',
+  heroCta: 'See selected work',
+  workLabel: 'Selected work',
+  workTitle: 'Not just a better-looking website. A clearer reason to choose you.',
+  projects: [
+    { name: 'Prádelna Krkonoše', type: 'Strategy · Web design · Copy', note: 'Turning a traditional service into a credible digital experience.', class: 'laundry' },
+    { name: 'Proelectrica', type: 'Structure · UI/UX · Web design', note: 'A complex offer translated into a clear customer journey.', class: 'electric' },
+    { name: 'cink', type: 'SaaS · Landing page · Brand direction', note: 'A new product explained without the technical noise.', class: 'cink' },
+  ],
+  projectCta: 'View project',
+  servicesLabel: 'What I bring to the table',
+  servicesTitle: 'From a business problem to a website that knows its job.',
+  servicesIntro: 'I do not start with colors or components. First, I need to understand why people should choose you — then I give that reason the right form.',
+  services: [
+    ['01', 'Clarity in the brand', 'Positioning, language and visual direction. We name what is valuable about your business and show it without empty claims.'],
+    ['02', 'A website that moves people', 'Information architecture, UX, design and Astro development. Every page has a clear role and a meaningful next step.'],
+    ['03', 'Content and image', 'Copy and photography are not filler. They are evidence. Together, they make the experience credible and memorable.'],
+    ['04', 'A partner after launch', 'A website is not a one-off file. We observe, adjust and turn it into a stronger business tool over time.'],
+  ],
+  methodLabel: 'How we get to the result',
+  methodTitle: 'Understand first. Then make the moves that help the business forward.',
+  method: ['A conversation before a brief', 'Find the real problem', 'Give the value a shape', 'Launch and learn', 'Keep improving together'],
+  aboutLabel: 'About',
+  aboutTitle: 'I’m Jonas. A designer, builder and someone who asks before he draws.',
+  aboutText: 'I work directly with founders and teams who care about what they build. I combine strategic thinking, web design, development and photography, so the idea does not get lost between disciplines.',
+  photosLabel: 'Away from the screen',
+  photosTitle: 'Photography teaches me to look. That helps the work focus on what matters.',
+  contactLabel: 'Start a conversation',
+  contactTitle: 'Does your business work better than it currently looks?',
+  contactText: 'Tell me what needs to change. I’ll reply personally, without a sales routine.',
+  contactCta: 'hello@jonasrech.com',
+  footer: 'Independent brand & digital partner',
+};
+---
+<BaseLayout lang={lang} title={t.title} description={t.description}>
+  <div class="cursor" data-cursor aria-hidden="true"><span data-cursor-label></span></div>
+  <header class="site-header" data-header>
+    <a class="wordmark" data-magnetic href={`/${lang}/`} aria-label="Jonas Rech — home">jonasrech<span>.</span></a>
+    <nav class="desktop-nav" aria-label={isCs ? 'Hlavní navigace' : 'Primary navigation'}>
+      <a href="#work">{t.nav[0]}</a>
+      <a href="#about">{t.nav[2]}</a>
+      <a href="#contact">{t.nav[3]}</a>
+    </nav>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
+      <span class="sr-only">{isCs ? 'Otevřít menu' : 'Open menu'}</span>
+      <span class="menu-toggle__icon menu-toggle__list" aria-hidden="true" set:html={menuIcon}></span>
+      <span class="menu-toggle__icon menu-toggle__close" aria-hidden="true" set:html={closeIcon}></span>
+    </button>
+  </header>
+  <aside class="site-menu" id="site-menu" aria-hidden="true" data-menu>
+    <nav aria-label={isCs ? 'Hlavní navigace' : 'Primary navigation'}>
+      <a href="#main" data-menu-link>Home</a>
+      <a href="#work" data-menu-link>{t.nav[0]}</a>
+      <a href="#services" data-menu-link>{t.nav[1]}</a>
+      <a href="#about" data-menu-link>{t.nav[2]}</a>
+      <a href="#contact" data-menu-link>{t.nav[3]}</a>
+    </nav>
+    <div class="site-menu__footer"><span>Brno, CZ</span><a href="mailto:hello@jonasrech.com">hello@jonasrech.com</a><div class="menu-languages" aria-label={isCs ? 'Výběr jazyka' : 'Language selection'}><a class:list={{ active: isCs }} href="/cs/">CZ</a><span>/</span><a class:list={{ active: !isCs }} href="/en/">EN</a></div></div>
+  </aside>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title" data-motion="hero">
+      <img class="hero__image" src="/images/jonas-hero-figma.png" alt="" fetchpriority="high" />
+      <div class="hero__shade"></div>
+      <p class="hero__eyebrow" data-hero-eyebrow>{t.eyebrow}</p>
+      <h1 id="hero-title">
+        <span class="hero__line-mask"><span class="hero__line" data-hero-line>{t.heroA}</span></span>
+        <span class="hero__line-mask accent"><span class="hero__line" data-hero-line><span>{t.heroBefore}</span><span class="hero-word">{t.heroWord}</span></span></span>
+      </h1>
+      <div class="hero__bottom" data-hero-bottom>
+        <p>{t.heroText}</p>
+        <a class="round-link" data-magnetic href="#work"><span>{t.heroCta}</span><i class="round-link__icon" aria-hidden="true" set:html={arrowDownRightIcon}></i></a>
+      </div>
+    </section>
+
+    <section class="statement section-pad" data-motion="statement">
+      <p class="section-label" data-motion-label>01 — {isCs ? 'Pozice' : 'Position'}</p>
+      <p class="statement__copy" data-motion-copy>{isCs ? 'Když web jen dobře vypadá, je to dekorace. Když přesně ukáže hodnotu firmy a pomůže lidem rozhodnout se, je to obchodní nástroj.' : 'When a website merely looks good, it is decoration. When it makes the value of a business clear and helps people decide, it becomes a business tool.'}</p>
+    </section>
+
+    <section id="work" class="work section-pad" data-motion="work">
+      <div class="section-intro">
+        <p class="section-label" data-motion-label>02 — {t.workLabel}</p>
+        <h2 data-motion-title>{t.workTitle}</h2>
+      </div>
+      <div class="project-list">
+        {t.projects.map((project, index) => (
+          <article class="project" data-project>
+            <a href="#contact" aria-label={`${t.projectCta}: ${project.name}`} data-project-link>
+              <div class="project__reveal" data-project-reveal>
+                <div class:list={['project__visual', project.class]} data-project-visual>
+                  <div class="project__index">0{index + 1}</div>
+                  <div class="poster-word" aria-hidden="true">{project.name}</div>
+                  <div class="mock-window" aria-hidden="true"><span></span><span></span><span></span><b>{project.name}</b></div>
+                </div>
+              </div>
+              <div class="project__meta" data-project-meta>
+                <div><p>{project.type}</p><h3>{project.name}</h3></div>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="services" class="services section-pad" data-motion="services">
+      <div class="services__intro" data-services-intro>
+        <p class="section-label" data-motion-label>03 — {t.servicesLabel}</p>
+        <h2 data-motion-title>{t.servicesTitle}</h2>
+        <p data-motion-support>{t.servicesIntro}</p>
+      </div>
+      <div class="service-list">
+        {t.services.map(([number, title, text]) => (
+          <article class="service" data-service>
+            <div class="service__content" data-service-part>
+              <span class="service__number">{number}</span>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="method section-pad" data-motion="method">
+      <div class="section-intro">
+        <p class="section-label" data-motion-label>04 — {t.methodLabel}</p>
+        <h2 data-motion-title>{t.methodTitle}</h2>
+      </div>
+      <ol class="method__steps">
+        {t.method.map((step, index) => (
+          <li data-method-step>
+            <span class="method__number">0{index + 1}</span>
+            <span class="method__text">{step}</span>
+            <span class="method__line" aria-hidden="true"></span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section id="about" class="about section-pad" data-motion="about">
+      <div class="about__image" data-about-image><img src="/images/jonas-about.webp" alt={isCs ? 'Jonas Rech v horách nad jezerem' : 'Jonas Rech in the mountains above a lake'} loading="lazy" /></div>
+      <div class="about__copy" data-about-copy>
+        <p class="section-label" data-motion-label>05 — {t.aboutLabel}</p>
+        <h2 data-motion-title>{t.aboutTitle}</h2>
+        <p data-about-detail>{t.aboutText}</p>
+        <div class="about__facts" data-about-detail><span>Brno, CZ</span><span>Design · Code · Photo</span></div>
+      </div>
+    </section>
+
+    <section class="photos section-pad" data-motion="photos">
+      <div class="photos__heading">
+        <p class="section-label" data-motion-label>06 — {t.photosLabel}</p>
+        <h2 data-motion-title>{t.photosTitle}</h2>
+      </div>
+      <div class="photo-grid">
+        <figure data-photo><img src="/images/photo-lake.webp" alt={isCs ? 'Horské jezero z paddleboardu' : 'Mountain lake seen from a paddleboard'} loading="lazy" /><figcaption>Gosausee · 2026</figcaption></figure>
+        <figure data-photo><img src="/images/photo-climb.jpg" alt={isCs ? 'Pohled z via ferraty nad jezerem' : 'View from a via ferrata above a lake'} loading="lazy" /><figcaption>Austria · 2026</figcaption></figure>
+        <figure data-photo><img src="/images/photo-gran-canaria.webp" alt={isCs ? 'Horská krajina na Gran Canarii' : 'Mountain landscape in Gran Canaria'} loading="lazy" /><figcaption>Gran Canaria · 2026</figcaption></figure>
+      </div>
+    </section>
+
+    <section id="contact" class="contact section-pad" data-motion="contact">
+      <p class="section-label" data-motion-label>07 — {t.contactLabel}</p>
+      <h2 data-motion-title>{t.contactTitle}</h2>
+      <div class="contact__bottom">
+        <p data-contact-detail>{t.contactText}</p>
+        <a href="mailto:hello@jonasrech.com" data-contact-detail>{t.contactCta}<span>↗</span></a>
+      </div>
+      <a class="contact__email" href="mailto:hello@jonasrech.com" data-contact-detail><span>{t.contactCta}</span><span class="contact__arrow" aria-hidden="true" set:html={arrowDownRightIcon}></span></a>
+      <div class="contact__details" data-contact-detail>
+        <div><p>{isCs ? 'Najdete mě' : 'Find me'}</p><a href="https://www.linkedin.com" rel="me">LinkedIn</a><a href="https://www.instagram.com" rel="me">Instagram</a></div>
+        <div><p>{isCs ? 'Základna' : 'Based in'}</p><span>Brno, CZ · Worldwide</span></div>
+        <div><p>{isCs ? 'Napište' : 'Write'}</p><a href="mailto:hello@jonasrech.com">{t.contactCta}</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer__brand" aria-hidden="true">JONASRECH</div>
+    <div><a class="wordmark" href="#main">jonasrech<span>.</span></a><p>{t.footer}</p></div>
+    <p>© {new Date().getFullYear()} Jonas Rech</p>
+  </footer>
+
+  <script>
+    import gsap from 'gsap';
+    import { initMotion } from '../scripts/motion';
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const menuToggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+    const menu = document.querySelector<HTMLElement>('[data-menu]');
+    const setMenu = (open: boolean) => {
+      document.body.classList.toggle('menu-open', open);
+      if (open) header?.classList.remove('is-hidden');
+      menuToggle?.classList.toggle('is-open', open);
+      menuToggle?.setAttribute('aria-expanded', String(open));
+      menu?.setAttribute('aria-hidden', String(!open));
+      menu?.classList.toggle('is-open', open);
+      if (!reduced && open) gsap.fromTo('[data-menu-link]', { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: .055, delay: .08, duration: .55, ease: 'power3.out' });
+    };
+    menuToggle?.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
+    document.querySelectorAll('[data-menu-link]').forEach((link) => link.addEventListener('click', () => setMenu(false)));
+    addEventListener('keydown', (event) => { if (event.key === 'Escape') setMenu(false); });
+
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const cursor = document.querySelector<HTMLElement>('[data-cursor]');
+      const cursorLabel = document.querySelector<HTMLElement>('[data-cursor-label]');
+      const moveX = gsap.quickTo(cursor, 'x', { duration: .22, ease: 'power3.out' });
+      const moveY = gsap.quickTo(cursor, 'y', { duration: .22, ease: 'power3.out' });
+      addEventListener('pointermove', (event) => { moveX(event.clientX); moveY(event.clientY); });
+      document.documentElement.classList.add('has-custom-cursor');
+      document.querySelectorAll('[data-project-link]').forEach((project) => {
+        project.addEventListener('pointerenter', () => { cursor?.classList.add('is-project'); if (cursorLabel) cursorLabel.textContent = 'SEE PROJECT'; });
+        project.addEventListener('pointerleave', () => { cursor?.classList.remove('is-project'); if (cursorLabel) cursorLabel.textContent = ''; });
+      });
+      document.querySelectorAll('a, button').forEach((target) => {
+        target.addEventListener('pointerenter', () => cursor?.classList.add('is-link'));
+        target.addEventListener('pointerleave', () => cursor?.classList.remove('is-link'));
+      });
+
+      if (!reduced) {
+        document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((element) => {
+          const moveX = gsap.quickTo(element, 'x', { duration: .42, ease: 'power3.out' });
+          const moveY = gsap.quickTo(element, 'y', { duration: .42, ease: 'power3.out' });
+          const strength = element.classList.contains('round-link') ? .16 : .28;
+          element.addEventListener('pointermove', (event) => {
+            const bounds = element.getBoundingClientRect();
+            moveX((event.clientX - (bounds.left + bounds.width / 2)) * strength);
+            moveY((event.clientY - (bounds.top + bounds.height / 2)) * strength);
+          });
+          element.addEventListener('pointerleave', () => {
+            moveX(0);
+            moveY(0);
+          });
+        });
+      }
+    }
+    initMotion(reduced);
+    const header = document.querySelector<HTMLElement>('[data-header]');
+    const hero = document.querySelector<HTMLElement>('.hero');
+    const updateHeader = () => {
+      const y = window.scrollY;
+      header?.classList.toggle('is-scrolled', y > 20);
+      header?.classList.toggle('is-past-hero', Boolean(hero && hero.getBoundingClientRect().bottom <= (header?.offsetHeight ?? 0) + 16));
+    };
+    addEventListener('scroll', () => {
+      updateHeader();
+    }, { passive: true });
+    updateHeader();
+  </script>
+</BaseLayout>

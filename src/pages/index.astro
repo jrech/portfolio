@@ -1,0 +1,14 @@
+---
+const canonical = new URL('/en/', Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="refresh" content="0;url=/en/" />
+    <link rel="canonical" href={canonical} />
+    <title>Jonas Rech</title>
+  </head>
+  <body><a href="/en/">Continue in English</a> · <a href="/cs/">Pokračovat česky</a></body>
+</html>
