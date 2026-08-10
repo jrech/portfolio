@@ -18,6 +18,8 @@ html.lenis.lenis-smooth { scroll-behavior: auto !important; }
 html.lenis.lenis-stopped { overflow: hidden; }
 body { margin: 0; background: var(--ink); color: var(--paper); font-family: 'Manrope Variable', Arial, sans-serif; line-height: 1.45; overflow-x: hidden; }
 h1, h2, h3 { font-family: 'Instrument Sans Variable', Arial, sans-serif; font-weight: 500; }
+h1, h2, h3 { text-wrap: balance; }
+p, li, dd, .method__text { text-wrap: pretty; }
 main, footer { width: 100%; margin-inline: 0; }
 main > section, footer { padding-left: max(var(--pad), calc((100vw - var(--page-max)) / 2 + var(--pad))); padding-right: max(var(--pad), calc((100vw - var(--page-max)) / 2 + var(--pad))); }
 a { color: inherit; text-decoration: none; }
