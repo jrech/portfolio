@@ -188,6 +188,23 @@ html[lang="en"] .hero-word::after { display: none; }
 .contact__details p { margin-bottom: .25rem; color: rgba(242,239,233,.42); font-size: .62rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
 .contact__details a { transition: color .2s ease; }
 .contact__details a:hover { color: var(--orange); }
+.llm-info { min-height: 100vh; padding: clamp(7rem, 12vw, 11rem) var(--pad) 6rem; background: var(--paper); color: var(--ink); }
+.llm-info article { max-width: 50rem; margin: 0 auto; }
+.llm-info h1 { max-width: 14ch; margin: 1rem 0 2rem; font-size: clamp(3rem, 7vw, 7rem); line-height: .95; letter-spacing: -.06em; }
+.llm-info h2 { margin: clamp(3.5rem, 8vw, 7rem) 0 1.25rem; font-size: clamp(1.8rem, 3vw, 3rem); line-height: 1; letter-spacing: -.045em; }
+.llm-info h3 { margin: 2rem 0 .7rem; font-size: 1.35rem; }
+.llm-info p, .llm-info li, .llm-info dd { max-width: 65ch; color: #4f4c47; font-size: .95rem; line-height: 1.65; }
+.llm-info p + p { margin-top: 1rem; }
+.llm-info__lead { max-width: 42ch; font-size: 1.2rem !important; color: var(--ink) !important; }
+.llm-info dl { display: grid; grid-template-columns: 8rem 1fr; gap: .55rem 1rem; margin: 0; }
+.llm-info dt { color: #77736c; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.llm-info dd { margin: 0; }
+.llm-info ul { padding-left: 1.2rem; }
+.llm-info li { padding-left: .35rem; }
+.llm-info a { color: var(--ink); text-decoration: underline; text-decoration-color: rgba(255,77,24,.55); text-underline-offset: .2em; transition: color .2s ease; }
+.llm-info a:hover { color: var(--orange); }
+.llm-info blockquote { margin: 1.5rem 0; padding-left: 1.2rem; border-left: 2px solid var(--orange); color: var(--ink); font-size: 1.1rem; line-height: 1.5; }
+.llm-info__updated { margin-top: 5rem !important; color: #77736c !important; font-size: .75rem !important; }
 
 footer { position: relative; isolation: isolate; overflow: hidden; display: grid; grid-template-columns: 1fr auto; gap: 4rem; padding: 2.25rem max(var(--pad), calc((100vw - var(--page-max)) / 2 + var(--pad))) clamp(7rem, 12vw, 11rem); background: #080808; }
 footer > div:first-child:not(.footer__brand) p { margin-top: .6rem; color: var(--muted); font-size: .75rem; }
