@@ -238,7 +238,7 @@ footer > p { grid-column: 1 / -1; color: var(--muted); font-size: .65rem; }
   .poster-word { font-size: 22vw; bottom: .5rem; }
   .services__intro { grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 4rem; }
   .services__intro > p:last-child { grid-column: auto; }
-  .service-list { display: flex; gap: .75rem; overflow-x: auto; margin: 0 calc(var(--pad) * -1); padding: 0 var(--pad) .8rem; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .service-list { display: flex; gap: .75rem; overflow-x: auto; margin: 0; padding: 0 0 .8rem; scroll-snap-type: x mandatory; scrollbar-width: none; }
   .service-list::-webkit-scrollbar { display: none; }
   .service { flex: 0 0 min(78vw, 21rem); min-height: 25rem; padding: 1.25rem; scroll-snap-align: start; }
   .service p { max-width: 25ch; }
