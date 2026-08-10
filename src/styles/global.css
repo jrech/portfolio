@@ -17,7 +17,8 @@ html.lenis, html.lenis body { height: auto; }
 html.lenis.lenis-smooth { scroll-behavior: auto !important; }
 html.lenis.lenis-stopped { overflow: hidden; }
 body { margin: 0; background: var(--ink); color: var(--paper); font-family: 'Manrope Variable', Arial, sans-serif; line-height: 1.45; overflow-x: hidden; }
-main, footer { width: min(100%, var(--page-max)); margin-inline: auto; }
+main, footer { width: 100%; margin-inline: 0; }
+main > section, footer { padding-left: max(var(--pad), calc((100vw - var(--page-max)) / 2 + var(--pad))); padding-right: max(var(--pad), calc((100vw - var(--page-max)) / 2 + var(--pad))); }
 a { color: inherit; text-decoration: none; }
 img { display: block; width: 100%; }
 h1, h2, h3, p { margin: 0; }
@@ -185,7 +186,7 @@ body.menu-open { overflow: hidden; }
 .contact__details a { transition: color .2s ease; }
 .contact__details a:hover { color: var(--orange); }
 
-footer { position: relative; isolation: isolate; overflow: hidden; display: grid; grid-template-columns: 1fr auto; gap: 4rem; padding: 2.25rem var(--pad) clamp(7rem, 12vw, 11rem); background: #080808; }
+footer { position: relative; isolation: isolate; overflow: hidden; display: grid; grid-template-columns: 1fr auto; gap: 4rem; padding: 2.25rem max(var(--pad), calc((100vw - var(--page-max)) / 2 + var(--pad))) clamp(7rem, 12vw, 11rem); background: #080808; }
 footer > div:first-child:not(.footer__brand) p { margin-top: .6rem; color: var(--muted); font-size: .75rem; }
 .footer__brand { position: absolute; z-index: -1; left: -1.8vw; bottom: -4vw; color: #fff; opacity: .03; white-space: nowrap; font-size: clamp(8rem, 27vw, 30rem); line-height: .72; letter-spacing: -.105em; font-weight: 800; pointer-events: none; }
 .footer__links { display: flex; gap: 2rem; font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
