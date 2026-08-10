@@ -1,0 +1,41 @@
+{
+  "title": "Jonas Rech — Brand & digital partner",
+  "description": "Pomáhám dobrým firmám jasně ukázat jejich hodnotu — od značky přes web až po obraz.",
+  "nav": ["Práce", "Služby", "O mně", "Kontakt"],
+  "eyebrow": "Brand & digital partner",
+  "heroA": "Váš byznys už má kvalitu.",
+  "heroBefore": "Já ji pomáhám lidem ",
+  "heroWord": "uvidět.",
+  "heroText": "Strategie, značka a web navržené jako jeden celek — aby lidé rychleji pochopili vaši hodnotu a snáz udělali další krok.",
+  "heroCta": "Prohlédnout práci",
+  "workLabel": "Vybraná práce",
+  "workTitle": "Nejen hezčí web. Jasnější důvod vybrat si právě vás.",
+  "projects": [
+    { "name": "Prádelna Krkonoše", "type": "Strategie · Webdesign · Copy", "note": "Proměna tradiční služby v důvěryhodnou digitální zkušenost.", "class": "laundry" },
+    { "name": "Proelectrica", "type": "Struktura · UI/UX · Webdesign", "note": "Komplexní nabídka přeložená do srozumitelné cesty pro zákazníka.", "class": "electric" },
+    { "name": "cink", "type": "SaaS · Landing page · Brand direction", "note": "Nový produkt vysvětlený bez technického šumu.", "class": "cink" }
+  ],
+  "projectCta": "Prohlédnout projekt",
+  "servicesLabel": "Co přináším ke stolu",
+  "servicesTitle": "Od obchodního problému k webu, který umí dělat svoji práci.",
+  "servicesIntro": "Nezačínám barvami ani komponentami. Nejdřív potřebuji pochopit, proč si vás mají lidé vybrat — a teprve potom tomu dám správný tvar.",
+  "services": [
+    ["01", "Jasno ve značce", "Pozice, sdělení a vizuální směr. Pojmenujeme, co je na vašem byznysu cenné a jak to ukázat bez prázdných frází."],
+    ["02", "Web, který vede k akci", "Informační architektura, UX, design a vývoj v Astro. Každá stránka má jasný úkol a měřitelný další krok."],
+    ["03", "Obsah a obraz", "Copy a fotografie nejsou výplň. Jsou důkaz. Společně vytvoříme materiál, který působí pravdivě a zapamatovatelně."],
+    ["04", "Partnerství po spuštění", "Web není jednorázový soubor. Sledujeme, co lidé dělají, upravujeme a postupně z něj děláme lepší obchodní nástroj."]
+  ],
+  "methodLabel": "Jak se dostaneme k výsledku",
+  "methodTitle": "Nejdřív pochopit. Pak udělat věci, které pohnou byznysem.",
+  "method": ["Rozhovor bez briefu", "Najít skutečný problém", "Dát hodnotě tvar", "Spustit a sledovat", "Zlepšovat spolu"],
+  "aboutLabel": "O mně",
+  "aboutTitle": "Jsem Jonas. Designer, stavitel a člověk, který se ptá dřív, než kreslí.",
+  "aboutText": "Pracuji přímo s majiteli a týmy, kterým záleží na tom, co budují. Spojuji strategické myšlení, webdesign, vývoj a fotografii, takže mezi myšlenkou a výsledkem nevznikají zbytečné mezery.",
+  "photosLabel": "Mimo plátno",
+  "photosTitle": "Fotografie mě učí dívat se. V práci pak pomáhá vidět to podstatné.",
+  "contactLabel": "Začněme rozhovorem",
+  "contactTitle": "Máte kvalitní byznys, který zatím nevypadá tak dobře, jak funguje?",
+  "contactText": "Napište mi, co se má změnit. Ozvu se osobně a bez prodejního kolečka.",
+  "contactCta": "hello@jonasrech.com",
+  "footer": "Nezávislý brand & digital partner"
+}
