@@ -132,7 +132,7 @@ body.menu-open { overflow: hidden; }
 .service::before, .service::after { content: ''; position: absolute; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .5s ease, transform 1.05s var(--ease); }
 .service::before { width: 150%; aspect-ratio: 1; left: -46%; bottom: -112%; border-radius: 46% 54% 62% 38% / 43% 41% 59% 57%; background: radial-gradient(circle at 62% 34%, #ffbd73 0 4%, transparent 22%), radial-gradient(circle at 32% 60%, #ff6a36 0 8%, transparent 38%), linear-gradient(145deg, #ff4d18 12%, #ff8a36 53%, #ef3210 100%); transform: rotate(-18deg) scale(.78); }
 .service::after { width: 78%; aspect-ratio: 1; right: -36%; bottom: -25%; border-radius: 50%; background: rgba(255, 206, 135, .72); filter: blur(12px); transform: translate3d(14%, 24%, 0) scale(.7); }
-.service:hover { color: #17110e; transform: translateY(-.35rem); }
+.service:hover { color: #17110e; transform: translateY(-.5rem); }
 .service:hover::before { opacity: 1; transform: rotate(9deg) translate3d(12%, -34%, 0) scale(1.16); animation: service-wash 5.5s ease-in-out infinite alternate; }
 .service:hover::after { opacity: .82; transform: translate3d(-22%, -40%, 0) scale(1.12); }
 @keyframes service-wash { from { border-radius: 46% 54% 62% 38% / 43% 41% 59% 57%; } to { border-radius: 61% 39% 41% 59% / 55% 63% 37% 45%; } }
