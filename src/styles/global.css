@@ -193,7 +193,7 @@ footer > div:first-child:not(.footer__brand) p { margin-top: .6rem; color: var(-
 footer > p { grid-column: 1 / -1; color: var(--muted); font-size: .65rem; }
 
 @media (min-width: 1441px) {
-  main > section, footer { padding-left: max(var(--pad), calc((100vw - var(--page-max)) / 2)); padding-right: max(var(--pad), calc((100vw - var(--page-max)) / 2)); }
+  main > section.section-pad, footer { padding-left: max(var(--pad), calc((100vw - var(--page-max)) / 2)); padding-right: max(var(--pad), calc((100vw - var(--page-max)) / 2)); }
 }
 
 @media (max-width: 800px) {
