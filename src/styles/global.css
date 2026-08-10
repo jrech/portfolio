@@ -38,7 +38,7 @@ button, input, textarea { font: inherit; }
 .menu-open .site-header { background: transparent; border-color: transparent; backdrop-filter: none; }
 .wordmark { font-size: 1rem; font-weight: 800; letter-spacing: -.05em; justify-self: start; }
 .wordmark span { color: var(--orange); }
-.desktop-nav { display: flex; align-items: center; gap: 2rem; margin-left: auto; font-size: .8rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; transition: opacity .3s ease, transform .35s var(--ease); }
+.desktop-nav { display: flex; align-items: center; justify-content: space-between; width: min(100%, 25rem); gap: 0; margin-left: auto; font-size: .8rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; transition: opacity .3s ease, transform .35s var(--ease); }
 .desktop-nav a { transition: color .2s ease; }
 .desktop-nav a:hover { color: var(--orange); }
 .site-header.is-past-hero .desktop-nav { opacity: 0; pointer-events: none; transform: translateY(-.35rem); }
