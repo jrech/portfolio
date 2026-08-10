@@ -192,6 +192,10 @@ footer > div:first-child:not(.footer__brand) p { margin-top: .6rem; color: var(-
 .footer__links { display: flex; gap: 2rem; font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
 footer > p { grid-column: 1 / -1; color: var(--muted); font-size: .65rem; }
 
+@media (min-width: 1441px) {
+  main > section, footer { padding-left: max(var(--pad), calc((100vw - var(--page-max)) / 2)); padding-right: max(var(--pad), calc((100vw - var(--page-max)) / 2)); }
+}
+
 @media (max-width: 800px) {
   .desktop-nav { display: none; }
   .menu-toggle { opacity: 1; pointer-events: auto; transform: scale(1); }
