@@ -53,13 +53,13 @@ const t = isCs ? {
   description: 'I help good businesses make their value clear — through brand, digital and image.',
   nav: ['Work', 'Services', 'About', 'Contact'],
   eyebrow: 'Brand & digital partner',
-  heroA: 'Your business already has quality.',
-  heroBefore: 'I help people ',
-  heroWord: 'see it.',
-  heroText: 'Strategy, brand and web designed as one system — so people understand your value faster and find it easier to take the next step.',
+  heroA: 'Your business is already good.',
+  heroBefore: 'I make sure it ',
+  heroWord: 'looks the part.',
+  heroText: 'I help businesses sharpen their message, build a stronger identity and turn it into a website people actually understand — and want to use.',
   heroCta: 'See selected work',
   workLabel: 'Selected work',
-  workTitle: 'Not just a better-looking website. A clearer reason to choose you.',
+  workTitle: 'Good design gets attention. Clear thinking gives people a reason to choose you.',
   projects: [
     { name: 'Prádelna Krkonoše', type: 'Strategy · Web design · Copy', note: 'Turning a traditional service into a credible digital experience.', class: 'laundry' },
     { name: 'Proelectrica', type: 'Structure · UI/UX · Web design', note: 'A complex offer translated into a clear customer journey.', class: 'electric' },
@@ -67,27 +67,27 @@ const t = isCs ? {
   ],
   projectCta: 'View project',
   servicesLabel: 'What I bring to the table',
-  servicesTitle: 'From a business problem to a website that knows its job.',
-  servicesIntro: 'I do not start with colors or components. First, I need to understand why people should choose you — then I give that reason the right form.',
+  servicesTitle: 'I figure out what needs to be said before deciding how it should look.',
+  servicesIntro: 'I start by understanding the business, the people behind it and the people it needs to reach. From there, we build the brand and website around what actually makes you worth choosing.',
   services: [
-    ['01', 'Clarity in the brand', 'Positioning, language and visual direction. We name what is valuable about your business and show it without empty claims.'],
-    ['02', 'A website that moves people', 'Information architecture, UX, design and Astro development. Every page has a clear role and a meaningful next step.'],
-    ['03', 'Content and image', 'Copy and photography are not filler. They are evidence. Together, they make the experience credible and memorable.'],
-    ['04', 'A partner after launch', 'A website is not a one-off file. We observe, adjust and turn it into a stronger business tool over time.'],
+    ['01', 'Brand direction', 'Positioning, messaging and visual direction that give the business a clearer identity — without trying to sound bigger, smarter or different than it really is.'],
+    ['02', 'Web design & development', 'Structure, UX, design and development brought together from the start. The result is a website that feels good to use and makes it easy to understand where to go next.'],
+    ['03', 'Copy & photography', 'The words and images should feel like they belong to the same business as the design. I can take care of both, so the final result feels consistent rather than assembled from separate pieces.'],
+    ['04', 'After launch', 'Launching isn’t where the relationship has to end. I can stay involved, see how the site performs and improve it as the business changes.'],
   ],
-  methodLabel: 'How we get to the result',
-  methodTitle: 'Understand first. Then make the moves that help the business forward.',
-  method: ['A conversation before a brief', 'Find the real problem', 'Give the value a shape', 'Launch and learn', 'Keep improving together'],
+  methodLabel: 'How we get there',
+  methodTitle: 'Understand the business first. Design the right thing second.',
+  method: ['Start with a conversation', 'Find what needs fixing', 'Turn the idea into something real', 'Launch, then learn', 'Keep making it better'],
   aboutLabel: 'About',
-  aboutTitle: 'I’m Jonas. A designer, builder and someone who asks before he draws.',
-  aboutText: 'I work directly with founders and teams who care about what they build. I combine strategic thinking, web design, development and photography, so the idea does not get lost between disciplines.',
+  aboutTitle: 'I’m Jonas. Designer, developer and occasional photographer.',
+  aboutText: 'I work directly with founders and small teams who care about what they’re building. Keeping strategy, design, development and photography close together means fewer handovers, fewer things getting lost in translation, and a result that feels like one idea from start to finish.',
   photosLabel: 'Away from the screen',
-  photosTitle: 'Photography teaches me to look. That helps the work focus on what matters.',
+  photosTitle: 'Photography keeps me curious about places, people and details.',
   contactLabel: 'Start a conversation',
-  contactTitle: 'Does your business work better than it currently looks?',
-  contactText: 'Tell me what needs to change. I’ll reply personally, without a sales routine.',
+  contactTitle: 'Feel like your business has outgrown its website?',
+  contactText: 'Tell me what you’re working on, what isn’t working, or simply where you want to take the business next.',
   contactCta: 'hello@jonasrech.com',
-  footer: 'Independent brand & digital partner',
+  footer: 'Independent brand & digital designer',
 };
 ---
 <BaseLayout lang={lang} title={t.title} description={t.description}>
@@ -133,7 +133,7 @@ const t = isCs ? {
 
     <section class="statement section-pad" data-motion="statement">
       <p class="section-label" data-motion-label>01 — {isCs ? 'Pozice' : 'Position'}</p>
-      <p class="statement__copy" data-motion-copy>{isCs ? 'Když web jen dobře vypadá, je to dekorace. Když přesně ukáže hodnotu firmy a pomůže lidem rozhodnout se, je to obchodní nástroj.' : 'When a website merely looks good, it is decoration. When it makes the value of a business clear and helps people decide, it becomes a business tool.'}</p>
+      <p class="statement__copy" data-motion-copy>{isCs ? 'Když web jen dobře vypadá, je to dekorace. Když přesně ukáže hodnotu firmy a pomůže lidem rozhodnout se, je to obchodní nástroj.' : 'A good website shouldn’t just look good. It should make it obvious what you do, why it matters and why someone should choose you.'}</p>
     </section>
 
     <section id="work" class="work section-pad" data-motion="work">
@@ -229,7 +229,7 @@ const t = isCs ? {
       <div class="contact__details" data-contact-detail>
         <div class="contact__identity"><a class="wordmark" href="#main">jonasrech<span>.</span></a><span>{t.footer}</span></div>
         <div><p>{isCs ? 'Najdete mě' : 'Find me'}</p><a href="https://www.linkedin.com" rel="me">LinkedIn</a><a href="https://www.instagram.com" rel="me">Instagram</a></div>
-        <div><p>{isCs ? 'Základna' : 'Based in'}</p><span>Brno, CZ · Worldwide</span></div>
+        <div><p>{isCs ? 'Základna' : 'Based in'}</p><span>{isCs ? 'Brno, CZ · Worldwide' : 'Brno, CZ · Working worldwide'}</span></div>
         <div><p>{isCs ? 'Napište' : 'Write'}</p><a href="mailto:hello@jonasrech.com">{t.contactCta}</a></div>
       </div>
     </section>
