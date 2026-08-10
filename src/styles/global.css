@@ -177,11 +177,8 @@ html[lang="en"] .hero-word::after { display: none; }
 .contact .section-label { color: rgba(242,239,233,.5); }
 .contact h2 { grid-column: 2; max-width: 12ch; margin: 0; font-size: clamp(3rem, 6vw, 7.5rem); line-height: .94; letter-spacing: -.065em; font-weight: 500; }
 .contact__bottom { display: none; }
-.contact__email { grid-column: 2; display: inline-flex; justify-self: start; align-items: center; gap: .65rem; margin-top: clamp(-1.5rem, -2vw, -.5rem); color: rgba(242,239,233,.66); font-size: clamp(2rem, 4vw, 5rem); line-height: 1; letter-spacing: -.06em; transition: color .35s ease, transform .45s var(--ease); }
-.contact__arrow { display: inline-flex; align-self: center; color: var(--orange); line-height: 1; transform: translateY(-.02em); transition: transform .4s var(--ease), color .35s ease; }
-.contact__arrow svg { width: .46em; height: .46em; display: block; stroke: currentColor; }
-.contact__email:hover { color: var(--paper); transform: translateX(.04em); }
-.contact__email:hover .contact__arrow { transform: rotate(-45deg) translate(.08em, -.08em); }
+.contact__email { grid-column: 2; display: inline-flex; justify-self: start; align-items: center; margin-top: clamp(-1.5rem, -2vw, -.5rem); color: transparent; font-size: clamp(2rem, 4vw, 5rem); line-height: 1; letter-spacing: -.06em; background-image: linear-gradient(90deg, var(--orange), var(--orange)), linear-gradient(90deg, rgba(242,239,233,.66), rgba(242,239,233,.66)); background-repeat: no-repeat; background-position: left center; background-size: 0% 100%, 100% 100%; -webkit-background-clip: text; background-clip: text; transition: background-size .55s var(--ease); }
+.contact__email:hover { background-size: 100% 100%, 100% 100%; }
 .contact__details { grid-column: 1 / -1; width: 100%; max-width: var(--page-max); justify-self: center; display: flex; justify-content: space-between; align-items: start; gap: 2rem; margin-top: clamp(1rem, 4vw, 4rem); padding-top: 1.35rem; border-top: 1px solid rgba(242,239,233,.18); }
 .contact__details div { display: grid; align-content: start; justify-items: start; gap: .4rem; color: rgba(242,239,233,.75); font-size: .75rem; }
 .contact__identity { gap: .2rem !important; }
