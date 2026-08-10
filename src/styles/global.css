@@ -184,7 +184,7 @@ body.menu-open { overflow: hidden; }
 .contact__identity { gap: .2rem !important; }
 .contact__identity .wordmark { font-size: .75rem; }
 .contact__identity > span { color: rgba(242,239,233,.75); }
-.contact__details > :last-child { justify-items: end; text-align: right; }
+.contact__details > :last-child { justify-items: start; text-align: left; }
 .contact__details p { margin-bottom: .25rem; color: rgba(242,239,233,.42); font-size: .62rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
 .contact__details a { transition: color .2s ease; }
 .contact__details a:hover { color: var(--orange); }
