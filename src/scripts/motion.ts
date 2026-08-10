@@ -182,6 +182,7 @@ export function initMotion(reduced: boolean) {
           duration: .9,
           ease: EASE,
           delay: index * .1,
+          clearProps: 'transform',
           scrollTrigger: once(card, 'top 84%'),
         });
       });
