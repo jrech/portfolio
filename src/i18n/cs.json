@@ -18,12 +18,12 @@
   "projectCta": "Prohlédnout projekt",
   "servicesLabel": "Co dělám",
   "servicesTitle": "Nejdřív chci vědět, co děláte a proč. Pak řeším design.",
-  "servicesIntro": "Potřebuju pochopit váš byznys, vaše zákazníky a to, čím jste jiní. Teprve z toho vzniká značka, obsah a web.",
+  "servicesIntro": "Potřebuju pochopit váš byznys, vaše zákazníky a to, čím jste jiní. Na tom pak stavím značku, obsah i web.",
   "services": [
-    ["01", "Brand identity", "Pomůžu vám ujasnit, čím jste zajímaví, jak o sobě mluvit a jak by značka měla působit. Bez zbytečných sloganů a snahy znít větší, než ve skutečnosti jste."],
-    ["02", "Webdesign & development", "Struktura, UX, design a vývoj řeším společně od začátku. Výsledkem je web, který dobře vypadá, dobře se používá a návštěvník se v něm nemusí zbytečně hledat."],
-    ["03", "Copy & fotografie", "Texty a fotografie by měly působit jako přirozená součást stejné značky. Můžu se postarat i o ně, aby výsledný web nepůsobil jako něco poskládaného z pěti různých zdrojů."],
-    ["04", "Po spuštění", "Spuštěním webu to nemusí končit. Můžeme sledovat, jak funguje, postupně ho upravovat a přizpůsobovat tomu, jak se mění váš byznys."]
+    ["01", "Brand identity", "Pomůžu vám ujasnit, čím jste jiní, jak o sobě mluvit a jak má vaše značka působit. Bez zbytečných sloganů a hraní si na něco, co nejste."],
+    ["02", "Webdesign & development", "Web navrhnu i postavím. Od struktury a UX přes vizuální návrh až po finální vývoj. Všechno tak drží pohromadě od začátku."],
+    ["03", "Copy & fotografie", "Když projekt potřebuje vlastní texty nebo fotky, můžu se postarat i o ně. Web pak působí jako jeden celek, ne jako poskládané části."],
+    ["04", "Po spuštění", "Spuštěním webu to nemusí skončit. Můžu se starat o další úpravy, nové stránky nebo web postupně rozvíjet spolu s vaším byznysem."]
   ],
   "methodLabel": "Jak pracuju",
   "methodTitle": "Nejdřív pochopit byznys. Potom navrhovat.",
