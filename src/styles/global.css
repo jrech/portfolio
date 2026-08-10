@@ -68,7 +68,6 @@ body.menu-open { overflow: hidden; }
 .cursor.is-link { width: 1.35rem; }
 .cursor.is-project { width: 7rem; background: var(--orange); mix-blend-mode: normal; color: var(--ink); }
 .cursor.is-project span { opacity: 1; }
-.has-custom-cursor, .has-custom-cursor * { cursor: none !important; }
 
 .hero { position: relative; min-height: 100svh; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 7.5rem var(--pad) 2rem; isolation: isolate; }
 .hero__image, .hero__shade { position: absolute; inset: 0; width: 100%; height: 100%; }
