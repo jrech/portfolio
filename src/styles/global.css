@@ -194,6 +194,8 @@ footer > p { grid-column: 1 / -1; color: var(--muted); font-size: .65rem; }
 
 @media (min-width: 1441px) {
   main > section.section-pad, main > section.hero, footer { padding-left: max(var(--pad), calc((100vw - var(--page-max)) / 2)); padding-right: max(var(--pad), calc((100vw - var(--page-max)) / 2)); }
+  .site-header { padding-left: max(var(--pad), calc((100vw - var(--page-max)) / 2)); padding-right: max(var(--pad), calc((100vw - var(--page-max)) / 2)); }
+  .menu-toggle { right: max(var(--pad), calc((100vw - var(--page-max)) / 2)); }
 }
 
 @media (max-width: 800px) {
