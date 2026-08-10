@@ -227,6 +227,7 @@ const t = isCs ? {
       </div>
       <a class="contact__email" href="mailto:hello@jonasrech.com" data-contact-detail><span>{t.contactCta}</span><span class="contact__arrow" aria-hidden="true" set:html={arrowDownRightIcon}></span></a>
       <div class="contact__details" data-contact-detail>
+        <div class="contact__identity"><a class="wordmark" href="#main">jonasrech<span>.</span></a><span>{t.footer}</span></div>
         <div><p>{isCs ? 'Najdete mě' : 'Find me'}</p><a href="https://www.linkedin.com" rel="me">LinkedIn</a><a href="https://www.instagram.com" rel="me">Instagram</a></div>
         <div><p>{isCs ? 'Základna' : 'Based in'}</p><span>Brno, CZ · Worldwide</span></div>
         <div><p>{isCs ? 'Napište' : 'Write'}</p><a href="mailto:hello@jonasrech.com">{t.contactCta}</a></div>
@@ -236,8 +237,6 @@ const t = isCs ? {
 
   <footer>
     <div class="footer__brand" aria-hidden="true">JONASRECH</div>
-    <div><a class="wordmark" href="#main">jonasrech<span>.</span></a><p>{t.footer}</p></div>
-    <p>© {new Date().getFullYear()} Jonas Rech</p>
   </footer>
 
   <script>
