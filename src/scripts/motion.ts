@@ -75,15 +75,16 @@ const initStatementWordReveal = (section: HTMLElement) => {
   const words = select<HTMLElement>(section, '[data-statement-word]');
   if (!words.length) return;
   section.classList.add('statement--word-reveal');
-  gsap.fromTo(words, { opacity: .2 }, {
+  gsap.fromTo(words, { opacity: .14, filter: 'blur(5px)' }, {
     opacity: 1,
+    filter: 'blur(0px)',
     duration: 2.35,
     ease: 'none',
     stagger: { each: .13, from: 'start' },
     scrollTrigger: {
       trigger: section,
-      start: 'top 80%',
-      end: 'top 35%',
+      start: 'top 64%',
+      end: 'top 28%',
       scrub: .35,
       invalidateOnRefresh: true,
     },
@@ -114,9 +115,9 @@ export function initMotion(reduced: boolean) {
       const timeline = gsap.timeline({ defaults: { ease: EASE } });
       timeline
         .fromTo(hero.querySelector('.hero__image'), { autoAlpha: 0, scale: 1.035 }, { autoAlpha: 1, scale: 1, duration: 1.8, ease: 'power3.out' })
-        .fromTo(hero.querySelector('[data-hero-eyebrow]'), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .8 }, .42)
-        .fromTo(select(hero, '[data-hero-line]'), { autoAlpha: 0, yPercent: 14 }, { autoAlpha: 1, yPercent: 0, duration: 1.35, stagger: .1 }, .56)
-        .fromTo(select(hero, '[data-hero-bottom] > *'), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .9, stagger: .12 }, 1.2);
+        .fromTo(hero.querySelector('[data-hero-eyebrow]'), { autoAlpha: 0, y: 10, filter: 'blur(7px)' }, { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: .8 }, .42)
+        .fromTo(select(hero, '[data-hero-line]'), { autoAlpha: 0, yPercent: 14, filter: 'blur(9px)' }, { autoAlpha: 1, yPercent: 0, filter: 'blur(0px)', duration: 1.35, stagger: .1 }, .56)
+        .fromTo(select(hero, '[data-hero-bottom] > *'), { autoAlpha: 0, y: 10, filter: 'blur(7px)' }, { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: .9, stagger: .12 }, 1.2);
 
       const heroTitle = hero.querySelector('h1');
       if (heroTitle) {
