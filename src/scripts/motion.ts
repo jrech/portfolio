@@ -71,6 +71,25 @@ const revealDetails = (timeline: gsap.core.Timeline, elements: Element[], positi
   );
 };
 
+const initStatementWordReveal = (section: HTMLElement) => {
+  const words = select<HTMLElement>(section, '[data-statement-word]');
+  if (!words.length) return;
+  section.classList.add('statement--word-reveal');
+  gsap.fromTo(words, { opacity: .2 }, {
+    opacity: 1,
+    duration: 2.35,
+    ease: 'none',
+    stagger: { each: .13, from: 'start' },
+    scrollTrigger: {
+      trigger: section,
+      start: 'top 80%',
+      end: 'top 35%',
+      scrub: .35,
+      invalidateOnRefresh: true,
+    },
+  });
+};
+
 export function initMotion(reduced: boolean) {
   window.__portfolioMotionCleanup?.();
   restoreSplitText();
@@ -138,9 +157,7 @@ export function initMotion(reduced: boolean) {
     }
 
     document.querySelectorAll<HTMLElement>('[data-motion="statement"]').forEach((section) => {
-      const timeline = gsap.timeline({ scrollTrigger: once(section) });
-      revealLabel(timeline, section.querySelector('[data-motion-label]'));
-      revealText(timeline, section.querySelector('[data-motion-copy]'), .1);
+      initStatementWordReveal(section);
     });
 
     document.querySelectorAll<HTMLElement>('[data-motion="work"]').forEach((section) => {
@@ -158,8 +175,8 @@ export function initMotion(reduced: boolean) {
         const timeline = gsap.timeline({ scrollTrigger: once(card, MEDIA_START) });
         timeline.fromTo(
           visual,
-          { autoAlpha: 0, scale: .8 },
-          { autoAlpha: 1, scale: 1, duration: 1.25, ease: EASE },
+          { autoAlpha: 0, scale: .92 },
+          { autoAlpha: 1, scale: 1, duration: 1.05, ease: EASE },
         );
         if (meta) revealDetails(timeline, Array.from(meta.children), .32);
       });

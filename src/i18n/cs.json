@@ -9,21 +9,21 @@
   "heroText": "Pomáhám firmám ujasnit si, co chtějí říct, dát značce jasnější směr a převést to do webu, kterému lidé rozumí a dobře se používá.",
   "heroCta": "Moje projekty",
   "workLabel": "Projekty",
-  "workTitle": "Dobrý design přitáhne pozornost. Jasná komunikace dává důvod zůstat.",
+  "workTitle": "Dobrý design přitáhne pozornost. Jasné myšlení lidem ukáže, v čem jste jiní a proč by si měli vybrat právě vás.",
   "projects": [
-    { "name": "Prádelna Krkonoše", "type": "Strategie · Webdesign · Copy", "note": "Proměna tradiční služby v důvěryhodnou digitální zkušenost.", "class": "laundry" },
-    { "name": "Proelectrica", "type": "Struktura · UI/UX · Webdesign", "note": "Komplexní nabídka přeložená do srozumitelné cesty pro zákazníka.", "class": "electric" },
-    { "name": "cink", "type": "SaaS · Landing page · Brand direction", "note": "Nový produkt vysvětlený bez technického šumu.", "class": "cink" }
+    { "name": "Prádelna Krkonoše", "type": "Strategie · Webdesign · Copy", "status": "Klientská práce", "note": "Proměna tradiční služby v důvěryhodnou digitální zkušenost.", "class": "laundry" },
+    { "name": "Proelectrica", "type": "Struktura · UI/UX · Webdesign", "status": "Klientská práce", "note": "Komplexní nabídka přeložená do srozumitelné cesty pro zákazníka.", "class": "electric" },
+    { "name": "cink", "type": "SaaS · Landing page · Brand direction", "status": "Klientská práce", "note": "Nový produkt vysvětlený bez technického šumu.", "class": "cink" }
   ],
   "projectCta": "Prohlédnout projekt",
   "servicesLabel": "Co dělám",
-  "servicesTitle": "Nejdřív chci vědět, co děláte a proč. Pak řeším design.",
-  "servicesIntro": "Potřebuju pochopit váš byznys, vaše zákazníky a to, čím jste jiní. Od toho se pak odvíjí obsah, design i samotný web.",
+  "servicesTitle": "Značka, web, texty a fotografie — jako jeden srozumitelný celek.",
+  "servicesIntro": "Propojuju positioning, obsah, design, vývoj, copy i fotografie. Jednotlivé části tak drží pohromadě a výsledek působí jako jedna značka, ne jako sada výstupů.",
   "services": [
-    ["01", "Brand identity", "Pomůžu vám ujasnit, čím jste jiní, jak o sobě mluvit a jak má vaše značka působit. Bez zbytečných sloganů a hraní si na něco, co nejste."],
-    ["02", "Webdesign & development", "Web navrhnu i postavím. Od struktury a UX přes vizuální návrh až po finální vývoj. Všechno tak drží pohromadě od začátku."],
-    ["03", "Copy & fotografie", "Když projekt potřebuje vlastní texty nebo fotky, můžu se postarat i o ně. Web pak působí jako jeden celek, ne jako poskládané části."],
-    ["04", "Po spuštění", "Spuštěním webu to nemusí skončit. Můžu se starat o další úpravy, nové stránky nebo web postupně rozvíjet spolu s vaším byznysem."]
+    ["01", "Brand identity", "Positioning, sdělení a vizuální směr, díky kterým je značka snáz rozpoznatelná a srozumitelná."],
+    ["02", "Webdesign & development", "Struktura, UX, design a vývoj řešené společně, aby web držel pohromadě a další krok byl vždy jasný."],
+    ["03", "Copy & fotografie", "Texty a fotografie vznikají spolu s designem, takže výsledek působí jako jeden celek, ne jako poskládané části."],
+    ["04", "Po spuštění", "Průběžné úpravy podle toho, jak web funguje a jak se mění váš byznys."]
   ],
   "methodLabel": "Jak pracuju",
   "methodTitle": "Nejdřív pochopit byznys. Potom navrhovat.",
@@ -35,7 +35,6 @@
   "photosTitle": "Když zrovna nedělám weby, nejspíš mám někde s sebou foťák.",
   "contactLabel": "Začněme rozhovorem",
   "contactTitle": "Máte pocit, že váš byznys přerostl současný web?",
-  "contactText": "Napište mi, na čem pracujete, co vám na současném řešení vadí nebo kam byste se chtěli posunout.",
   "contactCta": "hello@jonasrech.com",
   "footer": "Web & brand designer"
 }

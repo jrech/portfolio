@@ -1,0 +1,72 @@
+---
+import menuIcon from '@phosphor-icons/core/assets/regular/list.svg?raw';
+import closeIcon from '@phosphor-icons/core/assets/regular/x.svg?raw';
+
+interface Props { lang: 'cs' | 'en' }
+const { lang } = Astro.props;
+const isCs = lang === 'cs';
+const home = `/${lang}/`;
+---
+<div class="cursor" data-cursor aria-hidden="true"><span data-cursor-label></span></div>
+<header class="site-header" data-header>
+  <a class="wordmark" data-magnetic href={home} aria-label="Jonas Rech — home">jonasrech<span>.</span></a>
+  <nav class="desktop-nav" aria-label={isCs ? 'Hlavní navigace' : 'Primary navigation'}>
+    <a href={`${home}#work`}>{isCs ? 'Projekty' : 'Work'}</a>
+    <a href={`${home}#about`}>{isCs ? 'O mně' : 'About'}</a>
+    <a href={`${home}#contact`}>{isCs ? 'Kontakt' : 'Contact'}</a>
+  </nav>
+  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="project-menu" data-menu-toggle>
+    <span class="sr-only">{isCs ? 'Otevřít menu' : 'Open menu'}</span>
+    <span class="menu-toggle__icon menu-toggle__list" aria-hidden="true" set:html={menuIcon}></span>
+    <span class="menu-toggle__icon menu-toggle__close" aria-hidden="true" set:html={closeIcon}></span>
+  </button>
+</header>
+<aside class="site-menu" id="project-menu" aria-hidden="true" data-menu>
+  <nav aria-label={isCs ? 'Hlavní navigace' : 'Primary navigation'}>
+    <a href={home} data-menu-link>{isCs ? 'Domů' : 'Home'}</a>
+    <a href={`${home}#work`} data-menu-link>{isCs ? 'Projekty' : 'Work'}</a>
+    <a href={`${home}#services`} data-menu-link>{isCs ? 'Služby' : 'Services'}</a>
+    <a href={`${home}#about`} data-menu-link>{isCs ? 'O mně' : 'About'}</a>
+    <a href={`${home}#contact`} data-menu-link>{isCs ? 'Kontakt' : 'Contact'}</a>
+  </nav>
+  <div class="site-menu__footer"><span>Brno, CZ</span><a href="mailto:hello@jonasrech.com">hello@jonasrech.com</a></div>
+</aside>
+
+<script>
+  import gsap from 'gsap';
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const menuToggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const setMenu = (open: boolean) => {
+    document.body.classList.toggle('menu-open', open);
+    menuToggle?.classList.toggle('is-open', open);
+    menuToggle?.setAttribute('aria-expanded', String(open));
+    menu?.setAttribute('aria-hidden', String(!open));
+    menu?.classList.toggle('is-open', open);
+    if (!reduced && open) gsap.fromTo('[data-menu-link]', { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: .055, delay: .08, duration: .55, ease: 'power3.out' });
+  };
+  menuToggle?.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
+  document.querySelectorAll('[data-menu-link]').forEach((link) => link.addEventListener('click', () => setMenu(false)));
+  addEventListener('keydown', (event) => { if (event.key === 'Escape') setMenu(false); });
+
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const cursor = document.querySelector<HTMLElement>('[data-cursor]');
+    const moveX = gsap.quickTo(cursor, 'x', { duration: .22, ease: 'power3.out' });
+    const moveY = gsap.quickTo(cursor, 'y', { duration: .22, ease: 'power3.out' });
+    addEventListener('pointermove', (event) => { moveX(event.clientX); moveY(event.clientY); });
+    document.documentElement.classList.add('has-custom-cursor');
+    document.querySelectorAll('a, button').forEach((target) => {
+      target.addEventListener('pointerenter', () => cursor?.classList.add('is-link'));
+      target.addEventListener('pointerleave', () => cursor?.classList.remove('is-link'));
+    });
+  }
+
+  const hero = document.querySelector<HTMLElement>('.case-hero');
+  if (header && hero && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(([entry]) => {
+      header.classList.toggle('is-past-hero', !entry.isIntersecting);
+    }, { rootMargin: `-${header.offsetHeight + 16}px 0px 0px 0px`, threshold: 0 });
+    observer.observe(hero);
+  }
+</script>

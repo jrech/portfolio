@@ -1,0 +1,14 @@
+---
+import ProjectCaseStudy from '../../../components/ProjectCaseStudy.astro';
+import { getProjects, type ProjectCaseStudy as ProjectData } from '../../../data/projects';
+
+export function getStaticPaths() {
+  return (['en', 'cs'] as const).flatMap((lang) =>
+    getProjects(lang).map((project) => ({ params: { lang, slug: project.slug }, props: { project } })),
+  );
+}
+
+interface Props { project: ProjectData }
+const { project } = Astro.props;
+---
+<ProjectCaseStudy project={project} />

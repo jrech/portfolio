@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CaseVisual from './CaseVisual.astro';
+import ProjectChrome from './ProjectChrome.astro';
+import type { ProjectCaseStudy } from '../data/projects';
+import '../styles/project.css';
+
+interface Props { project: ProjectCaseStudy }
+const { project } = Astro.props;
+const localizedPath = `/work/${project.slug}/`;
+---
+<BaseLayout
+  lang={project.lang}
+  title={project.seoTitle}
+  description={project.description}
+  localizedPath={localizedPath}
+  ogImagePath="/images/jonas-hero-figma.webp"
+  ogImageAlt={`${project.title} project case study`}
+  structuredData={{
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: project.title,
+    description: project.description,
+    dateCreated: project.year,
+    inLanguage: project.lang,
+    url: `https://www.jonasrech.com/${project.lang}${localizedPath}`,
+    creator: { '@type': 'Person', name: 'Jonas Rech', url: 'https://www.jonasrech.com' },
+  }}
+>
+  <ProjectChrome lang={project.lang} />
+  <main id="main" class="case-study">
+    <header class="case-hero" data-case-hero>
+      <p class="section-label" data-case-label>{project.lang === 'cs' ? 'Vybraný projekt' : 'Selected project'} · {project.year}</p>
+      <h1 data-case-title>{project.title}</h1>
+      <p class="case-hero__summary" data-case-detail>{project.summary}</p>
+      <dl class="case-hero__meta" data-case-detail>
+        <div><dt>{project.lang === 'cs' ? 'Rok' : 'Year'}</dt><dd>{project.year}</dd></div>
+        <div><dt>{project.lang === 'cs' ? 'Rozsah' : 'Scope'}</dt><dd>{project.services.join(' · ')}</dd></div>
+      </dl>
+    </header>
+
+    <section class="case-lead-visual" aria-label={project.lang === 'cs' ? 'Hlavní vizuál projektu' : 'Project hero visual'}>
+      <CaseVisual visual={project.hero} placeholderLabel={project.placeholderLabel} />
+    </section>
+
+    <section class="case-context case-section" data-case-copy>
+      <p class="section-label">01 — {project.contextLabel}</p>
+      <div class="case-context__copy">
+        {project.context.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    </section>
+
+    <section class="case-contribution case-section" data-case-copy>
+      <p class="section-label">02 — {project.contributionLabel}</p>
+      <ul>{project.services.map((service, index) => <li><span>0{index + 1}</span>{service}</li>)}</ul>
+    </section>
+
+    <div class="case-story">
+      {project.story.map((block, index) => (
+        block.type === 'visual' ? (
+          <section class:list={['case-story__visual', `case-story__visual--${block.layout}`]} aria-label={`${project.lang === 'cs' ? 'Vizuál projektu' : 'Project visual'} ${index + 1}`}>
+            <CaseVisual visual={block.visual} placeholderLabel={project.placeholderLabel} />
+          </section>
+        ) : block.type === 'pair' ? (
+          <section class:list={['case-story__pair', `case-story__pair--${block.ratio}`]} aria-label={project.lang === 'cs' ? 'Dvojice projektových detailů' : 'Paired project details'}>
+            {block.visuals.map((visual) => <CaseVisual visual={visual} placeholderLabel={project.placeholderLabel} />)}
+          </section>
+        ) : (
+          <section class:list={['case-story__text-visual', `case-story__text-visual--${block.align}`]}>
+            <div class="case-story__copy" data-case-copy>
+              <p class="section-label">{block.label}</p>
+              <h2>{block.title}</h2>
+              <p>{block.text}</p>
+            </div>
+            <CaseVisual visual={block.visual} placeholderLabel={project.placeholderLabel} />
+          </section>
+        )
+      ))}
+    </div>
+
+    {project.brandDetails && (
+      <section class="case-brand case-section">
+        <div class="case-brand__copy" data-case-copy>
+          <p class="section-label">03 — {project.brandDetails.label}</p>
+          <h2>{project.brandDetails.title}</h2>
+          <dl>{project.brandDetails.items.map((item) => <div><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
+        </div>
+        <CaseVisual visual={project.brandDetails.visual} placeholderLabel={project.placeholderLabel} />
+      </section>
+    )}
+
+    <section class="case-outcome case-section" data-case-copy>
+      <p class="section-label">04 — {project.outcomeLabel}</p>
+      <p>{project.outcome}</p>
+    </section>
+
+    <a class="case-next" href={project.next.href} data-case-copy>
+      <span>{project.next.label}</span>
+      <strong>{project.next.title}<i aria-hidden="true">→</i></strong>
+    </a>
+  </main>
+
+  <script>
+    import { initProjectMotion } from '../scripts/project-motion';
+    initProjectMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  </script>
+</BaseLayout>

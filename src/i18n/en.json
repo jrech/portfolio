@@ -9,21 +9,21 @@
   "heroText": "I help businesses sharpen their message, build a stronger identity and turn it into a website people actually understand — and want to use.",
   "heroCta": "See selected work",
   "workLabel": "Selected work",
-  "workTitle": "Good design gets attention. Clear thinking gives people a reason to choose you.",
+  "workTitle": "Good design gets attention. Clear thinking makes people understand what makes you different and why they should choose you.",
   "projects": [
-    { "name": "Prádelna Krkonoše", "type": "Strategy · Web design · Copy", "note": "Turning a traditional service into a credible digital experience.", "class": "laundry" },
-    { "name": "Proelectrica", "type": "Structure · UI/UX · Web design", "note": "A complex offer translated into a clear customer journey.", "class": "electric" },
-    { "name": "cink", "type": "SaaS · Landing page · Brand direction", "note": "A new product explained without the technical noise.", "class": "cink" }
+    { "name": "Prádelna Krkonoše", "type": "Strategy · Web design · Copy", "status": "Client work", "note": "Turning a traditional service into a credible digital experience.", "class": "laundry" },
+    { "name": "Proelectrica", "type": "Structure · UI/UX · Web design", "status": "Client work", "note": "A complex offer translated into a clear customer journey.", "class": "electric" },
+    { "name": "cink", "type": "SaaS · Landing page · Brand direction", "status": "Client work", "note": "A new product explained without the technical noise.", "class": "cink" }
   ],
   "projectCta": "View project",
   "servicesLabel": "What I bring to the table",
-  "servicesTitle": "I figure out what needs to be said before deciding how it should look.",
-  "servicesIntro": "I start by understanding the business, the people behind it and the people it needs to reach. From there, we build the brand and website around what actually makes you worth choosing.",
+  "servicesTitle": "Brand, website, words and images — shaped into one clear experience.",
+  "servicesIntro": "I can bring positioning, messaging, design, development, copy and photography together. The parts stay connected, so the result feels like one business rather than a collection of deliverables.",
   "services": [
-    ["01", "Brand direction", "Positioning, messaging and visual direction that give the business a clearer identity — without trying to sound bigger, smarter or different than it really is."],
-    ["02", "Web design & development", "Structure, UX, design and development brought together from the start. The result is a website that feels good to use and makes it easy to understand where to go next."],
-    ["03", "Copy & photography", "The words and images should feel like they belong to the same business as the design. I can take care of both, so the final result feels consistent rather than assembled from separate pieces."],
-    ["04", "After launch", "Launching isn’t where the relationship has to end. I can stay involved, see how the site performs and improve it as the business changes."]
+    ["01", "Brand direction", "Positioning, messaging and visual direction that make the business easier to recognize and choose."],
+    ["02", "Web design & development", "Structure, UX, design and development considered together, so the website feels coherent and the next step stays clear."],
+    ["03", "Copy & photography", "Words and images made alongside the design, so the finished website feels like one idea rather than separate pieces."],
+    ["04", "After launch", "Ongoing improvements based on how the website performs and how the business changes."]
   ],
   "methodLabel": "How we get there",
   "methodTitle": "Understand the business first. Design the right thing second.",
@@ -35,7 +35,6 @@
   "photosTitle": "Photography keeps me curious about places, people and details.",
   "contactLabel": "Start a conversation",
   "contactTitle": "Feel like your business has outgrown its website?",
-  "contactText": "Tell me what you’re working on, what isn’t working, or simply where you want to take the business next.",
   "contactCta": "hello@jonasrech.com",
   "footer": "Independent brand & digital designer"
 }

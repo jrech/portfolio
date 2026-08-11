@@ -1,0 +1,32 @@
+---
+import type { ProjectVisual } from '../data/projects';
+
+interface Props {
+  visual: ProjectVisual;
+  placeholderLabel: string;
+}
+
+const { visual, placeholderLabel } = Astro.props;
+---
+<figure class:list={['case-visual', `case-visual--${visual.kind}`, { 'case-visual--asset': visual.asset }]} data-case-visual>
+  {visual.asset ? (
+    <img
+      src={visual.asset.src}
+      alt={visual.asset.alt}
+      width={visual.asset.width}
+      height={visual.asset.height}
+      loading="lazy"
+      decoding="async"
+    />
+  ) : (
+    <div class="case-art" role="img" aria-label={`${placeholderLabel}: ${visual.title}`}>
+      <span class="case-art__index">JR / 01</span>
+      {visual.kicker && <span class="case-art__kicker">{visual.kicker}</span>}
+      <strong class="case-art__title">{visual.title}</strong>
+      {visual.body && <span class="case-art__body">{visual.body}</span>}
+      <div class="case-art__sheet" aria-hidden="true"><b>{visual.title}</b></div>
+      <div class="case-art__orb" aria-hidden="true"></div>
+    </div>
+  )}
+  {visual.caption && <figcaption>{visual.caption}</figcaption>}
+</figure>

@@ -1,17 +1,39 @@
 ---
 import '@fontsource-variable/manrope';
 import '@fontsource-variable/instrument-sans';
-import '@fontsource/instrument-serif/400-italic.css';
 import '../styles/global.css';
 
 interface Props {
   lang: 'cs' | 'en';
   title: string;
   description: string;
+  localizedPath?: string;
+  ogImagePath?: string;
+  ogImageAlt?: string;
+  structuredData?: Record<string, unknown>;
 }
 
-const { lang, title, description } = Astro.props;
-const canonical = new URL(`/${lang}/`, Astro.site);
+const {
+  lang,
+  title,
+  description,
+  localizedPath = '/',
+  ogImagePath = '/images/jonas-hero-figma.png',
+  ogImageAlt = 'Jonas Rech, independent designer and digital partner',
+  structuredData,
+} = Astro.props;
+const canonical = new URL(`/${lang}${localizedPath}`, Astro.site);
+const ogImage = new URL(ogImagePath, Astro.site);
+const schema = structuredData ?? {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Jonas Rech',
+  url: 'https://www.jonasrech.com',
+  jobTitle: 'Brand & digital partner',
+  email: 'mailto:hello@jonasrech.com',
+  knowsAbout: ['Web design', 'Brand direction', 'Web development', 'Photography'],
+  sameAs: ['https://www.instagram.com/jonasrech.design'],
+};
 ---
 <!doctype html>
 <html lang={lang}>
@@ -22,24 +44,22 @@ const canonical = new URL(`/${lang}/`, Astro.site);
     <meta name="description" content={description} />
     <meta name="theme-color" content="#10100f" />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="cs" href={new URL('/cs/', Astro.site)} />
-    <link rel="alternate" hreflang="en" href={new URL('/en/', Astro.site)} />
-    <link rel="alternate" hreflang="x-default" href={new URL('/en/', Astro.site)} />
+    <link rel="alternate" hreflang="cs" href={new URL(`/cs${localizedPath}`, Astro.site)} />
+    <link rel="alternate" hreflang="en" href={new URL(`/en${localizedPath}`, Astro.site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(`/en${localizedPath}`, Astro.site)} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Jonas Rech" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={ogImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
     <title>{title}</title>
-    <script is:inline type="application/ld+json" set:html={JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Person',
-      name: 'Jonas Rech',
-      url: 'https://www.jonasrech.com',
-      jobTitle: lang === 'cs' ? 'Brand & digital partner' : 'Brand & digital partner',
-      email: 'mailto:hello@jonasrech.com',
-      knowsAbout: ['Web design', 'Brand direction', 'Web development', 'Photography'],
-    })} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
   <body>
     <a class="skip-link" href="#main">{lang === 'cs' ? 'Přeskočit na obsah' : 'Skip to content'}</a>
