@@ -6,6 +6,11 @@ export default defineConfig({
   site: 'https://www.jonasrech.com',
   output: 'server',
   adapter: node({ mode: 'standalone' }),
+  vite: {
+    ssr: {
+      noExternal: ['piccolore'],
+    },
+  },
   integrations: [sitemap()],
   i18n: {
     defaultLocale: 'en',
