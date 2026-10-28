@@ -1,16 +1,7 @@
 /**
- * Site motion (approved by Jonas, 2026-10-28). Loaded after first paint by BaseLayout,
- * never when the visitor prefers reduced motion. Content is visible without JS: the
- * hidden start state only exists while <html> has `js-motion` (set inline in <head>).
- *
- *   [data-reveal="heading"] headings: lines slide up from a mask, light blur, 1100 ms expo-like out, stagger 90 ms
- *   .hero                   headline, then intro (+350 ms), then CTAs (+150 ms)
- *   [data-reveal="scrub"]   statement: section pinned for 100vh, words dim → full with scroll
- *   [data-reveal="fade"]    content: opacity + 24 px, 800 ms, stagger 160 ms
- *   .cta, .wordmark         magnetic hover (pointer: fine, not in the menu)
- *   .faq__item              accordion: height + opacity, one open at a time
- *   [data-cursor]           custom cursor states (pointer: fine only); arrow circle over the card image
- *   #site-menu              fullscreen menu: rolls down from the top (clip-path), links from below; rolls back up on close
+ * Shared editorial motion: 900 ms content/rules, 1050 ms masked headings,
+ * 85 ms stagger, one soft easing curve. Native scrolling; no pinned reading.
+ * Content remains available without JS and with reduced motion.
  */
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -21,75 +12,78 @@ gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase);
 
 // Curves: fast start, long soft landing, so movement settles like a real object.
 const EASE = CustomEase.create('site-out', '0.22, 1, 0.36, 1'); // same as --ease-out in tokens.css
-const EASE_REVEAL = CustomEase.create('site-reveal', '0.16, 1, 0.3, 1'); // expo-like out, headings
+const EASE_REVEAL = EASE; // expo-like out, headings
 const EASE_MENU = CustomEase.create('site-menu', '0.76, 0, 0.24, 1'); // shutter: eases in and out
 const root = document.documentElement;
 
-function slideUp(heading: HTMLElement) {
-  // Lines slide up from behind a mask; a light blur keeps a hint of the smoke look.
-  const split = SplitText.create(heading, { type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto' });
-  heading.classList.add('is-split');
-  gsap.set(heading, { opacity: 1 });
-  const tl = gsap.from(split.lines, {
-    yPercent: 105,
-    opacity: 0,
-    filter: 'blur(4px)',
-    duration: 1.1,
-    stagger: 0.09,
-    ease: EASE_REVEAL,
-    paused: true,
-    onComplete: () => {
-      split.revert();
-      heading.classList.remove('is-split');
-    },
-  });
-  // Hero heading plays on load; the rest once, when 15 % into the viewport.
-  if (heading.closest('.hero')) tl.play();
-  else ScrollTrigger.create({ trigger: heading, start: 'top 85%', once: true, onEnter: () => tl.play() });
-}
 
+const MOTION = { duration: 0.9, heading: 1.05, stagger: 0.085, distance: 20 };
+const visible = (el: HTMLElement) => el.getClientRects().length > 0;
+
+// Split only at entry: off-screen headings keep natural wrapping until needed.
 function revealHeadings() {
-  document.querySelectorAll<HTMLElement>('[data-reveal="heading"]').forEach(slideUp);
-}
-
-// Proposition: pinned for one viewport of scroll while its words go from dim to full.
-function scrubStatement() {
-  document.querySelectorAll<HTMLElement>('[data-reveal="scrub"]').forEach((text) => {
-    const section = text.closest('section') ?? text;
-    const split = SplitText.create(text, { type: 'words', aria: 'auto' });
-    gsap.set(text, { opacity: 1 });
-    gsap.fromTo(
-      split.words,
-      { opacity: 0.15 },
-      {
-        opacity: 1,
-        stagger: 0.1,
-        ease: 'none',
-        scrollTrigger: { trigger: section, start: 'top top', end: '+=100%', scrub: 0.6, pin: true },
-      },
-    );
+  document.querySelectorAll<HTMLElement>('[data-reveal="heading"], [data-reveal="scrub"]').forEach((heading) => {
+    const play = () => {
+      gsap.set(heading, { opacity: 1 });
+      SplitText.create(heading, {
+        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
+        autoSplit: true,
+        onSplit(self) {
+          return gsap.from(self.lines, {
+            yPercent: 104, opacity: 0, duration: MOTION.heading,
+            stagger: MOTION.stagger, ease: EASE,
+            onComplete: () => self.revert(),
+          });
+        },
+      });
+    };
+    if (heading.closest('.hero')) play();
+    else ScrollTrigger.create({ trigger: heading, start: 'top 88%', once: true, onEnter: play });
   });
 }
 
-// Hero entrance runs in order: headline, then intro, then CTAs, each a beat later.
 function revealHero() {
-  const items = gsap.utils.toArray<HTMLElement>('.hero [data-reveal="fade"]');
-  gsap.fromTo(
-    items,
-    { opacity: 0, y: 16 },
-    { opacity: 1, y: 0, duration: 0.9, delay: 0.35, stagger: 0.15, ease: EASE, clearProps: 'transform' },
-  );
+  const items = gsap.utils.toArray<HTMLElement>('.hero [data-reveal="fade"], .hero__baseline');
+  gsap.fromTo(items, { opacity: 0, y: MOTION.distance }, {
+    opacity: 1, y: 0, duration: MOTION.duration, delay: 0.22,
+    stagger: MOTION.stagger, ease: EASE, clearProps: 'transform,opacity',
+  });
 }
 
 function revealContent() {
-  const items = gsap.utils.toArray<HTMLElement>('[data-reveal="fade"]').filter((el) => !el.closest('.hero'));
-  gsap.set(items, { opacity: 0, y: 24 });
+  const selector = '[data-reveal="fade"], .eyebrow, .footer__lead, .footer__bio, .footer__email, .footer__col, .footer__legal, .footer__invite .cta';
+  const candidates = gsap.utils.toArray<HTMLElement>(selector).filter(el =>
+    !el.closest('.hero, #site-menu') && visible(el));
+  // Animate the owning block once; never stack parent and child translations.
+  const items = candidates.filter(el => !candidates.some(parent => parent !== el && parent.contains(el)));
+  gsap.set(items, { opacity: 0, y: MOTION.distance });
   ScrollTrigger.batch(items, {
-    start: 'top 85%',
-    once: true,
-    // Items entering together (process steps, services, FAQ rows) come in one after another.
-    onEnter: (batch) =>
-      gsap.to(batch, { opacity: 1, y: 0, duration: 0.8, stagger: 0.16, ease: EASE, clearProps: 'transform' }),
+    start: 'top 88%', once: true, batchMax: 4, interval: 0.06,
+    onEnter: batch => gsap.to(batch, {
+      opacity: 1, y: 0, duration: MOTION.duration,
+      stagger: MOTION.stagger, ease: EASE, clearProps: 'transform,opacity',
+    }),
+  });
+}
+
+// Keep borders in layout; the pseudo element supplies only the visual stroke.
+function revealRules() {
+  const rules: HTMLElement[] = [];
+  document.querySelectorAll<HTMLElement>('main section *, footer *').forEach(el => {
+    if (!visible(el) || el.matches('img, svg, path, button, a')) return;
+    const style = getComputedStyle(el);
+    if (parseFloat(style.borderTopWidth) !== 1 || style.borderTopStyle !== 'solid') return;
+    el.style.setProperty('--motion-rule-color', style.borderTopColor);
+    el.classList.add('motion-rule-top');
+    rules.push(el);
+  });
+  gsap.set(rules, { '--rule-progress': 0 });
+  ScrollTrigger.batch(rules, {
+    start: 'top 90%', once: true, batchMax: 4, interval: 0.06,
+    onEnter: batch => gsap.to(batch, {
+      '--rule-progress': 1, duration: MOTION.duration,
+      stagger: MOTION.stagger, ease: EASE,
+    }),
   });
 }
 
@@ -136,7 +130,7 @@ const MENU_SHOWN = 'inset(0% 0% 0% 0%)';
 // toward the pointer by a fraction of the distance and springs back on leave.
 function magnet() {
   if (!matchMedia('(pointer: fine)').matches) return;
-  const STRENGTH = 0.3;
+  const STRENGTH = 0.12;
   document.querySelectorAll<HTMLElement>('.cta, .wordmark').forEach((el) => {
     if (el.closest('#site-menu')) return;
     el.classList.add('magnet');
@@ -155,7 +149,7 @@ function magnet() {
       });
     });
     el.addEventListener('pointerleave', () => {
-      gsap.to(el, { '--mx': '0px', '--my': '0px', duration: 0.8, ease: 'elastic.out(1, 0.5)', overwrite: true });
+      gsap.to(el, { '--mx': '0px', '--my': '0px', duration: 0.8, ease: EASE, overwrite: true });
     });
   });
 }
@@ -252,14 +246,32 @@ function menu() {
   });
 }
 
+
 document.fonts.ready.then(() => {
-  scrubStatement(); // pins first, so later triggers measure the added scroll distance
-  revealHeadings();
-  revealHero();
-  revealContent();
-  root.classList.add('motion-ready');
-  cursor();
-  magnet();
-  faq();
-  menu();
+  // The head timeout deliberately wins: never hide content again after a slow load.
+  if (!root.classList.contains('js-motion')) return;
+  try {
+    revealHeadings();
+    revealHero();
+    revealContent();
+    revealRules();
+    root.classList.add('motion-ready');
+    cursor();
+    magnet();
+    faq();
+    menu();
+    ScrollTrigger.refresh();
+  } catch (error) {
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    gsap.globalTimeline.getChildren().forEach(animation => animation.progress(1));
+    root.classList.remove('js-motion');
+    console.warn('Motion disabled; content remains accessible.', error);
+  }
+});
+
+matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', event => {
+  if (!event.matches) return;
+  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  gsap.globalTimeline.getChildren().forEach(animation => animation.totalProgress(1));
+  root.classList.remove('js-motion');
 });
