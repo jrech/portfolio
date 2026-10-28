@@ -64,6 +64,8 @@ const t = useT(Astro);
     display: none;
     font-size: 10px;
     letter-spacing: 2px;
+    /* Same cream as the hamburger lines: the caption grey disappeared over the hero photo. */
+    color: var(--color-text-display);
     transition: color var(--duration-fast) var(--ease-out);
   }
 
@@ -86,7 +88,7 @@ const t = useT(Astro);
 
   .menu-toggle:hover .menu-toggle__label,
   .menu-toggle:focus-visible .menu-toggle__label {
-    color: var(--color-text-primary);
+    color: var(--color-accent);
   }
 
   .menu-toggle:hover .menu-toggle__icon span:last-child {

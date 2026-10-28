@@ -4,6 +4,7 @@
  * hidden start state only exists while <html> has `js-motion` (set inline in <head>).
  *
  *   [data-reveal="heading"] headings: lines slide up from a mask, light blur, 1100 ms expo-like out, stagger 90 ms
+ *   .hero                   headline, then intro (+350 ms), then CTAs (+150 ms)
  *   [data-reveal="fade"]    content: opacity + 12 px, 700 ms, stagger 60 ms
  *   [data-cursor]           custom cursor states (pointer: fine only)
  *   #site-menu              fullscreen menu: rolls down from the top (clip-path), links from below; rolls back up on close
@@ -48,8 +49,18 @@ function revealHeadings() {
   document.querySelectorAll<HTMLElement>('[data-reveal="heading"]').forEach(slideUp);
 }
 
+// Hero entrance runs in order: headline, then intro, then CTAs, each a beat later.
+function revealHero() {
+  const items = gsap.utils.toArray<HTMLElement>('.hero [data-reveal="fade"]');
+  gsap.fromTo(
+    items,
+    { opacity: 0, y: 16 },
+    { opacity: 1, y: 0, duration: 0.9, delay: 0.35, stagger: 0.15, ease: EASE, clearProps: 'transform' },
+  );
+}
+
 function revealContent() {
-  const items = gsap.utils.toArray<HTMLElement>('[data-reveal="fade"]');
+  const items = gsap.utils.toArray<HTMLElement>('[data-reveal="fade"]').filter((el) => !el.closest('.hero'));
   gsap.set(items, { opacity: 0, y: 12 });
   ScrollTrigger.batch(items, {
     start: 'top 85%',
@@ -147,6 +158,7 @@ function menu() {
 
 document.fonts.ready.then(() => {
   revealHeadings();
+  revealHero();
   revealContent();
   root.classList.add('motion-ready');
   cursor();
