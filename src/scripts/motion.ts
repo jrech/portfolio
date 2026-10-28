@@ -159,45 +159,52 @@ function revealFooter() {
   const heading = footer.querySelector<HTMLElement>('.footer__title');
   const invite = footer.querySelector<HTMLElement>('.footer__invite');
   if (!heading || !invite) return;
-  const eyebrow = [...footer.querySelectorAll<HTMLElement>('.footer__invite .eyebrow')].filter(visible);
-  const action = footer.querySelector<HTMLElement>('.footer__invite .cta');
-  const lead = footer.querySelector<HTMLElement>('.footer__lead');
-  const opening = [...eyebrow, action, lead].filter((el): el is HTMLElement => !!el && visible(el));
-  gsap.set(opening, { opacity: 0, y: MOTION.distance });
+
+  const eyebrow = [...invite.querySelectorAll<HTMLElement>('.eyebrow')].filter(visible);
+  const action = invite.querySelector<HTMLElement>('.cta');
+  const lead = invite.querySelector<HTMLElement>('.footer__lead');
+  const centered = footer.classList.contains('footer--centered') && matchMedia('(min-width: 1024px)').matches;
+  const support = (centered ? [lead, action] : [action, lead])
+    .filter((el): el is HTMLElement => !!el && visible(el));
+
+  gsap.set([...eyebrow, ...support], { opacity: 0, y: MOTION.distance });
   gsap.set(heading, { opacity: 0 });
 
   ScrollTrigger.create({
     trigger: invite, start: 'top 82%', once: true,
     onEnter: () => {
+      const split = SplitText.create(heading, {
+        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
+      });
+      // Prepare the masked lines while their parent is still invisible. A timeline
+      // set can otherwise expose the unsplit title for one frame at scroll entry.
+      gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
       const timeline = gsap.timeline();
       if (eyebrow.length) timeline.to(eyebrow, {
         opacity: 1, y: 0, duration: 0.55, ease: EASE, clearProps: 'transform,opacity',
       });
-      const split = SplitText.create(heading, {
-        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
-      });
       timeline.set(heading, { opacity: 1 });
-      timeline.fromTo(split.lines,
-        { yPercent: 104, opacity: 0, filter: 'blur(6px)' },
-        { yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading,
-          stagger: MOTION.stagger, ease: EASE, onComplete: () => split.revert() },
-        eyebrow.length ? '-=0.12' : 0,
-      );
-      for (const el of [action, lead]) {
-        if (el && visible(el)) timeline.to(el, {
-          opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
-          clearProps: 'transform,opacity',
-        }, '+=0.04');
-      }
+      timeline.to(split.lines, {
+        yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading,
+        stagger: MOTION.stagger, ease: EASE,
+        onComplete: () => {
+          split.revert();
+          gsap.set(heading, { opacity: 1 });
+        },
+      }, eyebrow.length ? '-=0.12' : 0);
+      support.forEach(el => timeline.to(el, {
+        opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
+        clearProps: 'transform,opacity',
+      }, '+=0.04'));
     },
   });
 
-  const groups: [string, string][] = [
-    ['.footer__contact', '.footer__contact > *'],
-    ['.footer__nav', '.footer__col-label, .footer__nav li'],
-    ['.footer__legal', '.footer__legal > *'],
+  const groups: [string, string, number][] = [
+    ['.footer__contact', '.footer__contact > *', 0.16],
+    ['.footer__nav', '.footer__col-label, .footer__nav li', 0.12],
+    ['.footer__legal', '.footer__legal > *', 0.1],
   ];
-  groups.forEach(([containerSelector, itemSelector]) => {
+  groups.forEach(([containerSelector, itemSelector, stagger]) => {
     const container = footer.querySelector<HTMLElement>(containerSelector);
     if (!container) return;
     const items = [...container.querySelectorAll<HTMLElement>(itemSelector)].filter(visible);
@@ -206,7 +213,7 @@ function revealFooter() {
     ScrollTrigger.create({
       trigger: container, start: 'top 88%', once: true,
       onEnter: () => gsap.to(items, {
-        opacity: 1, y: 0, duration: MOTION.duration, stagger: 0.12,
+        opacity: 1, y: 0, duration: MOTION.duration, stagger,
         ease: EASE, clearProps: 'transform,opacity',
       }),
     });
