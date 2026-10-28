@@ -1,0 +1,284 @@
+---
+import Eyebrow from '../ui/Eyebrow.astro';
+import CtaButton from '../ui/CtaButton.astro';
+import Icon from '../ui/Icon.astro';
+import MediaFrame from '../ui/MediaFrame.astro';
+---
+
+<section id="about" class="about" aria-labelledby="about-title">
+  <div class="about__inner container">
+    <header class="about__heading">
+      <Eyebrow index="[03]">The person behind the pixels</Eyebrow>
+      <h2 id="about-title" class="about__title">Not an agency.<br />A person in your corner.</h2>
+    </header>
+
+    <div class="about__story">
+      <div class="about__portrait">
+        <MediaFrame class="about__media" label="Jonas in Wanaka, New Zealand">
+          <slot name="media" />
+        </MediaFrame>
+        <p class="about__location caption">WANAKA, NEW ZEALAND</p>
+      </div>
+
+      <div class="about__intro">
+        <h3 class="about__hello">Hi, I’m Jonas.</h3>
+        <p class="about__description">
+          The person you talk to is the person doing the work. From the first idea to the final
+          detail, I connect strategy, design and development without the handoffs.
+        </p>
+        <p class="about__detail">
+          And when your story needs original photography, I bring my camera along.
+        </p>
+
+        <!-- Desktop frame: CTA button. Tablet/mobile frames: text links + signature. -->
+        <CtaButton href="#contact" class="about__cta" />
+        <div class="about__links">
+          <a class="about__link-primary" href="#contact">Let’s work together ↗</a>
+          <a class="about__link-secondary" href="/about">More about me</a>
+          <p class="about__signature">
+            <Icon name="arrow-up-right" size={20} />
+            <span class="caption">ONE PERSON. A SHARED DIRECTION.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Mobile (390) */
+  .about__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    padding-block: 64px;
+  }
+
+  .about__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .about__title {
+    font-size: 40px;
+    font-weight: var(--weight-medium);
+    line-height: 41px;
+    letter-spacing: -1.6px;
+    color: var(--color-text-primary);
+  }
+
+  .about__story {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .about__portrait {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .about__portrait :global(.about__media) {
+    height: 390px;
+  }
+
+  .about__location {
+    position: absolute;
+    left: 16px;
+    bottom: 15px;
+    padding: 10px 12px;
+    background: var(--color-background);
+    color: var(--color-paper);
+  }
+
+  .about__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 26px;
+  }
+
+  .about__hello {
+    font-size: 24px;
+    font-weight: var(--weight-medium);
+    line-height: normal;
+    letter-spacing: -0.6px;
+    color: var(--color-text-primary);
+  }
+
+  .about__description {
+    font-size: 17px;
+    line-height: 26px;
+    color: var(--color-text-lead);
+  }
+
+  .about__detail {
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text-secondary);
+  }
+
+  .about__intro :global(.about__cta) {
+    display: none;
+  }
+
+  /* The links share the intro's 26px rhythm. */
+  .about__links {
+    display: contents;
+  }
+
+  .about__link-primary {
+    font-size: 18px;
+    font-weight: var(--weight-medium);
+    line-height: normal;
+    color: var(--color-accent);
+  }
+
+  .about__link-secondary {
+    margin-top: 6px;
+    font-size: 14px;
+    line-height: normal;
+    color: var(--color-text-secondary);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .about__link-primary:hover,
+  .about__link-primary:focus-visible,
+  .about__link-secondary:hover,
+  .about__link-secondary:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .about__link-secondary:hover {
+    color: var(--color-text-primary);
+  }
+
+  .about__signature {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    align-self: stretch;
+    padding-top: 24px;
+    border-top: 1px solid var(--color-rule);
+    color: var(--color-accent);
+  }
+
+  .about__signature :global(svg) {
+    stroke-width: 1.75;
+  }
+
+  /* Tablet (834) */
+  @media (min-width: 640px) {
+    .about__inner {
+      gap: 44px;
+      padding-block: 80px;
+    }
+
+    .about__title {
+      font-size: 56px;
+      line-height: 57px;
+      letter-spacing: -2px;
+    }
+
+    .about__story {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .about__portrait {
+      width: 330px;
+    }
+
+    .about__portrait :global(.about__media) {
+      height: 440px;
+    }
+
+    .about__location {
+      bottom: 14px;
+    }
+
+    .about__intro {
+      flex: 1;
+    }
+
+    .about__hello {
+      font-size: 28px;
+    }
+
+    .about__link-primary {
+      font-size: 19px;
+    }
+
+    .about__link-secondary {
+      font-size: 15px;
+    }
+  }
+
+  /* Desktop (1440) */
+  @media (min-width: 1024px) {
+    .about {
+      background: var(--color-background-deep);
+    }
+
+    .about__inner {
+      gap: 56px;
+      padding-block: 120px;
+    }
+
+    .about__title {
+      font-size: 76px;
+      line-height: 78px;
+      letter-spacing: -3.5px;
+    }
+
+    .about__story {
+      gap: 100px;
+    }
+
+    /* 640px at 1440; shrinks first on narrower desktops so the copy keeps ≥ 360px. */
+    .about__portrait {
+      flex: 0 1 640px;
+      width: auto;
+      min-width: 0;
+    }
+
+    .about__intro {
+      flex: 1 0 360px;
+    }
+
+    .about__portrait :global(.about__media) {
+      height: 520px;
+    }
+
+    .about__location {
+      left: 24px;
+      bottom: 18px;
+    }
+
+    .about__hello {
+      font-size: 36px;
+      letter-spacing: -1.1px;
+    }
+
+    .about__description {
+      font-size: 19px;
+      line-height: 29px;
+    }
+
+    .about__detail {
+      max-width: 454px;
+      font-size: 17px;
+      line-height: 26px;
+    }
+
+    .about__intro :global(.about__cta) {
+      display: inline-flex;
+    }
+
+    .about__links {
+      display: none;
+    }
+  }
+</style>

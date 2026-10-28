@@ -1,0 +1,165 @@
+---
+/** Client quote. Only pass quotes the client has approved for publication. */
+interface Props {
+  testimonial: { quote: string; name: string; company: string; lang: string };
+}
+
+const { testimonial } = Astro.props;
+---
+
+<section class="testimonial theme-deep" aria-label="Client testimonial">
+  <div class="testimonial__inner container">
+    <figure class="testimonial__content">
+      <span class="testimonial__mark" aria-hidden="true">“</span>
+      <div class="testimonial__body">
+        <blockquote class="testimonial__quote" lang={testimonial.lang}>
+          <p>{testimonial.quote}</p>
+        </blockquote>
+        <figcaption class="testimonial__attribution">
+          <span class="testimonial__avatar" aria-hidden="true"><slot name="avatar" /></span>
+          <span class="testimonial__person">
+            <span class="testimonial__name">{testimonial.name}</span>
+            <span class="testimonial__company">{testimonial.company}</span>
+          </span>
+        </figcaption>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<style>
+  /* Mobile (390) */
+  .testimonial__inner {
+    padding-block: 56px;
+  }
+
+  .testimonial__content {
+    display: flex;
+    gap: 10px;
+  }
+
+  .testimonial__mark {
+    align-self: flex-start;
+    font-size: 48px;
+    font-weight: var(--weight-medium);
+    line-height: 38px;
+    letter-spacing: -1.6px;
+    color: var(--color-accent);
+  }
+
+  .testimonial__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .testimonial__quote {
+    font-size: 25px;
+    font-weight: var(--weight-medium);
+    line-height: 33px;
+    letter-spacing: -0.7px;
+    color: var(--color-text-primary);
+  }
+
+  .testimonial__attribution {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-top: 24px;
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .testimonial__avatar {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    overflow: hidden;
+    border-radius: var(--radius-round);
+    background: var(--color-surface);
+  }
+
+  .testimonial__person {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .testimonial__name {
+    font-size: 14px;
+    font-weight: var(--weight-bold);
+    line-height: normal;
+    color: var(--color-text-primary);
+  }
+
+  .testimonial__company {
+    font-family: var(--font-caption);
+    font-size: var(--caption-size);
+    font-weight: var(--weight-bold);
+    line-height: 14px;
+    letter-spacing: var(--caption-tracking);
+    color: var(--color-text-secondary);
+  }
+
+  /* Tablet (834) */
+  @media (min-width: 640px) {
+    .testimonial__inner {
+      padding-block: 80px;
+    }
+
+    .testimonial__content {
+      gap: 28px;
+    }
+
+    .testimonial__mark {
+      font-size: 64px;
+      line-height: 51px;
+      letter-spacing: -2px;
+    }
+
+    .testimonial__quote {
+      font-size: 38px;
+      line-height: 44px;
+    }
+
+    .testimonial__company {
+      line-height: 15px;
+    }
+  }
+
+  /* Desktop (1440) */
+  @media (min-width: 1024px) {
+    .testimonial__inner {
+      padding-block: 160px;
+    }
+
+    .testimonial__content {
+      gap: 56px;
+    }
+
+    .testimonial__mark {
+      font-size: 100px;
+      line-height: 80px;
+      letter-spacing: normal;
+    }
+
+    .testimonial__body {
+      gap: 48px;
+    }
+
+    .testimonial__quote {
+      max-width: 1144px;
+      font-size: 45px;
+      line-height: 52px;
+      letter-spacing: -1.7px;
+    }
+
+    /* Desktop frame sets the company in Rethink Sans. */
+    .testimonial__company {
+      font-family: var(--font-display);
+      font-size: 11px;
+      line-height: normal;
+      letter-spacing: 0.2px;
+    }
+  }
+</style>

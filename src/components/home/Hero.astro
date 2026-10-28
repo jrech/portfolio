@@ -1,0 +1,220 @@
+---
+/**
+ * Homepage hero (Pen: "Portrait-led hero").
+ * Portrait is a neutral placeholder until final photography is supplied —
+ * pass an <Image /> or <video> into the `media` slot to replace it.
+ */
+import CtaButton from '../ui/CtaButton.astro';
+import { site } from '@/data/site';
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__media" aria-hidden="true">
+    <slot name="media" />
+  </div>
+  <div class="hero__shade" aria-hidden="true"></div>
+
+  <div class="hero__inner container">
+    <div class="hero__message">
+      <h1 id="hero-title" class="hero__title">
+        Distinctive websites that help businesses win more enquiries.
+      </h1>
+      <p class="hero__intro">
+        I design and build strategic websites that make your business stand out and earn trust.
+      </p>
+      <div class="hero__actions">
+        <CtaButton href="#contact" class="hero__cta" />
+        <a class="hero__explore" href="#work">Explore the work ↓</a>
+      </div>
+    </div>
+
+    <p class="hero__baseline caption">{site.location.toUpperCase()}</p>
+  </div>
+</section>
+
+<style>
+  /* Mobile (390 frame) */
+  .hero {
+    position: relative;
+    isolation: isolate;
+    height: 830px;
+    overflow: hidden;
+    background: var(--color-background);
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: -2;
+    height: 520px;
+    background: var(--color-surface);
+  }
+
+  .hero__media :global(img),
+  .hero__media :global(video) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      0deg,
+      var(--color-background) 0%,
+      #10100fee 42%,
+      #10100f00 85%
+    );
+  }
+
+  .hero__inner {
+    position: relative;
+    height: 100%;
+  }
+
+  .hero__message {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    padding-top: 340px;
+  }
+
+  .hero__title {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: var(--weight-medium);
+    line-height: 0.98;
+    letter-spacing: -1.5px;
+    color: var(--color-text-display);
+  }
+
+  .hero__intro {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--color-text-intro);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .hero__actions :global(.hero__cta) {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .hero__explore {
+    font-family: var(--font-caption);
+    font-size: var(--caption-size);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--caption-tracking);
+    line-height: normal;
+    color: var(--color-paper);
+    white-space: nowrap;
+    text-underline-offset: 4px;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .hero__explore:hover,
+  .hero__explore:focus-visible {
+    color: var(--color-text-display);
+    text-decoration: underline;
+  }
+
+  .hero__baseline {
+    position: absolute;
+    bottom: 25px;
+  }
+
+  /* Tablet (834 frame) */
+  @media (min-width: 640px) {
+    .hero {
+      height: 800px;
+    }
+
+    .hero__media {
+      height: 100%;
+    }
+
+    .hero__shade {
+      background: linear-gradient(
+        -90deg,
+        #10100f00 0%,
+        #10100fcc 70%,
+        var(--color-background) 100%
+      );
+    }
+
+    .hero__message {
+      max-width: 640px;
+      padding-top: 270px;
+    }
+
+    .hero__title {
+      max-width: 538px;
+      font-size: 52px;
+      letter-spacing: -2.5px;
+    }
+
+    .hero__actions {
+      flex-direction: row;
+      width: auto;
+    }
+
+    .hero__actions :global(.hero__cta) {
+      width: auto;
+    }
+
+    .hero__baseline {
+      bottom: 32px;
+    }
+  }
+
+  /* Desktop (1440 frame) */
+  @media (min-width: 1024px) {
+    .hero {
+      height: 816px;
+    }
+
+    .hero__message {
+      max-width: 860px;
+      gap: 30px;
+      padding-top: 229px;
+    }
+
+    .hero__title {
+      max-width: 843px;
+      font-size: 66px;
+      letter-spacing: -3.5px;
+    }
+
+    .hero__intro {
+      max-width: 446px;
+      font-size: 17px;
+      line-height: 26px;
+    }
+
+    .hero__actions {
+      gap: 30px;
+      padding-top: 16px;
+    }
+
+    /* Desktop frame sets the anchor in Rethink Sans, not Space Mono. */
+    .hero__explore {
+      font-family: var(--font-display);
+      font-size: 11px;
+      letter-spacing: normal;
+    }
+
+    .hero__baseline {
+      bottom: 53px;
+    }
+  }
+</style>

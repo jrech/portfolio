@@ -1,0 +1,165 @@
+---
+/**
+ * Selected-work card: media, title, description, disciplines + orange arrow.
+ * The whole card is clickable via the title link's stretched hit area.
+ */
+import MediaFrame from '../ui/MediaFrame.astro';
+import ArrowBadge from '../ui/ArrowBadge.astro';
+import { formatServices, isPublished, projectUrl, type ProjectEntry } from '@/lib/projects';
+
+interface Props {
+  project: ProjectEntry;
+  /** Lead card spanning the full grid width. */
+  featured?: boolean;
+}
+
+const { project, featured = false } = Astro.props;
+const { title, cardTitle, description, services, descriptionWidth } = project.data;
+const href = isPublished(project) ? projectUrl(project) : undefined;
+const disciplines = formatServices(services);
+---
+
+<article class:list={['project', { 'project--featured': featured, 'project--static': !href }]}>
+  <MediaFrame class="project__media">
+    <slot name="media" />
+  </MediaFrame>
+  <div class="project__details">
+    <div class="project__text">
+      <h3 class="project__title">
+        {href ? <a class="project__link" href={href}>{cardTitle ?? title}</a> : (cardTitle ?? title)}
+      </h3>
+      <p
+        class="project__description"
+        style={descriptionWidth ? { '--desktop-measure': `${descriptionWidth}px` } : undefined}
+      >
+        {description}
+      </p>
+    </div>
+    <div class="project__meta">
+      <p class="project__disciplines caption">{disciplines}</p>
+      <ArrowBadge />
+    </div>
+  </div>
+</article>
+
+<style>
+  /* Mobile (390) */
+  .project {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .project :global(.project__media) {
+    height: 230px;
+  }
+
+  /* Grow to the row height so arrows line up when descriptions wrap differently. */
+  .project__details {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .project__text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .project__title {
+    font-size: 24px;
+    font-weight: var(--weight-medium);
+    line-height: normal;
+    letter-spacing: -0.6px;
+    color: var(--color-text-display);
+  }
+
+  .project__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .project__link:focus-visible {
+    outline: none;
+  }
+
+  .project__link:focus-visible::after {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+  .project__description {
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--color-text-secondary);
+  }
+
+  .project__meta {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  /* Disciplines are hidden in the tablet and mobile frames. */
+  .project__disciplines {
+    display: none;
+    text-transform: uppercase;
+  }
+
+  .project:not(.project--static):hover :global(.arrow-badge),
+  .project:not(.project--static):focus-within :global(.arrow-badge) {
+    transform: rotate(45deg);
+  }
+
+  /* Tablet (834) */
+  @media (min-width: 640px) {
+    .project :global(.project__media) {
+      height: 240px;
+    }
+
+    /* Lead project spans the grid (Jonas, 2026-10-28; no Pen frame — see DESIGN_SYSTEM.md). */
+    .project--featured {
+      grid-column: 1 / -1;
+    }
+
+    .project--featured :global(.project__media) {
+      height: 400px;
+    }
+
+    .project__title {
+      font-size: 23px;
+    }
+  }
+
+  /* Desktop (1440) */
+  @media (min-width: 1024px) {
+    .project :global(.project__media) {
+      height: 345px;
+    }
+
+    .project--featured :global(.project__media) {
+      height: 600px;
+    }
+
+    .project__title {
+      font-size: 30px;
+      letter-spacing: -0.8px;
+    }
+
+    .project__description {
+      max-width: var(--desktop-measure, none);
+      font-size: 15px;
+      line-height: 21px;
+    }
+
+    .project__disciplines {
+      display: block;
+    }
+  }
+</style>

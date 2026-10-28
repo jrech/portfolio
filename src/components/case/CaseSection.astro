@@ -1,0 +1,129 @@
+---
+/**
+ * Numbered editorial section (Pen: "The challenge. section" …): eyebrow, then
+ * heading + 552px reading column side by side on desktop. Extra content
+ * (e.g. the solution's decision list) goes in the default slot.
+ * Without `content` it renders a clearly marked "content to follow" placeholder.
+ */
+import Eyebrow from '../ui/Eyebrow.astro';
+
+interface Props {
+  index: string;
+  label: string;
+  content?: { heading?: string; paragraphs: string[] };
+  /** Outcome: no bottom padding on mobile, equal padding on desktop. */
+  last?: boolean;
+}
+
+const { index, label, content, last = false } = Astro.props;
+const id = `case-${label.toLowerCase().replace(/[^a-z]+/g, '-').replace(/-$/, '')}`;
+---
+
+<section class:list={['case-section container', { 'case-section--last': last }]} aria-labelledby={id}>
+  <Eyebrow index={index}>{label}</Eyebrow>
+  <div class="case-section__columns">
+    <h2 id={id} class="case-section__heading">{content?.heading ?? label}</h2>
+    <div class="case-section__reading">
+      {
+        content ? (
+          content.paragraphs.map((p) => <p>{p}</p>)
+        ) : (
+          <Fragment>
+            <p class="caption caption--accent">CONTENT TO FOLLOW</p>
+            <p>This section will be written once the project details are confirmed with the client.</p>
+          </Fragment>
+        )
+      }
+    </div>
+  </div>
+  <slot />
+</section>
+
+<style>
+  /* Mobile (390) */
+  .case-section {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    padding-block: 96px 72px;
+  }
+
+  .case-section--last {
+    padding-bottom: 0;
+  }
+
+  .case-section__columns {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .case-section__heading {
+    font-size: 40px;
+    font-weight: var(--weight-medium);
+    line-height: 42px;
+    letter-spacing: -1.5px;
+    color: var(--color-text-primary);
+  }
+
+  .case-section__reading {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text-secondary);
+  }
+
+  /* Tablet (interpolated) */
+  @media (min-width: 640px) {
+    .case-section {
+      gap: 40px;
+      padding-block: 120px 96px;
+    }
+
+    .case-section--last {
+      padding-bottom: 0;
+    }
+
+    .case-section__heading {
+      font-size: 52px;
+      line-height: 54px;
+      letter-spacing: -2px;
+    }
+
+    .case-section__reading {
+      max-width: 552px;
+      font-size: 18px;
+      line-height: 27px;
+    }
+  }
+
+  /* Desktop (1440) */
+  @media (min-width: 1024px) {
+    .case-section {
+      gap: 48px;
+      padding-block: 160px 120px;
+    }
+
+    .case-section--last {
+      padding-bottom: 160px;
+    }
+
+    .case-section__columns {
+      flex-direction: row;
+      gap: 96px;
+    }
+
+    .case-section__heading {
+      flex: 1 1 0;
+      font-size: 64px;
+      line-height: 67px;
+      letter-spacing: -2.5px;
+    }
+
+    .case-section__reading {
+      flex: 0 0 552px;
+    }
+  }
+</style>

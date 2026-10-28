@@ -1,0 +1,439 @@
+---
+/**
+ * Fullscreen navigation (Pen: Desktop / Tablet / Mobile — Fullscreen navigation).
+ * Native <dialog> gives focus trapping, Esc to close and an inert page behind it.
+ */
+import Wordmark from '../ui/Wordmark.astro';
+import Icon from '../ui/Icon.astro';
+import { menuNav, site, socials } from '@/data/site';
+
+interface Props {
+  current?: string;
+}
+
+const { current } = Astro.props;
+---
+
+<dialog id="site-menu" class="menu" aria-label="Site navigation">
+  <div class="menu__header container">
+    <Wordmark />
+    <button class="menu__close" type="button" data-menu-close autofocus>
+      <span class="menu__close-label caption" aria-hidden="true">CLOSE</span>
+      <span class="menu__close-icon"><Icon name="x" size={26} /></span>
+      <span class="visually-hidden">Close menu</span>
+    </button>
+  </div>
+
+  <nav class="menu__body container" aria-label="Main">
+    <p class="caption">TAKE A LOOK AROUND</p>
+    <ol class="menu__links" role="list">
+      {
+        menuNav.map((item, i) => (
+          <li>
+            <a
+              class="menu__link"
+              href={item.href}
+              aria-current={item.label === current ? 'page' : undefined}
+              data-menu-link
+            >
+              <span class="menu__index caption caption--accent" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span class="menu__label">{item.label}</span>
+              <Icon name="arrow-up-right" size={38} class="menu__arrow" />
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+
+  <div class="menu__baseline">
+    <div class="menu__baseline-inner container">
+      <div class="menu__email">
+        <p class="caption">HAVE A PROJECT IN MIND?</p>
+        <a class="menu__email-link" href={`mailto:${site.email}`}>{site.email}</a>
+      </div>
+      <div class="menu__meta">
+        <ul class="menu__socials" role="list">
+          {
+            socials.map((s) => (
+              <li>
+                <a class="menu__social" href={s.href} rel="noopener">
+                  {s.label}
+                  <Icon name={s.icon} size={16} />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="caption" lang="en">EN / CZ</p>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const menu = document.getElementById('site-menu') as HTMLDialogElement | null;
+  const openers = document.querySelectorAll<HTMLButtonElement>('[data-menu-open]');
+
+  if (menu) {
+    const setExpanded = (value: boolean) =>
+      openers.forEach((btn) => btn.setAttribute('aria-expanded', String(value)));
+
+    openers.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        menu.showModal();
+        setExpanded(true);
+      }),
+    );
+
+    menu.querySelector('[data-menu-close]')?.addEventListener('click', () => menu.close());
+    menu.querySelectorAll('[data-menu-link]').forEach((link) =>
+      link.addEventListener('click', () => menu.close()),
+    );
+    menu.addEventListener('close', () => {
+      setExpanded(false);
+      openers[0]?.focus();
+    });
+  }
+</script>
+
+<style>
+  .menu {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--color-background);
+    color: var(--color-text-primary);
+    overflow-y: auto;
+  }
+
+  .menu[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu::backdrop {
+    background: var(--color-background);
+  }
+
+  :global(html:has(.menu[open])) {
+    overflow: hidden;
+  }
+
+  /* ---------- Header ---------- */
+  .menu__header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    height: 80px;
+  }
+
+  .menu__header :global(.wordmark) {
+    color: var(--color-text-primary);
+  }
+
+  .menu__close {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .menu__close-label {
+    display: none;
+  }
+
+  .menu__close-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+  }
+
+  .menu__close-icon :global(svg) {
+    width: 24px;
+    height: 24px;
+    stroke-width: 1.75;
+  }
+
+  /* ---------- Links ---------- */
+  .menu__body {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 38px;
+    padding-bottom: 24px;
+  }
+
+  .menu__links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .menu__link {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    height: 58px;
+    color: var(--color-text-primary);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .menu__label {
+    font-family: var(--font-display);
+    font-size: 46px;
+    font-weight: var(--weight-medium);
+    line-height: 1.05;
+    letter-spacing: -1.8px;
+  }
+
+  .menu__link :global(.menu__arrow) {
+    width: 26px;
+    height: 26px;
+    stroke-width: 1.75;
+    opacity: 0;
+    transform: translate(-6px, 6px);
+    transition:
+      opacity var(--duration-base) var(--ease-out),
+      transform var(--duration-base) var(--ease-out);
+  }
+
+  /* Active / hover state: orange label + arrow (shown on "Work" in the frames). */
+  .menu__link:hover,
+  .menu__link:focus-visible,
+  .menu__link[aria-current='page'] {
+    color: var(--color-accent);
+  }
+
+  .menu__link:hover :global(.menu__arrow),
+  .menu__link:focus-visible :global(.menu__arrow),
+  .menu__link[aria-current='page'] :global(.menu__arrow) {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ---------- Baseline ---------- */
+  .menu__baseline {
+    flex-shrink: 0;
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .menu__baseline-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 24px;
+    padding-bottom: 28px;
+  }
+
+  .menu__email {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .menu__email-link {
+    font-size: 23px;
+    letter-spacing: -0.6px;
+    line-height: normal;
+    color: var(--color-text-primary);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .menu__email-link:hover {
+    color: var(--color-accent);
+  }
+
+  .menu__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .menu__socials {
+    display: flex;
+    gap: 20px;
+  }
+
+  .menu__social {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-caption);
+    font-size: var(--caption-size);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--caption-tracking);
+    color: var(--color-paper);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .menu__social :global(svg) {
+    width: 14px;
+    height: 14px;
+    stroke-width: 1.75;
+    color: var(--color-text-secondary);
+  }
+
+  .menu__social:hover {
+    color: var(--color-text-primary);
+  }
+
+  /* ---------- Tablet ---------- */
+  @media (min-width: 640px) {
+    .menu__header {
+      height: 88px;
+    }
+
+    .menu__header :global(.wordmark) {
+      font-size: 21px;
+    }
+
+    .menu__close-label {
+      display: block;
+    }
+
+    .menu__close-icon :global(svg) {
+      width: 25px;
+      height: 25px;
+    }
+
+    .menu__body {
+      padding-top: 44px;
+      padding-bottom: 48px;
+    }
+
+    .menu__links {
+      gap: 8px;
+    }
+
+    .menu__link {
+      gap: 24px;
+      height: 72px;
+    }
+
+    .menu__label {
+      font-size: 56px;
+      line-height: normal;
+      letter-spacing: -2px;
+    }
+
+    .menu__link :global(.menu__arrow) {
+      width: 30px;
+      height: 30px;
+    }
+
+    .menu__baseline-inner {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding-top: 28px;
+      padding-bottom: 32px;
+    }
+
+    .menu__email-link {
+      font-size: 21px;
+      letter-spacing: -0.5px;
+    }
+
+    .menu__meta {
+      gap: 26px;
+    }
+
+    .menu__socials {
+      gap: 26px;
+    }
+
+    .menu__social {
+      gap: 8px;
+    }
+
+    .menu__social :global(svg) {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  /* ---------- Desktop ---------- */
+  @media (min-width: 1024px) {
+    .menu__header {
+      height: 96px;
+    }
+
+    .menu__header :global(.wordmark) {
+      font-size: 22px;
+    }
+
+    .menu__close {
+      gap: 14px;
+    }
+
+    .menu__close-icon :global(svg) {
+      width: 26px;
+      height: 26px;
+    }
+
+    .menu__body {
+      gap: 60px;
+      padding-top: 44px;
+      padding-bottom: 44px;
+    }
+
+    .menu__links {
+      gap: 6px;
+      width: 760px;
+    }
+
+    .menu__link {
+      gap: 28px;
+      height: auto;
+      padding-block: 4px;
+    }
+
+    .menu__label {
+      font-size: 72px;
+      line-height: 1.04;
+      letter-spacing: -3px;
+    }
+
+    .menu__link :global(.menu__arrow) {
+      width: 38px;
+      height: 38px;
+    }
+
+    .menu__baseline-inner {
+      padding-bottom: 36px;
+    }
+
+    .menu__email {
+      gap: 12px;
+    }
+
+    .menu__email-link {
+      font-size: 22px;
+    }
+
+    /* Email, socials and language spread across the baseline. */
+    .menu__meta {
+      display: contents;
+    }
+
+    .menu__socials {
+      gap: 28px;
+    }
+
+    /* Desktop frame sets social labels in Rethink Sans (tablet/mobile use Space Mono). */
+    .menu__social {
+      font-family: var(--font-display);
+      font-size: 11px;
+      letter-spacing: 1.2px;
+    }
+  }
+</style>

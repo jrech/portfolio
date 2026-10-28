@@ -1,0 +1,196 @@
+---
+/**
+ * Case-study hero (Pen: "Project hero"): breadcrumb, title, positioning,
+ * metadata row, hero visual and the editorial notice while the case is in preparation.
+ */
+import { Image } from 'astro:assets';
+import MediaFrame from '../ui/MediaFrame.astro';
+import Lines from '../ui/Lines.astro';
+import { formatServices, type ProjectEntry } from '@/lib/projects';
+
+interface Props {
+  project: ProjectEntry;
+}
+
+const { title, heroTitle, positioning, client, industry, services, year, status, notice, cover } =
+  Astro.props.project.data;
+
+const statusLabel = status === 'published' ? 'Published' : 'In preparation';
+const metadata = [
+  { key: 'Client', value: client },
+  { key: 'Industry', value: industry },
+  { key: 'Services', value: formatServices(services) },
+  { key: 'Status / Year', value: `${statusLabel} / ${year ?? 'To confirm'}` },
+];
+
+const defaultNotice =
+  'CASE STUDY IN PREPARATION · Project details are being confirmed with the client. Content and image slots below are placeholders.';
+const noticeText = status === 'in-preparation' ? (notice ?? defaultNotice) : notice;
+---
+
+<section class="case-hero container" aria-labelledby="case-title">
+  <nav class="case-hero__breadcrumb" aria-label="Breadcrumb">
+    <ol role="list">
+      <li><a href="/">Home</a></li>
+      <li><a href="/#work">Work</a></li>
+      <li aria-current="page">{title}</li>
+    </ol>
+  </nav>
+
+  <h1 id="case-title" class="case-hero__title"><Lines text={heroTitle ?? title} /></h1>
+  <p class="case-hero__positioning">{positioning}</p>
+
+  <dl class="case-hero__meta">
+    {
+      metadata.map(({ key, value }) => (
+        <div class="case-hero__meta-item">
+          <dt class="caption">{key.toUpperCase()}</dt>
+          <dd>{value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+
+  <MediaFrame class="case-hero__visual" label={`${title} — hero visual placeholder`}>
+    {cover && <Image src={cover.src} alt={cover.alt} widths={[800, 1440, 2640]} sizes="100vw" />}
+  </MediaFrame>
+
+  {noticeText && <p class="case-hero__notice caption">{noticeText}</p>}
+</section>
+
+<style>
+  /* Mobile (390) */
+  .case-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    padding-top: 56px;
+  }
+
+  .case-hero__breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    font-size: 12px;
+    line-height: normal;
+    color: var(--color-text-secondary);
+  }
+
+  .case-hero__breadcrumb li + li::before {
+    content: '/';
+    padding-inline: 0.3em;
+  }
+
+  .case-hero__breadcrumb a {
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .case-hero__breadcrumb a:hover {
+    color: var(--color-text-primary);
+  }
+
+  .case-hero__title {
+    font-size: 56px;
+    font-weight: var(--weight-medium);
+    line-height: 55px;
+    letter-spacing: -2.5px;
+    color: var(--color-text-primary);
+    overflow-wrap: break-word;
+  }
+
+  /* Below the 390 frame, scale so long single words ("Starobrněnský") still fit. */
+  @media (max-width: 389px) {
+    .case-hero__title {
+      font-size: 14vw;
+      line-height: 0.98;
+    }
+  }
+
+  .case-hero__positioning {
+    max-width: 720px;
+    font-size: 20px;
+    line-height: 28px;
+    color: var(--color-text-secondary);
+  }
+
+  .case-hero__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-block: 24px;
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .case-hero__meta-item {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .case-hero__meta dd {
+    font-size: 16px;
+    line-height: 22px;
+    color: var(--color-text-primary);
+  }
+
+  .case-hero :global(.case-hero__visual) {
+    height: 280px;
+  }
+
+  .case-hero__notice {
+    line-height: 15px;
+  }
+
+  /* Tablet (no Pen frame — interpolated, see DESIGN_SYSTEM.md) */
+  @media (min-width: 640px) {
+    .case-hero {
+      gap: 40px;
+      padding-top: 64px;
+    }
+
+    .case-hero__title {
+      font-size: 72px;
+      line-height: 71px;
+      letter-spacing: -3.2px;
+    }
+
+    .case-hero__meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px 32px;
+    }
+
+    .case-hero :global(.case-hero__visual) {
+      height: 440px;
+    }
+
+    .case-hero__notice {
+      line-height: 17px;
+    }
+  }
+
+  /* Desktop (1440) */
+  @media (min-width: 1024px) {
+    .case-hero {
+      gap: 48px;
+      padding-top: 80px;
+    }
+
+    .case-hero__title {
+      font-size: 90px;
+      line-height: 88px;
+      letter-spacing: -4px;
+    }
+
+    .case-hero__meta {
+      display: flex;
+      flex-direction: row;
+      gap: 32px;
+    }
+
+    .case-hero :global(.case-hero__visual) {
+      height: 704px;
+    }
+  }
+</style>

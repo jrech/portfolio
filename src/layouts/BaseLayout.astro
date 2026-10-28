@@ -1,68 +1,40 @@
 ---
-import '@fontsource-variable/manrope';
-import '@fontsource-variable/instrument-sans';
-import '../styles/global.css';
+import '@fontsource-variable/rethink-sans';
+import '@fontsource/space-mono/700.css';
+import '@/styles/global.css';
 
 interface Props {
-  lang: 'cs' | 'en';
-  title: string;
-  description: string;
-  localizedPath?: string;
-  ogImagePath?: string;
-  ogImageAlt?: string;
-  structuredData?: Record<string, unknown>;
+  title?: string;
+  description?: string;
+  lang?: string;
+  /** Keep the page out of search results (unpublished case studies). */
+  noindex?: boolean;
 }
 
 const {
-  lang,
-  title,
-  description,
-  localizedPath = '/',
-  ogImagePath = '/images/jonas-hero-figma.png',
-  ogImageAlt = 'Jonas Rech, independent designer and digital partner',
-  structuredData,
+  title = 'Jonas Rech — Web design & development',
+  description = 'I design and build strategic websites that make your business stand out and earn trust.',
+  lang = 'en',
+  noindex = false,
 } = Astro.props;
-const canonical = new URL(`/${lang}${localizedPath}`, Astro.site);
-const ogImage = new URL(ogImagePath, Astro.site);
-const schema = structuredData ?? {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: 'Jonas Rech',
-  url: 'https://www.jonasrech.com',
-  jobTitle: 'Brand & digital partner',
-  email: 'mailto:hello@jonasrech.com',
-  knowsAbout: ['Web design', 'Brand direction', 'Web development', 'Photography'],
-  sameAs: ['https://www.instagram.com/jonasrech.design'],
-};
 ---
+
 <!doctype html>
 <html lang={lang}>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#10100f" />
-    <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="cs" href={new URL(`/cs${localizedPath}`, Astro.site)} />
-    <link rel="alternate" hreflang="en" href={new URL(`/en${localizedPath}`, Astro.site)} />
-    <link rel="alternate" hreflang="x-default" href={new URL(`/en${localizedPath}`, Astro.site)} />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:site_name" content="Jonas Rech" />
-    <meta property="og:image" content={ogImage} />
-    <meta property="og:image:alt" content={ogImageAlt} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <title>{title}</title>
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
-  <body>
-    <a class="skip-link" href="#main">{lang === 'cs' ? 'Přeskočit na obsah' : 'Skip to content'}</a>
-    <slot />
+  <body id="top">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot name="header" />
+    <main id="main">
+      <slot />
+    </main>
+    <slot name="footer" />
   </body>
 </html>

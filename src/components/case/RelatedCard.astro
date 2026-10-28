@@ -1,0 +1,113 @@
+---
+/** "More selected work" card: media, title + disciplines, orange arrow. Whole card is the link. */
+import { Image } from 'astro:assets';
+import MediaFrame from '../ui/MediaFrame.astro';
+import ArrowBadge from '../ui/ArrowBadge.astro';
+import { formatServices, projectUrl, type ProjectEntry } from '@/lib/projects';
+
+interface Props {
+  project: ProjectEntry;
+}
+
+const { project } = Astro.props;
+const { title, cardTitle, services, cover } = project.data;
+---
+
+<article class="related">
+  <MediaFrame class="related__media" label={`${title} — project image placeholder`}>
+    {cover && <Image src={cover.src} alt={cover.alt} widths={[640, 1320]} sizes="(min-width: 1024px) 50vw, 100vw" />}
+  </MediaFrame>
+  <div class="related__details">
+    <div class="related__text">
+      <h3 class="related__title">
+        <a class="related__link" href={projectUrl(project)}>{cardTitle ?? title}</a>
+      </h3>
+      <p class="related__disciplines">{formatServices(services)}</p>
+    </div>
+    <ArrowBadge />
+  </div>
+</article>
+
+<style>
+  /* Mobile (390) */
+  .related {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .related :global(.related__media) {
+    height: 256px;
+  }
+
+  .related__details {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .related__text {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .related__title {
+    font-size: 24px;
+    font-weight: var(--weight-medium);
+    line-height: normal;
+    letter-spacing: -0.8px;
+    color: var(--color-text-display);
+  }
+
+  .related__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .related__link:focus-visible {
+    outline: none;
+  }
+
+  .related__link:focus-visible::after {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+  .related__disciplines {
+    font-size: 14px;
+    line-height: normal;
+    color: var(--color-text-secondary);
+  }
+
+  .related:hover :global(.arrow-badge),
+  .related:focus-within :global(.arrow-badge) {
+    transform: rotate(45deg);
+  }
+
+  /* Tablet (interpolated) */
+  @media (min-width: 640px) {
+    .related :global(.related__media) {
+      height: 320px;
+    }
+  }
+
+  /* Desktop (1440) */
+  @media (min-width: 1024px) {
+    .related :global(.related__media) {
+      height: 480px;
+    }
+
+    .related__details {
+      gap: 24px;
+    }
+
+    .related__title {
+      font-size: 28px;
+    }
+  }
+</style>

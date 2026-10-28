@@ -1,0 +1,26 @@
+---
+/**
+ * Section eyebrow: orange index + secondary label, e.g. "[01] A few things I’ve made".
+ * Omit `index` for the accent-only variant ("YOUR NEXT CHAPTER").
+ */
+interface Props {
+  index?: string;
+  accent?: boolean;
+  class?: string;
+}
+
+const { index, accent = false, class: className } = Astro.props;
+---
+
+<p class:list={['eyebrow', className]}>
+  {index && <span class="caption caption--accent">{index}</span>}
+  <span class:list={['caption', { 'caption--accent': accent }]}><slot /></span>
+</p>
+
+<style>
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+</style>

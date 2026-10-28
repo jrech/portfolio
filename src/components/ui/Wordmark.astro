@@ -1,0 +1,36 @@
+---
+import { site } from '@/data/site';
+
+interface Props {
+  href?: string;
+}
+
+const { href = '/' } = Astro.props;
+---
+
+<a class="wordmark" href={href} aria-label={`${site.name} — home`}>
+  {site.wordmark}<span class="wordmark__reg" aria-hidden="true">®</span>
+</a>
+
+<style>
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: var(--weight-bold);
+    letter-spacing: -1px;
+    line-height: normal;
+    color: var(--color-text-display);
+    white-space: nowrap;
+  }
+
+  /* The ® glyph renders as a raised mark in Rethink Sans at this size. */
+  .wordmark__reg {
+    letter-spacing: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .wordmark {
+      font-size: 22px;
+    }
+  }
+</style>

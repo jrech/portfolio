@@ -1,15 +1,10 @@
+// @ts-check
 import { defineConfig } from 'astro/config';
-import sitemap from '@astrojs/sitemap';
+import mdx from '@astrojs/mdx';
 
+// Static output; deploy target: Vercel (deployment configured in a later phase).
 export default defineConfig({
-  site: 'https://www.jonasrech.com',
-  integrations: [sitemap()],
-  i18n: {
-    defaultLocale: 'en',
-    locales: ['cs', 'en'],
-    routing: {
-      prefixDefaultLocale: true,
-      redirectToDefaultLocale: false,
-    },
-  },
+  site: 'https://jonasrech.com',
+  integrations: [mdx()],
+  devToolbar: { enabled: false },
 });

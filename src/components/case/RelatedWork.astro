@@ -1,0 +1,105 @@
+---
+/**
+ * "More selected work" (Pen): up to two other projects + "Back to all projects".
+ * With no other projects only the back link remains.
+ */
+import RelatedCard from './RelatedCard.astro';
+import type { ProjectEntry } from '@/lib/projects';
+
+interface Props {
+  projects: ProjectEntry[];
+}
+
+const { projects } = Astro.props;
+---
+
+<section class="more" aria-labelledby={projects.length ? 'more-title' : undefined} aria-label={projects.length ? undefined : 'More work'}>
+  <div class="more__inner container">
+    {
+      projects.length > 0 && (
+        <Fragment>
+          <h2 id="more-title" class="more__title">More selected work.</h2>
+          <div class:list={['more__grid', { 'more__grid--single': projects.length === 1 }]}>
+            {projects.map((project) => <RelatedCard project={project} />)}
+          </div>
+        </Fragment>
+      )
+    }
+    <a class="more__back" href="/#work">← Back to all projects</a>
+  </div>
+</section>
+
+<style>
+  /* Mobile (390) */
+  .more {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .more__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 36px;
+    padding-block: 96px;
+  }
+
+  .more__title {
+    font-size: 40px;
+    font-weight: var(--weight-medium);
+    line-height: normal;
+    letter-spacing: -1.5px;
+    color: var(--color-text-primary);
+  }
+
+  .more__grid {
+    display: grid;
+    gap: 40px;
+    width: 100%;
+  }
+
+  .more__back {
+    font-size: 16px;
+    line-height: normal;
+    color: var(--color-text-primary);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .more__back:hover {
+    color: var(--color-accent);
+  }
+
+  /* Tablet (interpolated) */
+  @media (min-width: 640px) {
+    .more__inner {
+      gap: 40px;
+      padding-block: 120px;
+    }
+
+    .more__title {
+      font-size: 52px;
+      letter-spacing: -2px;
+    }
+
+    .more__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+  }
+
+  /* Desktop (1440) */
+  @media (min-width: 1024px) {
+    .more__inner {
+      gap: 48px;
+      padding-block: 160px;
+    }
+
+    .more__title {
+      font-size: 64px;
+      letter-spacing: -2.5px;
+    }
+
+    .more__grid {
+      gap: 32px;
+    }
+  }
+</style>

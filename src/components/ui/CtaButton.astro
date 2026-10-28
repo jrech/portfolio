@@ -1,0 +1,75 @@
+---
+/**
+ * "CTA / Start a project" — reusable Pen component (GBUkS).
+ * Orange pill, dark label, pale circle with arrow-up-right.
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  href: string;
+  label?: string;
+  /** Stretch to the container width (mobile hero). */
+  block?: boolean;
+  class?: string;
+}
+
+const { href, label = 'Start a project', block = false, class: className } = Astro.props;
+---
+
+<a class:list={['cta', { 'cta--block': block }, className]} href={href}>
+  <span class="cta__label">{label}</span>
+  <span class="cta__icon" aria-hidden="true">
+    <Icon name="arrow-up-right" size={20} />
+  </span>
+</a>
+
+<style>
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 26px;
+    height: 56px;
+    padding: 8px 8px 8px 22px;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+    color: var(--color-ink);
+    white-space: nowrap;
+    transition: transform 100ms var(--ease-out);
+  }
+
+  .cta--block {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .cta__label {
+    font-size: 18px;
+    font-weight: var(--weight-bold);
+    line-height: normal;
+  }
+
+  .cta__icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-round);
+    background: var(--color-text-display);
+    color: var(--color-ink);
+  }
+
+  .cta__icon :global(svg) {
+    stroke-width: 1.75;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .cta:hover .cta__icon :global(svg),
+  .cta:focus-visible .cta__icon :global(svg) {
+    transform: translate(1px, -1px);
+  }
+
+  .cta:active {
+    transform: scale(0.98);
+  }
+</style>

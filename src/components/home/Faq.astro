@@ -1,0 +1,182 @@
+---
+/**
+ * FAQ accordion. Native <details> grouped by `name` (one open at a time, no JS).
+ * The first item is open by default, as in the frames.
+ */
+import Eyebrow from '../ui/Eyebrow.astro';
+import Icon from '../ui/Icon.astro';
+import { faqs } from '@/data/home';
+---
+
+<section id="faq" class="faq" aria-labelledby="faq-title">
+  <div class="faq__inner container">
+    <header class="faq__intro">
+      <Eyebrow index="[05]">You might be wondering</Eyebrow>
+      <h2 id="faq-title" class="faq__title">Before we<br />get started.</h2>
+      <p class="faq__note">Still wondering about something?<br />Let’s talk it through.</p>
+    </header>
+
+    <div class="faq__list">
+      {
+        faqs.map((faq, i) => (
+          <details class="faq__item" name="faq" open={i === 0}>
+            <summary class="faq__question">
+              <span>{faq.question}</span>
+              <Icon name="plus" size={22} class="faq__icon faq__icon--plus" />
+              <Icon name="minus" size={22} class="faq__icon faq__icon--minus" />
+            </summary>
+            <p class="faq__answer">{faq.answer}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Mobile (390) */
+  .faq__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding-block: 64px;
+  }
+
+  .faq__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .faq__title {
+    font-size: 40px;
+    font-weight: var(--weight-medium);
+    line-height: 42px;
+    letter-spacing: -1.6px;
+    color: var(--color-text-primary);
+  }
+
+  .faq__note {
+    font-size: 17px;
+    line-height: 26px;
+    color: var(--color-text-secondary);
+  }
+
+  .faq__list {
+    padding-bottom: 2px;
+  }
+
+  .faq__item {
+    padding: 26px 0 30px;
+  }
+
+  .faq__item + .faq__item {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .faq__question {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    font-size: 20px;
+    font-weight: var(--weight-medium);
+    line-height: 24px;
+    letter-spacing: -0.4px;
+    color: var(--color-text-primary);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .faq__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__question > span {
+    flex: 1;
+  }
+
+  .faq__question:hover > span {
+    color: var(--color-text-display);
+  }
+
+  .faq__question :global(.faq__icon) {
+    stroke-width: 1.75;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .faq__question :global(.faq__icon--plus) {
+    color: var(--color-text-primary);
+  }
+
+  .faq__question :global(.faq__icon--minus) {
+    display: none;
+    color: var(--color-accent);
+  }
+
+  .faq__item[open] :global(.faq__icon--plus) {
+    display: none;
+  }
+
+  .faq__item[open] :global(.faq__icon--minus) {
+    display: block;
+  }
+
+  .faq__question:hover :global(.faq__icon--plus) {
+    transform: rotate(90deg);
+  }
+
+  .faq__answer {
+    padding-top: 14px;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text-secondary);
+  }
+
+  /* Tablet (834) */
+  @media (min-width: 640px) {
+    .faq__inner {
+      padding-block: 80px;
+    }
+
+    .faq__title {
+      font-size: 52px;
+      line-height: 54px;
+      letter-spacing: -2px;
+    }
+
+    .faq__question {
+      font-size: 23px;
+      line-height: 28px;
+    }
+  }
+
+  /* Desktop (1440) */
+  @media (min-width: 1024px) {
+    .faq__inner {
+      flex-direction: row;
+      gap: 90px;
+      padding-block: 140px;
+    }
+
+    .faq__intro {
+      flex: 0 0 430px;
+      gap: 28px;
+    }
+
+    .faq__title {
+      font-size: 64px;
+      line-height: 67px;
+      letter-spacing: -2.8px;
+    }
+
+    .faq__list {
+      flex: 1;
+    }
+
+    .faq__question {
+      font-size: 24px;
+      line-height: 29px;
+      letter-spacing: -0.5px;
+    }
+  }
+</style>

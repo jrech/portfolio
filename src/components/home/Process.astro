@@ -1,0 +1,243 @@
+---
+import Eyebrow from '../ui/Eyebrow.astro';
+import Icon from '../ui/Icon.astro';
+import { steps } from '@/data/home';
+---
+
+<section id="process" class="process theme-cream" aria-labelledby="process-title">
+  <div class="process__inner container">
+    <header class="process__intro">
+      <div class="process__heading">
+        <Eyebrow index="[04]">From hello to launch</Eyebrow>
+        <h2 id="process-title" class="process__title">Good work starts<br />with good questions.</h2>
+      </div>
+      <div class="process__summary">
+        <p class="process__text">
+          Understand first. Design second. One person to guide the work, with you involved at every
+          step.
+        </p>
+        <p class="process__promise">
+          <Icon name="messages-square" size={20} />
+          No handoffs. No guesswork.
+        </p>
+      </div>
+    </header>
+
+    <ol class="process__steps" role="list">
+      {
+        steps.map((step, i) => (
+          <li class="step">
+            <span class="step__index" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <div class="step__content">
+              <h3 class="step__title">{step.title}</h3>
+              <p class="step__description">{step.description}</p>
+              <p class="step__outcome">
+                <Icon name="arrow-up-right" size={15} />
+                <span class="caption">{step.outcome.toUpperCase()}</span>
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  /* Mobile (390) */
+  .process__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    padding-block: 64px;
+  }
+
+  .process__intro,
+  .process__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .process__title {
+    font-size: 40px;
+    font-weight: var(--weight-medium);
+    line-height: 42px;
+    letter-spacing: -1.6px;
+  }
+
+  .process__summary {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .process__text {
+    font-size: 17px;
+    line-height: 26px;
+    color: var(--color-text-secondary);
+  }
+
+  /* Promise line only appears in the desktop frame. */
+  .process__promise {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    line-height: normal;
+  }
+
+  .process__promise :global(svg) {
+    color: var(--color-accent);
+    stroke-width: 1.75;
+  }
+
+  .process__steps {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .step__index {
+    flex: 0 0 56px;
+    font-size: 40px;
+    font-weight: var(--weight-medium);
+    line-height: 40px;
+    letter-spacing: -2px;
+    color: var(--color-text-secondary);
+  }
+
+  .step__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .step__title {
+    font-size: 24px;
+    font-weight: var(--weight-medium);
+    line-height: 28px;
+    letter-spacing: -0.6px;
+  }
+
+  .step__description {
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text-secondary);
+  }
+
+  .step__outcome {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 6px;
+  }
+
+  .step__outcome :global(svg) {
+    color: var(--color-accent);
+    stroke-width: 2;
+  }
+
+  /* Tablet (834) */
+  @media (min-width: 640px) {
+    .process__inner {
+      gap: 44px;
+      padding-block: 80px;
+    }
+
+    .process__title {
+      font-size: 52px;
+      line-height: 54px;
+      letter-spacing: -2px;
+    }
+
+    .step {
+      gap: 32px;
+    }
+
+    .step__index {
+      flex-basis: 72px;
+      font-size: 64px;
+      line-height: 64px;
+    }
+
+    .step__title {
+      font-size: 28px;
+      line-height: 32px;
+    }
+  }
+
+  /* Desktop (1440) */
+  @media (min-width: 1024px) {
+    .process__inner {
+      gap: 126px;
+      padding-block: 160px;
+    }
+
+    .process__intro {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 80px;
+    }
+
+    .process__heading {
+      flex: 0 1 800px;
+    }
+
+    .process__title {
+      font-size: 64px;
+      line-height: 67px;
+      letter-spacing: -2.8px;
+    }
+
+    .process__summary {
+      flex: 1 0 280px;
+    }
+
+    .process__promise {
+      display: flex;
+    }
+
+    .process__steps {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 36px;
+    }
+
+    /* Staircase: each step drops 56px further than the previous one. */
+    .step {
+      flex: 1;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .step:nth-child(2) {
+      padding-top: 56px;
+    }
+
+    .step:nth-child(3) {
+      padding-top: 112px;
+    }
+
+    .step:nth-child(4) {
+      padding-top: 168px;
+    }
+
+    .step__index {
+      flex-basis: auto;
+      font-size: 82px;
+      line-height: 82px;
+      letter-spacing: -4px;
+    }
+  }
+</style>

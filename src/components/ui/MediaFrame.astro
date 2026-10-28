@@ -1,0 +1,39 @@
+---
+/**
+ * Media slot with a fixed aspect ratio (or fixed height) and a neutral placeholder.
+ * Final images/videos go in the default slot; until then the frame keeps the approved proportions.
+ */
+interface Props {
+  /** CSS aspect-ratio, e.g. "1440 / 816". */
+  ratio?: string;
+  label?: string;
+  class?: string;
+}
+
+const { ratio, label, class: className } = Astro.props;
+const hasMedia = Astro.slots.has('default');
+---
+
+<figure
+  class:list={['media', { 'media--placeholder': !hasMedia }, className]}
+  style={ratio ? { aspectRatio: ratio } : undefined}
+  aria-label={!hasMedia ? label : undefined}
+  role={!hasMedia && label ? 'img' : undefined}
+>
+  <slot />
+</figure>
+
+<style>
+  .media {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .media :global(img),
+  .media :global(video) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>

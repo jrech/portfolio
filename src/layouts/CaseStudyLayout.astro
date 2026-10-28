@@ -1,0 +1,62 @@
+---
+/**
+ * Case-study page shell: in-flow header, hero, editorial sections with the
+ * three visuals in between, optional approved testimonial, related work, split footer.
+ */
+import BaseLayout from './BaseLayout.astro';
+import SiteHeader from '@/components/site/SiteHeader.astro';
+import SiteFooter from '@/components/site/SiteFooter.astro';
+import CaseHero from '@/components/case/CaseHero.astro';
+import CaseSection from '@/components/case/CaseSection.astro';
+import CaseDecisions from '@/components/case/CaseDecisions.astro';
+import CaseVisual from '@/components/case/CaseVisual.astro';
+import RelatedWork from '@/components/case/RelatedWork.astro';
+import Testimonial from '@/components/home/Testimonial.astro';
+import { getRelatedProjects, isPublished, type ProjectEntry } from '@/lib/projects';
+
+interface Props {
+  project: ProjectEntry;
+}
+
+const { project } = Astro.props;
+const { title, description, challenge, approach, solution, outcome, visuals, testimonial } = project.data;
+const related = await getRelatedProjects(project);
+
+/** Neutral slots for projects whose visuals are not briefed yet. */
+const fallbackVisuals = [
+  { variant: 'full', title: 'Project capture.', brief: 'Placeholder — final project capture to follow.' },
+  { variant: 'responsive', title: 'Desktop and mobile.', brief: 'Placeholder — final project capture to follow.' },
+  { variant: 'detail', title: 'Detail.', brief: 'Placeholder — final project capture to follow.' },
+] as const;
+const slots = [0, 1, 2].map((i) => visuals[i] ?? fallbackVisuals[i]);
+---
+
+<BaseLayout title={`${title} — Jonas Rech`} description={description} noindex={!isPublished(project)}>
+  <SiteHeader slot="header" />
+
+  <CaseHero project={project} />
+
+  <CaseSection index="[01]" label="The challenge." content={challenge} />
+  <CaseVisual index={1} {...slots[0]} />
+
+  <CaseSection index="[02]" label="The approach." content={approach} />
+  <CaseVisual index={2} {...slots[1]} />
+
+  <CaseSection index="[03]" label="The solution." content={solution}>
+    {solution && solution.decisions.length > 0 && <CaseDecisions decisions={solution.decisions} />}
+  </CaseSection>
+  <CaseVisual index={3} {...slots[2]} />
+
+  <CaseSection index="[04]" label="The outcome." content={outcome} last />
+
+  {testimonial && <Testimonial testimonial={testimonial} />}
+
+  <RelatedWork projects={related} />
+
+  <SiteFooter
+    slot="footer"
+    variant="split"
+    headline="Your project could be next."
+    lead="Have something in mind? Let’s talk."
+  />
+</BaseLayout>

@@ -1,0 +1,88 @@
+/*
+ * Design tokens — Jonas Rech portfolio.
+ * Source: portfo.pen variables + values used in the approved frames / HTML exports.
+ * Names follow the Pen variables (`color/accent` → `--color-accent`).
+ * See DESIGN_SYSTEM.md for provenance and known discrepancies.
+ */
+
+:root {
+  /* ---------- Color: dark (default) ---------- */
+  --color-background: #10100f;      /* page; approved frames (Pen variable says #171817) */
+  --color-background-deep: #0f0f0e; /* Selected projects section */
+  --color-surface: #20211f;         /* raised surfaces, media placeholders */
+  --color-text-display: #f2efe9;    /* hero headline, wordmark, CTA arrow circle */
+  --color-text-primary: #eae9e5;
+  --color-text-intro: #c6c3bc;      /* hero introduction */
+  --color-text-lead: #c4c1ba;       /* About description */
+  --color-text-secondary: #a4a29c;
+  --color-rule: #484844;
+  --color-paper: #d5d3ca;
+  --color-ink: #10100f;             /* text on accent */
+  --color-accent: #ff4d18;
+
+  /* ---------- Color: cream rhythm (Services, Process) ---------- */
+  --color-cream: #eee9df;
+  --color-cream-ink: #171817;
+  --color-cream-muted: #595a53;
+  --color-cream-rule: #c9c5ba;
+
+  /* ---------- Typography ---------- */
+  --font-display: 'Rethink Sans Variable', 'Rethink Sans', system-ui, sans-serif;
+  --font-body: var(--font-display);
+  --font-caption: 'Space Mono', ui-monospace, monospace;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-bold: 700;
+
+  /* Caption (Space Mono, uppercase/bold) */
+  --caption-size: 10px;
+  --caption-tracking: 0.9px;
+
+  /* ---------- Spacing (Pen space/*) ---------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ---------- Layout ---------- */
+  --gutter: 24px;                 /* mobile 24 · tablet 40 · desktop 60 */
+  --content-max: 1320px;          /* 1440 canvas − 2 × 60 gutter */
+  --grid-gap: 36px;               /* project grid: mobile 36 (stack) · tablet 24 · desktop 28 */
+  --header-height: 80px;          /* mobile/tablet 80 · desktop 96 */
+
+  /* ---------- Shape ---------- */
+  --radius-pill: 28px;
+  --radius-round: 999px;
+
+  /* ---------- Motion (proposed defaults, see DESIGN_SYSTEM.md) ---------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 160ms;
+  --duration-base: 220ms;
+
+  /* ---------- Layers ---------- */
+  --z-header: 10;
+  --z-menu: 100;
+}
+
+/* Breakpoints: tablet ≥ 640px (acceptance frame 834), desktop ≥ 1024px (acceptance frame 1440). */
+@media (min-width: 640px) {
+  :root {
+    --caption-size: 11px;
+    --caption-tracking: 1.2px;
+    --gutter: 40px;
+    --grid-gap: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 60px;
+    --grid-gap: 28px;
+    --header-height: 96px;
+  }
+}

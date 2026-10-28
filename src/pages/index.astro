@@ -1,14 +1,30 @@
 ---
-const canonical = new URL('/en/', Astro.site);
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SiteHeader from '@/components/site/SiteHeader.astro';
+import SiteFooter from '@/components/site/SiteFooter.astro';
+import Hero from '@/components/home/Hero.astro';
+import SelectedWork from '@/components/home/SelectedWork.astro';
+import Proposition from '@/components/home/Proposition.astro';
+import Services from '@/components/home/Services.astro';
+import Testimonial from '@/components/home/Testimonial.astro';
+import About from '@/components/home/About.astro';
+import Process from '@/components/home/Process.astro';
+import Faq from '@/components/home/Faq.astro';
+import { getEntry } from 'astro:content';
+
+// Approved for publication by the client (Jonas, 2026-10-28).
+const quote = (await getEntry('projects', 'pradelna-krkonose'))?.data.testimonial;
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta http-equiv="refresh" content="0;url=/en/" />
-    <link rel="canonical" href={canonical} />
-    <title>Jonas Rech</title>
-  </head>
-  <body><a href="/en/">Continue in English</a> · <a href="/cs/">Pokračovat česky</a></body>
-</html>
+
+<BaseLayout>
+  <SiteHeader slot="header" overlay />
+  <Hero />
+  <SelectedWork />
+  <Proposition />
+  <Services />
+  {quote && <Testimonial testimonial={quote} />}
+  <About />
+  <Process />
+  <Faq />
+  <SiteFooter slot="footer" variant="centered" />
+</BaseLayout>

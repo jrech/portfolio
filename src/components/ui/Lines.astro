@@ -1,0 +1,10 @@
+---
+/** Renders copy with `\n` as forced line breaks (approved two-line titles). */
+interface Props {
+  text: string;
+}
+
+const lines = Astro.props.text.split('\n');
+---
+
+{lines.map((line, i) => (i === 0 ? line : <Fragment><br />{line}</Fragment>))}

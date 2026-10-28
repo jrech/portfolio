@@ -1,0 +1,79 @@
+---
+/** Numbered decision rows under "The solution." (Pen: "Three design decisions"). */
+interface Props {
+  decisions: { title: string; copy: string }[];
+}
+
+const { decisions } = Astro.props;
+---
+
+<ol class="decisions" role="list">
+  {
+    decisions.map((decision, i) => (
+      <li class="decision">
+        <span class="decision__number">{String(i + 1).padStart(2, '0')}</span>
+        <h3 class="decision__title">{decision.title}</h3>
+        <p class="decision__copy">{decision.copy}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  /* Mobile (390) */
+  .decisions {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .decision {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-block: 24px;
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .decision__number {
+    width: 48px;
+    font-size: 12px;
+    line-height: normal;
+    color: var(--color-accent);
+  }
+
+  .decision__title {
+    font-size: 26px;
+    font-weight: var(--weight-medium);
+    line-height: normal;
+    letter-spacing: -0.7px;
+    color: var(--color-text-primary);
+  }
+
+  .decision__copy {
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text-secondary);
+  }
+
+  /* Desktop (1440) */
+  @media (min-width: 1024px) {
+    .decision {
+      flex-direction: row;
+      gap: 32px;
+      padding-block: 32px;
+    }
+
+    .decision__number {
+      flex-shrink: 0;
+    }
+
+    .decision__title {
+      flex: 1 1 0;
+      font-size: 28px;
+    }
+
+    .decision__copy {
+      flex: 0 0 552px;
+    }
+  }
+</style>

@@ -1,0 +1,99 @@
+---
+import Wordmark from '../ui/Wordmark.astro';
+import MenuOverlay from './MenuOverlay.astro';
+
+interface Props {
+  /** Sit on top of the hero (homepage) instead of taking space in the flow (case studies). */
+  overlay?: boolean;
+  /** Current menu item label, highlighted in the fullscreen menu. */
+  current?: string;
+}
+
+const { overlay = false, current } = Astro.props;
+---
+
+<header class:list={['site-header', { 'site-header--overlay': overlay }]}>
+  <div class="site-header__inner container">
+    <Wordmark />
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-haspopup="dialog"
+      aria-expanded="false"
+      aria-controls="site-menu"
+      data-menu-open
+    >
+      <span class="menu-toggle__label caption" aria-hidden="true">MENU</span>
+      <span class="menu-toggle__icon" aria-hidden="true"><span></span><span></span></span>
+      <span class="visually-hidden">Open menu</span>
+    </button>
+  </div>
+</header>
+
+<MenuOverlay current={current} />
+
+<style>
+  .site-header {
+    position: relative;
+    z-index: var(--z-header);
+  }
+
+  .site-header--overlay {
+    position: absolute;
+    inset: 0 0 auto;
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+  }
+
+  .menu-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    /* Keep the 44px hit area flush with the gutter, as in the frames. */
+    margin-right: 0;
+  }
+
+  .menu-toggle__label {
+    display: none;
+    font-size: 10px;
+    letter-spacing: 2px;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .menu-toggle__icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .menu-toggle__icon span {
+    width: 27px;
+    height: 2px;
+    background: var(--color-text-display);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .menu-toggle:hover .menu-toggle__label,
+  .menu-toggle:focus-visible .menu-toggle__label {
+    color: var(--color-text-primary);
+  }
+
+  .menu-toggle:hover .menu-toggle__icon span:last-child {
+    transform: translateX(-4px);
+  }
+
+  @media (min-width: 1024px) {
+    .menu-toggle__label {
+      display: block;
+    }
+  }
+</style>

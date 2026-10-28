@@ -1,0 +1,101 @@
+---
+import Eyebrow from '../ui/Eyebrow.astro';
+import ProjectCard from './ProjectCard.astro';
+import { getProjects } from '@/lib/projects';
+
+const projects = await getProjects();
+---
+
+<section id="work" class="work theme-deep" aria-labelledby="work-title">
+  <div class="work__inner container">
+    <header class="work__heading">
+      <div class="work__title-group">
+        <Eyebrow index="[01]">A few things I’ve made</Eyebrow>
+        <h2 id="work-title" class="work__title">Good work. Real impact.</h2>
+      </div>
+      <p class="caption">2024 — 2026</p>
+    </header>
+
+    <div class="work__grid">
+      {projects.map((project, i) => <ProjectCard project={project} featured={i === 0} />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Mobile (390) */
+  .work__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    padding-block: 64px;
+  }
+
+  .work__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .work__title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .work__title {
+    font-size: 36px;
+    font-weight: var(--weight-medium);
+    line-height: normal;
+    letter-spacing: -1.5px;
+    color: var(--color-text-display);
+  }
+
+  .work__grid {
+    display: grid;
+    gap: 36px;
+  }
+
+  /* Tablet (834) */
+  @media (min-width: 640px) {
+    .work__inner {
+      gap: 44px;
+      padding-block: 80px;
+    }
+
+    .work__title {
+      font-size: 48px;
+    }
+
+    .work__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 44px 24px;
+    }
+  }
+
+  /* Desktop (1440) */
+  @media (min-width: 1024px) {
+    .work__inner {
+      padding-block: 160px;
+    }
+
+    .work__heading {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .work__title-group {
+      gap: 16px;
+    }
+
+    .work__title {
+      font-size: 54px;
+      letter-spacing: -2.3px;
+    }
+
+    .work__grid {
+      gap: 44px 28px;
+    }
+  }
+</style>

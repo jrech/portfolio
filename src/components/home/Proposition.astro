@@ -1,0 +1,55 @@
+---
+/** "A clear reason to choose you" — single editorial statement. */
+---
+
+<section class="proposition theme-deep" aria-label="Why it matters">
+  <div class="proposition__inner container">
+    <p class="proposition__text">
+      A good website shows what makes you different and why customers should choose you.
+    </p>
+  </div>
+</section>
+
+<style>
+  /* Mobile (390) */
+  .proposition__inner {
+    display: flex;
+    justify-content: center;
+    padding-block: 64px;
+  }
+
+  .proposition__text {
+    font-size: 38px;
+    font-weight: var(--weight-medium);
+    line-height: 42px;
+    letter-spacing: -1.6px;
+    color: var(--color-text-primary);
+  }
+
+  /* Tablet (834) */
+  @media (min-width: 640px) {
+    .proposition__inner {
+      padding-block: 80px;
+    }
+
+    .proposition__text {
+      font-size: 54px;
+      line-height: 59px;
+      letter-spacing: -2px;
+    }
+  }
+
+  /* Desktop (1440) */
+  @media (min-width: 1024px) {
+    .proposition__inner {
+      padding-block: 240px;
+    }
+
+    .proposition__text {
+      max-width: 1130px;
+      font-size: 72px;
+      line-height: 76px;
+      letter-spacing: -3.5px;
+    }
+  }
+</style>
