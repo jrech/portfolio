@@ -3,18 +3,22 @@
  * never when the visitor prefers reduced motion. Content is visible without JS: the
  * hidden start state only exists while <html> has `js-motion` (set inline in <head>).
  *
- *   [data-reveal="heading"] headings: lines slide up from a mask, light blur, 900 ms, stagger 80 ms
- *   [data-reveal="fade"]    content: opacity + 12 px, 450 ms, stagger 60 ms
+ *   [data-reveal="heading"] headings: lines slide up from a mask, light blur, 1100 ms expo-like out, stagger 90 ms
+ *   [data-reveal="fade"]    content: opacity + 12 px, 700 ms, stagger 60 ms
  *   [data-cursor]           custom cursor states (pointer: fine only)
  *   #site-menu              fullscreen menu: rolls down from the top (clip-path), links from below; rolls back up on close
  */
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
+import { CustomEase } from 'gsap/CustomEase';
 
-gsap.registerPlugin(ScrollTrigger, SplitText);
+gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase);
 
-const EASE = 'power3.out'; // closest GSAP curve to --ease-out (0.22, 1, 0.36, 1)
+// Curves: fast start, long soft landing, so movement settles like a real object.
+const EASE = CustomEase.create('site-out', '0.22, 1, 0.36, 1'); // same as --ease-out in tokens.css
+const EASE_REVEAL = CustomEase.create('site-reveal', '0.16, 1, 0.3, 1'); // expo-like out, headings
+const EASE_MENU = CustomEase.create('site-menu', '0.76, 0, 0.24, 1'); // shutter: eases in and out
 const root = document.documentElement;
 
 function slideUp(heading: HTMLElement) {
@@ -26,9 +30,9 @@ function slideUp(heading: HTMLElement) {
     yPercent: 105,
     opacity: 0,
     filter: 'blur(4px)',
-    duration: 0.9,
-    stagger: 0.08,
-    ease: EASE,
+    duration: 1.1,
+    stagger: 0.09,
+    ease: EASE_REVEAL,
     paused: true,
     onComplete: () => {
       split.revert();
@@ -51,7 +55,7 @@ function revealContent() {
     start: 'top 85%',
     once: true,
     onEnter: (batch) =>
-      gsap.to(batch, { opacity: 1, y: 0, duration: 0.45, stagger: 0.06, ease: EASE, clearProps: 'transform' }),
+      gsap.to(batch, { opacity: 1, y: 0, duration: 0.7, stagger: 0.06, ease: EASE, clearProps: 'transform' }),
   });
 }
 
@@ -107,12 +111,12 @@ function menu() {
     gsap.fromTo(
       dialog,
       { clipPath: MENU_HIDDEN },
-      { clipPath: MENU_SHOWN, duration: 0.7, ease: 'power4.inOut', clearProps: 'clipPath' },
+      { clipPath: MENU_SHOWN, duration: 0.8, ease: EASE_MENU, clearProps: 'clipPath' },
     );
     gsap.fromTo(
       links,
       { yPercent: 60, opacity: 0 },
-      { yPercent: 0, opacity: 1, duration: 0.6, stagger: 0.05, delay: 0.35, ease: EASE, clearProps: 'all' },
+      { yPercent: 0, opacity: 1, duration: 0.8, stagger: 0.05, delay: 0.4, ease: EASE_REVEAL, clearProps: 'all' },
     );
   }).observe(dialog, { attributes: true, attributeFilter: ['open'] });
 
@@ -129,8 +133,8 @@ function menu() {
       { clipPath: MENU_SHOWN },
       {
         clipPath: MENU_HIDDEN,
-        duration: 0.55,
-        ease: 'power4.inOut',
+        duration: 0.65,
+        ease: EASE_MENU,
         onComplete: () => {
           done();
           gsap.set(dialog, { clearProps: 'clipPath' });
