@@ -18,7 +18,7 @@ interface Props {
   title: string;
   brief: string;
   mobileLabel?: string;
-  image?: { src: ImageMetadata; alt: string };
+  image?: { src: ImageMetadata; alt: string; mobileSrc?: ImageMetadata; mobileAlt?: string };
 }
 
 const t = useT(Astro).case;
@@ -36,7 +36,8 @@ const isResponsive = variant === 'responsive';
   {
     image ? (
       <div class="visual__frame">
-        <Image class="visual__image" src={image.src} alt={image.alt} widths={[800, 1440, 2640]} sizes="100vw" />
+        <Image class:list={['visual__image', { 'visual__image--paired': image.mobileSrc }]} src={image.src} alt={image.alt} widths={[800, 1440, 2640]} sizes="100vw" />
+        {image.mobileSrc && <Image class="visual__image visual__image--mobile" src={image.mobileSrc} alt={image.mobileAlt ?? image.alt} widths={[390, 780]} sizes="100vw" />}
       </div>
     ) : (
       <div class="visual__frame" role="img" aria-label={`${t.visualPlaceholderLabel} ${number}: ${title.replace(/\n/g, ' ')}`}>
@@ -119,6 +120,20 @@ const isResponsive = variant === 'responsive';
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .visual__frame :global(.visual__image--mobile) {
+    display: none;
+  }
+
+  @media (max-width: 639px) {
+    .visual__frame :global(.visual__image--paired) {
+      display: none;
+    }
+
+    .visual__frame :global(.visual__image--mobile) {
+      display: block;
+    }
   }
 
   .visual__marker {

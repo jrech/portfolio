@@ -74,7 +74,7 @@ const projects = defineCollection({
             brief: z.string(),
             /** Responsive variant only: label of the mobile slot. */
             mobileLabel: z.string().optional(),
-            image: z.object({ src: image(), alt: z.string() }).optional(),
+            image: z.object({ src: image(), alt: z.string(), mobileSrc: image().optional(), mobileAlt: z.string().optional() }).optional(),
           }),
         )
         .max(3)

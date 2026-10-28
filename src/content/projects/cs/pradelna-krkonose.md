@@ -11,7 +11,7 @@ description: Přehlednější B2B web, ze kterého hotely a místní firmy rychl
 descriptionWidth: 495
 positioning: Nová digitální prezentace pro firmu, která stojí na čisté práci.
 order: 2
-notice: "PROJEKT SE PŘIPRAVUJE · Text níže je pracovní verze ke schválení klientem. Místa pro obrázky čekají na finální snímky."
+notice: "PROJEKT SE PŘIPRAVUJE · Text níže je pracovní verze ke schválení klientem. Fotografie v této pracovní studii jsou ilustrační vizualizace, ne snímky klientova provozu."
 
 challenge:
   paragraphs:
@@ -43,14 +43,25 @@ outcome:
 visuals:
   - variant: full
     title: Celkový obraz.
-    brief: Snímek celé desktopové homepage. Ukázat nabídku služby, hierarchii stránky a cestu ke kontaktu — bez rámečku zařízení.
+    brief: Ilustrační pohled do profesionální prádelny při skládání hotelového prádla.
+    image:
+      src: ../../../assets/images/pradelna-laundry.png
+      alt: Ilustrační fotografie pracovnic skládajících čisté hotelové prádlo v prádelně.
   - variant: responsive
     title: "Jeden zážitek.\nKaždá obrazovka."
-    brief: Srovnání desktopu a mobilu. Postavit vedle sebe přehled služeb a kontaktní flow v mobilu, aby bylo vidět, jak se hierarchie přizpůsobí.
+    brief: Ilustrační fotografie hotelového pokoje s čerstvě připraveným ložním prádlem.
     mobileLabel: "Mobil\nKontaktní flow"
+    image:
+      src: ../../../assets/images/pradelna-hotel-room.png
+      alt: Ilustrační fotografie hotelového pokoje s čistě povlečenou postelí.
+      mobileSrc: ../../../assets/images/pradelna-hotel-room-mobile.png
+      mobileAlt: Vertikální ilustrační fotografie čistě povlečené hotelové postele.
   - variant: detail
     title: Detaily dělají práci.
-    brief: Detailní výřez. Ukázat finální typografickou hierarchii, blok služby a poptávkovou akci v čitelném měřítku.
+    brief: Ilustrační detail čistých složených ručníků a ložního prádla.
+    image:
+      src: ../../../assets/images/pradelna-folded-linens.png
+      alt: Ilustrační fotografie složených bílých hotelových ručníků a prádla.
 
 # Schváleno klientem ke zveřejnění (Jonas, 2026-10-28).
 testimonial:
