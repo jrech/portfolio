@@ -179,39 +179,46 @@ function revealFooter() {
   const support = (centered ? [lead, action] : [action, lead])
     .filter((el): el is HTMLElement => !!el && visible(el));
 
+  // Each scroll entry waits for the section above it. On a fast jump, elements
+  // that are already behind the viewport are shown immediately instead of
+  // leaving a long trail of invisible content.
+  let previous: Promise<void> = Promise.resolve();
   if (!passed(invite)) {
     gsap.set([...eyebrow, ...support], { opacity: 0, y: MOTION.distance });
     gsap.set(heading, { opacity: 0 });
-
-    ScrollTrigger.create({
-    trigger: invite, start: 'top 82%', once: true,
-    onEnter: async () => {
-      await document.fonts.ready;
-      if (!root.classList.contains('js-motion')) return;
-      const split = SplitText.create(heading, {
-        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
-      });
-      // Prepare the masked lines while their parent is still invisible. A timeline
-      // set can otherwise expose the unsplit title for one frame at scroll entry.
-      gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
-      const timeline = gsap.timeline();
-      if (eyebrow.length) timeline.to(eyebrow, {
-        opacity: 1, y: 0, duration: 0.55, ease: EASE, clearProps: 'transform,opacity',
-      });
-      timeline.set(heading, { opacity: 1 });
-      timeline.to(split.lines, {
-        yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading,
-        stagger: MOTION.stagger, ease: EASE,
-        onComplete: () => {
-          split.revert();
-          gsap.set(heading, { opacity: 1 });
+    previous = new Promise<void>(resolve => {
+      ScrollTrigger.create({
+        trigger: invite, start: 'top 82%', once: true,
+        onEnter: async () => {
+          await document.fonts.ready;
+          if (!root.classList.contains('js-motion') || passed(invite)) {
+            gsap.set([heading, ...eyebrow, ...support], { clearProps: 'opacity,transform' });
+            resolve();
+            return;
+          }
+          const split = SplitText.create(heading, {
+            type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
+          });
+          gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
+          const timeline = gsap.timeline({ onComplete: resolve });
+          if (eyebrow.length) timeline.to(eyebrow, {
+            opacity: 1, y: 0, duration: 0.55, ease: EASE, clearProps: 'transform,opacity',
+          });
+          timeline.set(heading, { opacity: 1 });
+          timeline.to(split.lines, {
+            yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading,
+            stagger: MOTION.stagger, ease: EASE,
+            onComplete: () => {
+              split.revert();
+              gsap.set(heading, { opacity: 1 });
+            },
+          }, eyebrow.length ? '-=0.12' : 0);
+          support.forEach(el => timeline.to(el, {
+            opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
+            clearProps: 'transform,opacity',
+          }, '+=0.04'));
         },
-      }, eyebrow.length ? '-=0.12' : 0);
-      support.forEach(el => timeline.to(el, {
-        opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
-        clearProps: 'transform,opacity',
-      }, '+=0.04'));
-    },
+      });
     });
   }
 
@@ -226,12 +233,23 @@ function revealFooter() {
     const items = [...container.querySelectorAll<HTMLElement>(itemSelector)].filter(visible);
     if (!items.length) return;
     gsap.set(items, { opacity: 0, y: MOTION.distance });
-    ScrollTrigger.create({
-      trigger: container, start: 'top 88%', once: true,
-      onEnter: () => gsap.to(items, {
-        opacity: 1, y: 0, duration: MOTION.duration, stagger,
-        ease: EASE, clearProps: 'transform,opacity',
-      }),
+    const waitForPrevious = previous;
+    previous = new Promise<void>(resolve => {
+      ScrollTrigger.create({
+        trigger: container, start: 'top 88%', once: true,
+        onEnter: async () => {
+          await waitForPrevious;
+          if (!root.classList.contains('js-motion') || passed(container)) {
+            gsap.set(items, { clearProps: 'opacity,transform' });
+            resolve();
+            return;
+          }
+          gsap.to(items, {
+            opacity: 1, y: 0, duration: MOTION.duration, stagger,
+            ease: EASE, clearProps: 'transform,opacity', onComplete: resolve,
+          });
+        },
+      });
     });
   });
 }
