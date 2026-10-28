@@ -26,6 +26,7 @@ function revealHeadings() {
   document.querySelectorAll<HTMLElement>('[data-reveal="heading"]').forEach((heading) => {
     if (heading.closest('.footer') || (heading.closest('.faq') && matchMedia('(min-width: 1024px)').matches)) return;
     if (passed(heading)) return;
+    gsap.set(heading, { opacity: 0 });
     const play = () => {
       // Hide the lines before showing their parent to avoid a one-frame flash.
       const split = SplitText.create(heading, {
