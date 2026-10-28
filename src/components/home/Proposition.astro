@@ -1,7 +1,8 @@
 ---
 /**
  * "A clear reason to choose you" — single editorial statement, a full-viewport section.
- * motion.ts pins it and lights the words up one by one as the visitor scrolls.
+ * The sticky stage reserves its scroll distance before JS loads; motion.ts
+ * lights the words up one by one as the visitor scrolls.
  */
 import { useT } from '@/i18n';
 
@@ -29,6 +30,22 @@ const t = useT(Astro);
     display: flex;
     justify-content: center;
     padding-block: 64px;
+  }
+
+  /* Reserve the extra scroll distance in the first layout. GSAP's dynamic pin
+     spacer used to shift restored scroll positions by an entire viewport. */
+  :global(html.js-motion) .proposition {
+    display: block;
+    min-height: 200vh;
+    min-height: 200svh;
+  }
+
+  :global(html.js-motion) .proposition__inner {
+    position: sticky;
+    top: 0;
+    min-height: 100vh;
+    min-height: 100svh;
+    align-items: center;
   }
 
   .proposition__text {

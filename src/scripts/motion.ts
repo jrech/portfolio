@@ -58,8 +58,8 @@ function scrubStatement() {
       {
         opacity: 1, filter: 'blur(0px)', stagger: 0.1, ease: 'none',
         scrollTrigger: {
-          trigger: section, start: 'top top', end: '+=100%',
-          scrub: 0.6, pin: true, invalidateOnRefresh: true,
+          trigger: section, start: 'top top', end: 'bottom bottom',
+          scrub: 0.6, invalidateOnRefresh: true,
         },
       },
     );
@@ -81,6 +81,7 @@ function revealContent() {
     !(matchMedia('(min-width: 1024px)').matches && el.matches('.step, .faq__item')));
   // Animate the owning block once; never stack parent and child translations.
   const items = candidates.filter(el => !passed(el) && !candidates.some(parent => parent !== el && parent.contains(el)));
+  if (!items.length) return;
   gsap.set(items, { opacity: 0, y: MOTION.distance });
   ScrollTrigger.batch(items, {
     start: 'top 88%', once: true, batchMax: 4, interval: 0.06,
@@ -103,8 +104,10 @@ function revealRules() {
     rules.push(el);
   });
   const pending = rules.filter(el => !passed(el));
+  const generic = pending.filter(el => !(el.matches('.faq__item') && matchMedia('(min-width: 1024px)').matches));
   gsap.set(pending, { '--rule-progress': 0 });
-  ScrollTrigger.batch(pending.filter(el => !(el.matches('.faq__item') && matchMedia('(min-width: 1024px)').matches)), {
+  if (!generic.length) return;
+  ScrollTrigger.batch(generic, {
     start: 'top 90%', once: true, batchMax: 4, interval: 0.06,
     onEnter: batch => gsap.to(batch, {
       '--rule-progress': 1, duration: MOTION.duration,
