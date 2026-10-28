@@ -6,7 +6,7 @@
  *   [data-reveal="heading"] headings: lines slide up from a mask, light blur, 1100 ms expo-like out, stagger 90 ms
  *   .hero                   headline, then intro (+350 ms), then CTAs (+150 ms)
  *   [data-reveal="fade"]    content: opacity + 12 px, 700 ms, stagger 60 ms
- *   [data-cursor]           custom cursor states (pointer: fine only)
+ *   [data-cursor]           custom cursor states (pointer: fine only); arrow circle over the card image
  *   #site-menu              fullscreen menu: rolls down from the top (clip-path), links from below; rolls back up on close
  */
 import { gsap } from 'gsap';
@@ -99,7 +99,8 @@ function cursor() {
   });
   document.addEventListener('pointerover', (e) => {
     const target = e.target as Element;
-    const project = target.closest('[data-cursor="project"]');
+    // Big arrow circle only over the project image, so it never covers the title or copy.
+    const project = target.closest('[data-cursor="project"] .media');
     dot.classList.toggle('is-project', !!project);
     dot.classList.toggle('is-link', !project && !!target.closest('a, button, summary, [role="button"]'));
   });

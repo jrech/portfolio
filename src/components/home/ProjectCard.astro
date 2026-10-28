@@ -168,19 +168,13 @@ const disciplines = formatServices(services);
     }
   }
 
-  /* Hover: title turns accent and an underline draws from the left (no image zoom). */
+  /* Hover: title turns accent (no underline, no image zoom). */
   .project__name {
-    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
-    transition:
-      color 350ms var(--ease-out),
-      background-size 350ms var(--ease-out);
+    transition: color 350ms var(--ease-out);
   }
 
   .project:hover .project__name,
   .project:focus-within .project__name {
     color: var(--color-accent);
-    background-size: 100% 1px;
   }
 </style>
