@@ -92,13 +92,15 @@ body {
 
 /* ---------- Typography utilities ---------- */
 
-/* Space Mono metadata label: uppercase where the design shows uppercase copy. */
+/* Space Mono metadata label, always uppercase (Jonas, 2026-10-28). */
 .caption {
   font-family: var(--font-caption);
   font-size: var(--caption-size);
   font-weight: var(--weight-bold);
   letter-spacing: var(--caption-tracking);
   line-height: normal;
+  /* Space Mono reads poorly in mixed case; every mono label is set in caps. */
+  text-transform: uppercase;
   color: var(--color-text-secondary);
 }
 
