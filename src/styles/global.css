@@ -244,3 +244,15 @@ body {
   opacity: 1;
   transform: none;
 }
+
+/* SplitText line masks: room for accents and descenders under the tight heading line-heights.
+   Flex keeps the negative margins from collapsing, so lines stay exactly where they end up. */
+.is-split {
+  display: flex;
+  flex-direction: column;
+}
+
+.split-line-mask {
+  padding-block: 0.14em;
+  margin-block: -0.14em;
+}

@@ -92,13 +92,36 @@ const nav = menuNav(t, getLocale(Astro));
       }),
     );
 
-    menu.querySelector('[data-menu-close]')?.addEventListener('click', () => menu.close());
-    menu.querySelectorAll('[data-menu-link]').forEach((link) =>
-      link.addEventListener('click', () => menu.close()),
+    // The motion script can take over closing (to animate it) by cancelling `menu:close`
+    // and calling `detail.done` when finished. Without it the menu closes straight away.
+    let navigating = false;
+    const requestClose = (then?: () => void) => {
+      const done = () => {
+        menu.close();
+        then?.();
+      };
+      if (menu.dispatchEvent(new CustomEvent('menu:close', { cancelable: true, detail: { done } }))) done();
+    };
+
+    menu.querySelector('[data-menu-close]')?.addEventListener('click', () => requestClose());
+    menu.addEventListener('cancel', (e) => {
+      e.preventDefault();
+      requestClose();
+    });
+    menu.querySelectorAll<HTMLAnchorElement>('[data-menu-link]').forEach((link) =>
+      link.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        // Navigate once the menu is closed, so in-page anchors can scroll again.
+        e.preventDefault();
+        navigating = true;
+        requestClose(() => location.assign(link.href));
+      }),
     );
     menu.addEventListener('close', () => {
       setExpanded(false);
-      openers[0]?.focus();
+      // After a link the page moves to its target; only return focus when the menu was simply dismissed.
+      if (!navigating) openers[0]?.focus({ preventScroll: true });
+      navigating = false;
     });
   }
 </script>
@@ -122,8 +145,10 @@ const nav = menuNav(t, getLocale(Astro));
     flex-direction: column;
   }
 
+  /* Transparent so the page stays visible while the menu rolls down / up (motion.ts);
+     the dialog itself already covers the full viewport. */
   .menu::backdrop {
-    background: var(--color-background);
+    background: transparent;
   }
 
   :global(html:has(.menu[open])) {
