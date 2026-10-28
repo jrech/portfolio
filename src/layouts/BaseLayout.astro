@@ -32,6 +32,15 @@ const xDefault = new URL(switchLocalePath(pathname, 'cs'), Astro.site).href;
     <meta name="theme-color" content="#10100f" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <title>{title}</title>
+    <script is:inline>
+      // Motion start state (see src/scripts/motion.ts). Skipped for reduced motion;
+      // if the script has not taken over after 4 s, the content is simply shown.
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const html = document.documentElement;
+        html.classList.add('js-motion');
+        setTimeout(() => html.classList.contains('motion-ready') || html.classList.remove('js-motion'), 4000);
+      }
+    </script>
     {
       !noindex && (
         <Fragment>
@@ -49,5 +58,21 @@ const xDefault = new URL(switchLocalePath(pathname, 'cs'), Astro.site).href;
       <slot />
     </main>
     <slot name="footer" />
+
+    <script>
+      // GSAP loads after first paint so it never delays the hero.
+      if (document.documentElement.classList.contains('js-motion')) {
+        requestAnimationFrame(() => setTimeout(() => import('@/scripts/motion'), 0));
+      }
+    </script>
+
+    <!-- Simple Analytics: cookieless, no consent banner needed. -->
+    <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+    <noscript
+      ><img
+        src="https://queue.simpleanalyticscdn.com/noscript.gif"
+        alt=""
+        referrerpolicy="no-referrer-when-downgrade"
+      /></noscript>
   </body>
 </html>

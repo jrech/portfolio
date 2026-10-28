@@ -20,14 +20,18 @@ const href = isPublished(project) ? projectUrl(project, getLocale(Astro)) : unde
 const disciplines = formatServices(services);
 ---
 
-<article class:list={['project', { 'project--featured': featured, 'project--static': !href }]}>
+<article
+  class:list={['project', { 'project--featured': featured, 'project--static': !href }]}
+  data-reveal="fade"
+  data-cursor="project"
+>
   <MediaFrame class="project__media">
     <slot name="media" />
   </MediaFrame>
   <div class="project__details">
     <div class="project__text">
       <h3 class="project__title">
-        {href ? <a class="project__link" href={href}>{cardTitle ?? title}</a> : (cardTitle ?? title)}
+        {href ? <a class="project__link project__name" href={href}>{cardTitle ?? title}</a> : <span class="project__name">{cardTitle ?? title}</span>}
       </h3>
       <p
         class="project__description"
@@ -162,5 +166,21 @@ const disciplines = formatServices(services);
     .project__disciplines {
       display: block;
     }
+  }
+
+  /* Hover: title turns accent and an underline draws from the left (no image zoom). */
+  .project__name {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    transition:
+      color 350ms var(--ease-out),
+      background-size 350ms var(--ease-out);
+  }
+
+  .project:hover .project__name,
+  .project:focus-within .project__name {
+    color: var(--color-accent);
+    background-size: 100% 1px;
   }
 </style>

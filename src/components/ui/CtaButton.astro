@@ -26,16 +26,36 @@ const { href, label = useT(Astro).cta.startProject, block = false, class: classN
 
 <style>
   .cta {
+    position: relative;
+    isolation: isolate;
     display: inline-flex;
     align-items: center;
     gap: 26px;
     height: 56px;
+    overflow: hidden;
     padding: 8px 8px 8px 22px;
     border-radius: var(--radius-pill);
     background: var(--color-accent);
     color: var(--color-ink);
     white-space: nowrap;
     transition: transform 100ms var(--ease-out);
+  }
+
+  /* Hover: cream floods in from the left over the orange; the circle swaps to orange. 400 ms, CSS only. */
+  .cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-cream);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 400ms var(--ease-out);
+  }
+
+  .cta:hover::before,
+  .cta:focus-visible::before {
+    transform: scaleX(1);
   }
 
   .cta--block {
@@ -58,16 +78,22 @@ const { href, label = useT(Astro).cta.startProject, block = false, class: classN
     border-radius: var(--radius-round);
     background: var(--color-text-display);
     color: var(--color-ink);
+    transition: background-color 400ms var(--ease-out);
+  }
+
+  .cta:hover .cta__icon,
+  .cta:focus-visible .cta__icon {
+    background: var(--color-accent);
   }
 
   .cta__icon :global(svg) {
     stroke-width: 1.75;
-    transition: transform var(--duration-base) var(--ease-out);
+    transition: transform 400ms var(--ease-out);
   }
 
   .cta:hover .cta__icon :global(svg),
   .cta:focus-visible .cta__icon :global(svg) {
-    transform: translate(1px, -1px);
+    transform: translate(2px, -2px);
   }
 
   .cta:active {

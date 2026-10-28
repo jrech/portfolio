@@ -10,7 +10,7 @@ const { decisions } = Astro.props;
 <ol class="decisions" role="list">
   {
     decisions.map((decision, i) => (
-      <li class="decision">
+      <li class="decision" data-reveal="fade">
         <span class="decision__number">{String(i + 1).padStart(2, '0')}</span>
         <h3 class="decision__title">{decision.title}</h3>
         <p class="decision__copy">{decision.copy}</p>

@@ -29,7 +29,10 @@ const caption = image ? `/ ${flatTitle}` : `/ ${flatTitle} — ${t.captionToFoll
 const isResponsive = variant === 'responsive';
 ---
 
-<figure class:list={['visual container', `visual--${variant}`, { 'visual--filled': image }]}>
+<figure
+  class:list={['visual container', `visual--${variant}`, { 'visual--filled': image }]}
+  data-reveal="fade"
+>
   {
     image ? (
       <div class="visual__frame">

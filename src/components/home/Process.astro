@@ -13,9 +13,9 @@ const steps = t.process.steps;
     <header class="process__intro">
       <div class="process__heading">
         <Eyebrow index="[04]">{t.process.eyebrow}</Eyebrow>
-        <h2 id="process-title" class="process__title"><Lines text={t.process.title} /></h2>
+        <h2 id="process-title" class="process__title" data-reveal="smoke"><Lines text={t.process.title} /></h2>
       </div>
-      <div class="process__summary">
+      <div class="process__summary" data-reveal="fade">
         <p class="process__text">
           {t.process.text}
         </p>
@@ -29,7 +29,7 @@ const steps = t.process.steps;
     <ol class="process__steps" role="list">
       {
         steps.map((step, i) => (
-          <li class="step">
+          <li class="step" data-reveal="fade">
             <span class="step__index" aria-hidden="true">
               {String(i + 1).padStart(2, '0')}
             </span>

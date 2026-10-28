@@ -67,6 +67,7 @@
   /* ---------- Layers ---------- */
   --z-header: 10;
   --z-menu: 100;
+  --z-cursor: 1000;
 }
 
 /* Breakpoints: tablet ≥ 640px (acceptance frame 834), desktop ≥ 1024px (acceptance frame 1440). */

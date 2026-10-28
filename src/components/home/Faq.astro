@@ -16,14 +16,14 @@ const faqs = t.faq.items;
   <div class="faq__inner container">
     <header class="faq__intro">
       <Eyebrow index="[05]">{t.faq.eyebrow}</Eyebrow>
-      <h2 id="faq-title" class="faq__title"><Lines text={t.faq.title} /></h2>
-      <p class="faq__note"><Lines text={t.faq.note} /></p>
+      <h2 id="faq-title" class="faq__title" data-reveal="smoke"><Lines text={t.faq.title} /></h2>
+      <p class="faq__note" data-reveal="fade"><Lines text={t.faq.note} /></p>
     </header>
 
     <div class="faq__list">
       {
         faqs.map((faq, i) => (
-          <details class="faq__item" name="faq" open={i === 0}>
+          <details data-reveal="fade" class="faq__item" name="faq" open={i === 0}>
             <summary class="faq__question">
               <span>{faq.question}</span>
               <Icon name="plus" size={22} class="faq__icon faq__icon--plus" />

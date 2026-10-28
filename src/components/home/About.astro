@@ -14,18 +14,18 @@ const locale = getLocale(Astro);
   <div class="about__inner container">
     <header class="about__heading">
       <Eyebrow index="[03]">{t.about.eyebrow}</Eyebrow>
-      <h2 id="about-title" class="about__title"><Lines text={t.about.title} /></h2>
+      <h2 id="about-title" class="about__title" data-reveal="smoke"><Lines text={t.about.title} /></h2>
     </header>
 
     <div class="about__story">
-      <div class="about__portrait">
+      <div class="about__portrait" data-reveal="fade">
         <MediaFrame class="about__media" label={t.about.photoLabel}>
           <slot name="media" />
         </MediaFrame>
         <p class="about__location caption">{t.about.location}</p>
       </div>
 
-      <div class="about__intro">
+      <div class="about__intro" data-reveal="fade">
         <h3 class="about__hello">{t.about.hello}</h3>
         <p class="about__description">
           {t.about.description}

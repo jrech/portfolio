@@ -182,3 +182,65 @@ body {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* ---------- Motion (src/scripts/motion.ts) ---------- */
+
+/* Hidden start state exists only while the motion script is expected (class set inline in <head>). */
+.js-motion:not(.motion-ready) [data-reveal] {
+  opacity: 0;
+}
+
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-cursor);
+  display: grid;
+  place-items: center;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: var(--radius-round);
+  background: var(--color-text-display);
+  color: var(--color-ink);
+  mix-blend-mode: difference;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    width var(--duration-base) var(--ease-out),
+    height var(--duration-base) var(--ease-out),
+    margin var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out),
+    opacity var(--duration-fast) var(--ease-out);
+}
+
+.cursor svg {
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
+}
+
+.cursor.is-visible {
+  opacity: 1;
+}
+
+.cursor.is-link {
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+}
+
+.cursor.is-project {
+  width: 88px;
+  height: 88px;
+  margin: -44px 0 0 -44px;
+  background: var(--color-accent);
+  mix-blend-mode: normal;
+}
+
+.cursor.is-project svg {
+  opacity: 1;
+  transform: none;
+}

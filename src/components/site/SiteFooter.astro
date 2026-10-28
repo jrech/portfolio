@@ -41,7 +41,7 @@ const bio = t.footer.bio;
       <Eyebrow index={index} class="footer__eyebrow footer__eyebrow--indexed">{eyebrow}</Eyebrow>
       <Eyebrow accent class="footer__eyebrow footer__eyebrow--accent">{eyebrow.toUpperCase()}</Eyebrow>
       <div class="footer__invite-main">
-        <h2 id="footer-title" class="footer__title">{headline}</h2>
+        <h2 id="footer-title" class="footer__title" data-reveal="smoke">{headline}</h2>
         <CtaButton href="#contact" label={t.cta.startProject} />
       </div>
       {lead && <p class="footer__lead">{lead}</p>}

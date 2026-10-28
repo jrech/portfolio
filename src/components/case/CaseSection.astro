@@ -26,8 +26,8 @@ const t = useT(Astro).case;
 <section class:list={['case-section container', { 'case-section--last': last }]} aria-labelledby={id}>
   <Eyebrow index={index}>{label}</Eyebrow>
   <div class="case-section__columns">
-    <h2 id={id} class="case-section__heading">{content?.heading ?? label}</h2>
-    <div class="case-section__reading">
+    <h2 id={id} class="case-section__heading" data-reveal="smoke">{content?.heading ?? label}</h2>
+    <div class="case-section__reading" data-reveal="fade">
       {
         content ? (
           content.paragraphs.map((p) => <p>{p}</p>)

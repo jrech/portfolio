@@ -20,7 +20,7 @@ const t = useT(Astro).case;
     {
       projects.length > 0 && (
         <Fragment>
-          <h2 id="more-title" class="more__title">{t.moreTitle}</h2>
+          <h2 id="more-title" class="more__title" data-reveal="smoke">{t.moreTitle}</h2>
           <div class:list={['more__grid', { 'more__grid--single': projects.length === 1 }]}>
             {projects.map((project) => <RelatedCard project={project} />)}
           </div>

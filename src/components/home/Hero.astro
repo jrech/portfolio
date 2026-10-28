@@ -18,13 +18,13 @@ const t = useT(Astro);
 
   <div class="hero__inner container">
     <div class="hero__message">
-      <h1 id="hero-title" class="hero__title">
+      <h1 id="hero-title" class="hero__title" data-reveal="smoke">
         {t.hero.title}
       </h1>
-      <p class="hero__intro">
+      <p class="hero__intro" data-reveal="fade">
         {t.hero.intro}
       </p>
-      <div class="hero__actions">
+      <div class="hero__actions" data-reveal="fade">
         <CtaButton href="#contact" label={t.cta.startProject} class="hero__cta" />
         <a class="hero__explore" href="#work">{t.hero.explore}</a>
       </div>
