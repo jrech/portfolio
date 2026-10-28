@@ -11,6 +11,8 @@ import About from '@/components/home/About.astro';
 import Process from '@/components/home/Process.astro';
 import Faq from '@/components/home/Faq.astro';
 import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import portrait from '@/assets/images/jonas-portrait.webp';
 
 // Approved for publication by the client (Jonas, 2026-10-28).
 const quote = (await getEntry('projects', 'pradelna-krkonose'))?.data.testimonial;
@@ -18,7 +20,16 @@ const quote = (await getEntry('projects', 'pradelna-krkonose'))?.data.testimonia
 
 <BaseLayout>
   <SiteHeader slot="header" overlay />
-  <Hero />
+  <Hero>
+    {/* Cover crop needs far more than the viewport width on mobile/tablet; the full file is only ~35 KB. */}
+    <Image
+      slot="media"
+      src={portrait}
+      alt=""
+      loading="eager"
+      fetchpriority="high"
+    />
+  </Hero>
   <SelectedWork />
   <Proposition />
   <Services />
