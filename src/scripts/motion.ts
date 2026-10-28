@@ -173,10 +173,10 @@ function revealFooter() {
       if (eyebrow.length) timeline.to(eyebrow, {
         opacity: 1, y: 0, duration: 0.55, ease: EASE, clearProps: 'transform,opacity',
       });
-      gsap.set(heading, { opacity: 1 });
       const split = SplitText.create(heading, {
         type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
       });
+      timeline.set(heading, { opacity: 1 });
       timeline.fromTo(split.lines,
         { yPercent: 104, opacity: 0, filter: 'blur(6px)' },
         { yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading,
