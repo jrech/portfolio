@@ -12,7 +12,7 @@
 ## Shared system
 - Soft ease: cubic-bezier(0.22, 1, 0.36, 1).
 - Content and rules: 900 ms, 20 px content lift, 85 ms stagger, batches capped at four.
-- Headings: 1050 ms masked line reveal, 85 ms stagger, no blur.
+- Headings: 1050 ms masked line reveal, 85 ms stagger, smoke blur resolving from 6 px to zero.
 - Heading splitting happens on entry and adapts to width changes until completion.
 - Statement follows the heading language with native scrolling.
 - One-pixel top rules draw left to right; border geometry is preserved.

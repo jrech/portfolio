@@ -29,11 +29,14 @@ function revealHeadings() {
         type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
         autoSplit: true,
         onSplit(self) {
-          return gsap.from(self.lines, {
-            yPercent: 104, opacity: 0, duration: MOTION.heading,
-            stagger: MOTION.stagger, ease: EASE,
-            onComplete: () => self.revert(),
-          });
+          return gsap.fromTo(self.lines,
+            { yPercent: 104, opacity: 0, filter: 'blur(6px)' },
+            {
+              yPercent: 0, opacity: 1, filter: 'blur(0px)',
+              duration: MOTION.heading, stagger: MOTION.stagger, ease: EASE,
+              onComplete: () => self.revert(),
+            },
+          );
         },
       });
     };
