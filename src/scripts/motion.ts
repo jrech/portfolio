@@ -23,6 +23,7 @@ const visible = (el: HTMLElement) => el.getClientRects().length > 0;
 // Split only at entry: off-screen headings keep natural wrapping until needed.
 function revealHeadings() {
   document.querySelectorAll<HTMLElement>('[data-reveal="heading"]').forEach((heading) => {
+    if (heading.closest('.faq') && matchMedia('(min-width: 1024px)').matches) return;
     const play = () => {
       gsap.set(heading, { opacity: 1 });
       SplitText.create(heading, {
@@ -75,7 +76,8 @@ function revealHero() {
 function revealContent() {
   const selector = '[data-reveal="fade"], .eyebrow, .footer__lead, .footer__bio, .footer__email, .footer__col, .footer__legal, .footer__invite .cta';
   const candidates = gsap.utils.toArray<HTMLElement>(selector).filter(el =>
-    !el.closest('.hero, #site-menu') && visible(el));
+    !el.closest('.hero, #site-menu') && visible(el) &&
+    !(matchMedia('(min-width: 1024px)').matches && el.matches('.step, .faq__item')));
   // Animate the owning block once; never stack parent and child translations.
   const items = candidates.filter(el => !candidates.some(parent => parent !== el && parent.contains(el)));
   gsap.set(items, { opacity: 0, y: MOTION.distance });
@@ -100,12 +102,53 @@ function revealRules() {
     rules.push(el);
   });
   gsap.set(rules, { '--rule-progress': 0 });
-  ScrollTrigger.batch(rules, {
+  ScrollTrigger.batch(rules.filter(el => !(el.matches('.faq__item') && matchMedia('(min-width: 1024px)').matches)), {
     start: 'top 90%', once: true, batchMax: 4, interval: 0.06,
     onEnter: batch => gsap.to(batch, {
       '--rule-progress': 1, duration: MOTION.duration,
       stagger: MOTION.stagger, ease: EASE,
     }),
+  });
+}
+
+
+function revealSequences() {
+  if (!matchMedia('(min-width: 1024px)').matches) return;
+  const steps = gsap.utils.toArray<HTMLElement>('.process__steps .step');
+  if (steps.length) {
+    gsap.set(steps, { opacity: 0, y: MOTION.distance });
+    gsap.to(steps, {
+      opacity: 1, y: 0, duration: MOTION.duration, stagger: 0.28,
+      ease: EASE, clearProps: 'transform,opacity',
+      scrollTrigger: { trigger: '.process__steps', start: 'top 80%', once: true },
+    });
+  }
+  const heading = document.querySelector<HTMLElement>('.faq [data-reveal="heading"]');
+  const questions = gsap.utils.toArray<HTMLElement>('.faq__item');
+  if (!heading || !questions.length) return;
+  gsap.set(heading, { opacity: 0 });
+  gsap.set(questions, { opacity: 0, y: MOTION.distance });
+  ScrollTrigger.create({
+    trigger: heading, start: 'top 82%', once: true,
+    onEnter: () => {
+      gsap.set(heading, { opacity: 1 });
+      const split = SplitText.create(heading, {
+        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
+      });
+      const timeline = gsap.timeline();
+      timeline.fromTo(split.lines,
+        { yPercent: 104, opacity: 0, filter: 'blur(6px)' },
+        { yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading,
+          stagger: MOTION.stagger, ease: EASE, onComplete: () => split.revert() },
+      );
+      timeline.to(questions, {
+        opacity: 1, y: 0, duration: MOTION.duration, stagger: 0.22,
+        ease: EASE, clearProps: 'transform,opacity',
+      }, '+=0.1');
+      timeline.to(questions.filter(el => el.classList.contains('motion-rule-top')), {
+        '--rule-progress': 1, duration: MOTION.duration, stagger: 0.22, ease: EASE,
+      }, '<0.22');
+    },
   });
 }
 
@@ -278,6 +321,7 @@ document.fonts.ready.then(() => {
     revealHero();
     revealContent();
     revealRules();
+    revealSequences();
     root.classList.add('motion-ready');
     cursor();
     magnet();
