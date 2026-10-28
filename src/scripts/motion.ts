@@ -19,25 +19,26 @@ const root = document.documentElement;
 
 const MOTION = { duration: 0.9, heading: 1.05, stagger: 0.085, distance: 20 };
 const visible = (el: HTMLElement) => el.getClientRects().length > 0;
+const passed = (el: HTMLElement) => el.getBoundingClientRect().bottom <= 0;
 
 // Split only at entry: off-screen headings keep natural wrapping until needed.
 function revealHeadings() {
   document.querySelectorAll<HTMLElement>('[data-reveal="heading"]').forEach((heading) => {
     if (heading.closest('.footer') || (heading.closest('.faq') && matchMedia('(min-width: 1024px)').matches)) return;
+    if (passed(heading)) return;
     const play = () => {
-      gsap.set(heading, { opacity: 1 });
-      SplitText.create(heading, {
+      // Hide the lines before showing their parent to avoid a one-frame flash.
+      const split = SplitText.create(heading, {
         type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
-        autoSplit: true,
-        onSplit(self) {
-          return gsap.fromTo(self.lines,
-            { yPercent: 104, opacity: 0, filter: 'blur(6px)' },
-            {
-              yPercent: 0, opacity: 1, filter: 'blur(0px)',
-              duration: MOTION.heading, stagger: MOTION.stagger, ease: EASE,
-              onComplete: () => self.revert(),
-            },
-          );
+      });
+      gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
+      gsap.set(heading, { opacity: 1 });
+      gsap.to(split.lines, {
+        yPercent: 0, opacity: 1, filter: 'blur(0px)',
+        duration: MOTION.heading, stagger: MOTION.stagger, ease: EASE,
+        onComplete: () => {
+          split.revert();
+          gsap.set(heading, { opacity: 1 });
         },
       });
     };
@@ -45,7 +46,6 @@ function revealHeadings() {
     else ScrollTrigger.create({ trigger: heading, start: 'top 88%', once: true, onEnter: play });
   });
 }
-
 
 function scrubStatement() {
   document.querySelectorAll<HTMLElement>('[data-reveal="scrub"]').forEach(text => {
@@ -79,7 +79,7 @@ function revealContent() {
     !el.closest('.hero, #site-menu, .footer') && visible(el) &&
     !(matchMedia('(min-width: 1024px)').matches && el.matches('.step, .faq__item')));
   // Animate the owning block once; never stack parent and child translations.
-  const items = candidates.filter(el => !candidates.some(parent => parent !== el && parent.contains(el)));
+  const items = candidates.filter(el => !passed(el) && !candidates.some(parent => parent !== el && parent.contains(el)));
   gsap.set(items, { opacity: 0, y: MOTION.distance });
   ScrollTrigger.batch(items, {
     start: 'top 88%', once: true, batchMax: 4, interval: 0.06,
@@ -93,7 +93,7 @@ function revealContent() {
 // Keep borders in layout; the pseudo element supplies only the visual stroke.
 function revealRules() {
   const rules: HTMLElement[] = [];
-  document.querySelectorAll<HTMLElement>('main section *, footer *').forEach(el => {
+  document.querySelectorAll<HTMLElement>('.service, .testimonial__attribution, .faq__item, .footer__nav, .footer__legal').forEach(el => {
     if (!visible(el) || el.matches('img, svg, path, button, a')) return;
     const style = getComputedStyle(el);
     if (parseFloat(style.borderTopWidth) !== 1 || style.borderTopStyle !== 'solid') return;
@@ -101,8 +101,9 @@ function revealRules() {
     el.classList.add('motion-rule-top');
     rules.push(el);
   });
-  gsap.set(rules, { '--rule-progress': 0 });
-  ScrollTrigger.batch(rules.filter(el => !(el.matches('.faq__item') && matchMedia('(min-width: 1024px)').matches)), {
+  const pending = rules.filter(el => !passed(el));
+  gsap.set(pending, { '--rule-progress': 0 });
+  ScrollTrigger.batch(pending.filter(el => !(el.matches('.faq__item') && matchMedia('(min-width: 1024px)').matches)), {
     start: 'top 90%', once: true, batchMax: 4, interval: 0.06,
     onEnter: batch => gsap.to(batch, {
       '--rule-progress': 1, duration: MOTION.duration,
@@ -115,7 +116,7 @@ function revealRules() {
 function revealSequences() {
   if (!matchMedia('(min-width: 1024px)').matches) return;
   const steps = gsap.utils.toArray<HTMLElement>('.process__steps .step');
-  if (steps.length) {
+  if (steps.length && !passed(steps[steps.length - 1])) {
     gsap.set(steps, { opacity: 0, y: MOTION.distance });
     gsap.to(steps, {
       opacity: 1, y: 0, duration: MOTION.duration, stagger: 0.28,
@@ -125,21 +126,24 @@ function revealSequences() {
   }
   const heading = document.querySelector<HTMLElement>('.faq [data-reveal="heading"]');
   const questions = gsap.utils.toArray<HTMLElement>('.faq__item');
-  if (!heading || !questions.length) return;
+  if (!heading || !questions.length || passed(heading)) return;
   gsap.set(heading, { opacity: 0 });
   gsap.set(questions, { opacity: 0, y: MOTION.distance });
   ScrollTrigger.create({
     trigger: heading, start: 'top 82%', once: true,
     onEnter: () => {
-      gsap.set(heading, { opacity: 1 });
       const split = SplitText.create(heading, {
         type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
       });
+      gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
       const timeline = gsap.timeline();
-      timeline.fromTo(split.lines,
-        { yPercent: 104, opacity: 0, filter: 'blur(6px)' },
+      timeline.set(heading, { opacity: 1 });
+      timeline.to(split.lines,
         { yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading,
-          stagger: MOTION.stagger, ease: EASE, onComplete: () => split.revert() },
+          stagger: MOTION.stagger, ease: EASE, onComplete: () => {
+            split.revert();
+            gsap.set(heading, { opacity: 1 });
+          } },
       );
       timeline.to(questions, {
         opacity: 1, y: 0, duration: MOTION.duration, stagger: 0.22,
@@ -167,10 +171,11 @@ function revealFooter() {
   const support = (centered ? [lead, action] : [action, lead])
     .filter((el): el is HTMLElement => !!el && visible(el));
 
-  gsap.set([...eyebrow, ...support], { opacity: 0, y: MOTION.distance });
-  gsap.set(heading, { opacity: 0 });
+  if (!passed(invite)) {
+    gsap.set([...eyebrow, ...support], { opacity: 0, y: MOTION.distance });
+    gsap.set(heading, { opacity: 0 });
 
-  ScrollTrigger.create({
+    ScrollTrigger.create({
     trigger: invite, start: 'top 82%', once: true,
     onEnter: () => {
       const split = SplitText.create(heading, {
@@ -197,7 +202,8 @@ function revealFooter() {
         clearProps: 'transform,opacity',
       }, '+=0.04'));
     },
-  });
+    });
+  }
 
   const groups: [string, string, number][] = [
     ['.footer__contact', '.footer__contact > *', 0.16],
@@ -206,7 +212,7 @@ function revealFooter() {
   ];
   groups.forEach(([containerSelector, itemSelector, stagger]) => {
     const container = footer.querySelector<HTMLElement>(containerSelector);
-    if (!container) return;
+    if (!container || passed(container)) return;
     const items = [...container.querySelectorAll<HTMLElement>(itemSelector)].filter(visible);
     if (!items.length) return;
     gsap.set(items, { opacity: 0, y: MOTION.distance });
@@ -380,7 +386,7 @@ function menu() {
 }
 
 
-document.fonts.ready.then(() => {
+function initializeMotion() {
   // The head timeout deliberately wins: never hide content again after a slow load.
   if (!root.classList.contains('js-motion')) return;
   try {
@@ -396,6 +402,7 @@ document.fonts.ready.then(() => {
     magnet();
     faq();
     menu();
+    ScrollTrigger.sort();
     ScrollTrigger.refresh();
   } catch (error) {
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
@@ -403,7 +410,9 @@ document.fonts.ready.then(() => {
     root.classList.remove('js-motion');
     console.warn('Motion disabled; content remains accessible.', error);
   }
-});
+}
+
+initializeMotion();
 
 matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', event => {
   if (!event.matches) return;

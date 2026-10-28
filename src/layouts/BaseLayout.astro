@@ -60,9 +60,10 @@ const xDefault = new URL(switchLocalePath(pathname, 'cs'), Astro.site).href;
     <slot name="footer" />
 
     <script>
-      // GSAP loads after first paint so it never delays the hero.
+      // Start as soon as the deferred Astro script runs; another frame of
+      // waiting can expose content before its reveal state is prepared.
       if (document.documentElement.classList.contains('js-motion')) {
-        requestAnimationFrame(() => setTimeout(() => import('@/scripts/motion'), 0));
+        import('@/scripts/motion');
       }
     </script>
 
