@@ -2,18 +2,20 @@
 import Eyebrow from '../ui/Eyebrow.astro';
 import ProjectCard from './ProjectCard.astro';
 import { getProjects } from '@/lib/projects';
+import { getLocale, useT } from '@/i18n';
 
-const projects = await getProjects();
+const t = useT(Astro);
+const projects = await getProjects(getLocale(Astro));
 ---
 
 <section id="work" class="work theme-deep" aria-labelledby="work-title">
   <div class="work__inner container">
     <header class="work__heading">
       <div class="work__title-group">
-        <Eyebrow index="[01]">A few things I’ve made</Eyebrow>
-        <h2 id="work-title" class="work__title">Good work. Real impact.</h2>
+        <Eyebrow index="[01]">{t.work.eyebrow}</Eyebrow>
+        <h2 id="work-title" class="work__title">{t.work.title}</h2>
       </div>
-      <p class="caption">2024 — 2026</p>
+      <p class="caption">{t.work.years}</p>
     </header>
 
     <div class="work__grid">

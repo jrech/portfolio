@@ -1,0 +1,198 @@
+{
+  "meta": {
+    "title": "Jonas Rech — Webdesign a vývoj webů na míru",
+    "description": "Navrhuji a stavím weby, které vaši firmu odliší od konkurence a přivedou vám víc poptávek."
+  },
+  "a11y": {
+    "skipLink": "Přeskočit na obsah",
+    "home": "Jonas Rech — úvod",
+    "openMenu": "Otevřít menu",
+    "closeMenu": "Zavřít menu",
+    "siteNavigation": "Navigace webu",
+    "mainNavigation": "Hlavní",
+    "footerNavigation": "Patička",
+    "breadcrumb": "Drobečková navigace",
+    "propositionLabel": "Proč na tom záleží",
+    "testimonialLabel": "Reference klienta",
+    "languageSwitch": "Jazyk"
+  },
+  "nav": {
+    "work": "Práce",
+    "services": "Služby",
+    "about": "O mně",
+    "process": "Jak pracuji",
+    "contact": "Kontakt",
+    "faq": "Časté dotazy"
+  },
+  "menu": {
+    "open": "MENU",
+    "close": "ZAVŘÍT",
+    "eyebrow": "ROZHLÉDNĚTE SE",
+    "emailEyebrow": "MÁTE V PLÁNU PROJEKT?"
+  },
+  "cta": {
+    "startProject": "Začít projekt"
+  },
+  "hero": {
+    "title": "Výrazné weby, které firmám přivádějí víc poptávek.",
+    "intro": "Navrhuji a stavím promyšlené weby, díky kterým vaše firma vynikne a získá důvěru zákazníků.",
+    "explore": "Prohlédnout práci ↓",
+    "location": "Sídlím v Česku / Pracuji kdekoli"
+  },
+  "work": {
+    "eyebrow": "Pár věcí, které jsem vytvořil",
+    "title": "Dobrá práce. Skutečný dopad.",
+    "years": "2024 — 2026"
+  },
+  "proposition": {
+    "text": "Dobrý web ukáže, čím jste jiní a proč si zákazníci mají vybrat právě vás."
+  },
+  "services": {
+    "eyebrow": "Co spolu můžeme postavit",
+    "title": "Všechno, co potřebujete.\nPod jednou střechou.",
+    "lead": "Strategie, design a vývoj.\nJeden jasný směr.",
+    "items": [
+      {
+        "name": "Značka a vizuální styl",
+        "description": "Jasná a výrazná identita, díky které si vaši firmu lidé zapamatují a ti správní hned poznají, čím se lišíte.",
+        "shortDescription": "Jasná identita, díky které vaše firma vynikne."
+      },
+      {
+        "name": "Webdesign a vývoj",
+        "description": "Promyšlený web postavený kolem vašich cílů a zákazníků, od struktury a designu po vývoj a spuštění.",
+        "shortDescription": "Promyšlené weby od prvního nápadu po spuštění."
+      },
+      {
+        "name": "Obsah a fotografie",
+        "description": "Vlastní fotografie a srozumitelné texty, které vaši firmu oživí, působí autenticky a budují důvěru.",
+        "shortDescription": "Vlastní slova a obrazy, které vyprávějí váš příběh."
+      },
+      {
+        "name": "Dlouhodobá podpora",
+        "description": "Aktualizace, vylepšení a praktická pomoc, aby web držel krok s růstem vaší firmy.",
+        "shortDescription": "Aktualizace a podpora, jak vaše firma roste."
+      }
+    ]
+  },
+  "about": {
+    "eyebrow": "Člověk za pixely",
+    "title": "Žádná agentura.\nČlověk na vaší straně.",
+    "photoLabel": "Jonas ve Wanace na Novém Zélandu",
+    "location": "WANAKA, NOVÝ ZÉLAND",
+    "hello": "Ahoj, jsem Jonas.",
+    "description": "S kým mluvíte, ten na webu i pracuje. Od prvního nápadu po poslední detail propojuji strategii, design a vývoj bez předávání mezi lidmi.",
+    "detail": "A když váš příběh potřebuje vlastní fotky, vezmu s sebou foťák.",
+    "linkPrimary": "Pojďme spolupracovat ↗",
+    "linkSecondary": "Víc o mně",
+    "signature": "JEDEN ČLOVĚK. SPOLEČNÝ SMĚR."
+  },
+  "process": {
+    "eyebrow": "Od prvního hovoru po spuštění",
+    "title": "Dobrá práce začíná\ndobrými otázkami.",
+    "text": "Nejdřív pochopit, pak navrhnout. Jeden člověk, který vás provede celou prací, a vy u každého kroku.",
+    "promise": "Žádné předávání. Žádné hádání.",
+    "steps": [
+      {
+        "title": "Začneme rozhovorem",
+        "description": "Probereme vaši firmu, zákazníky a co je potřeba změnit. Úvodní hovory jsou zdarma a nezávazné.",
+        "outcome": "Společné porozumění"
+      },
+      {
+        "title": "Najdeme správný směr",
+        "description": "Ještě před designem se shodneme na nabídce, rozsahu a vizuálním směru.",
+        "outcome": "Odsouhlasený plán"
+      },
+      {
+        "title": "Oživíme to",
+        "description": "Design, obsah a vývoj se propojí a vy průběžně dáváte zpětnou vazbu.",
+        "outcome": "Web dostává tvar"
+      },
+      {
+        "title": "Spustíme s jistotou",
+        "description": "Otestujeme, doladíme a spustíme. Pak se domluvíme, jakou podporu budete potřebovat dál.",
+        "outcome": "Připraveno do ostrého provozu"
+      }
+    ]
+  },
+  "faq": {
+    "eyebrow": "Možná vás zajímá",
+    "title": "Než\nzačneme.",
+    "note": "Ještě vám něco vrtá hlavou?\nProbereme to spolu.",
+    "items": [
+      {
+        "question": "Kolik projekt stojí?",
+        "answer": "Odvíjí se od toho, co potřebujete a jak velký projekt je. Většinou vše probereme ve dvou až třech hovorech a na konci vám zašlu cenovou nabídku s jasným rozsahem."
+      },
+      {
+        "question": "Jak dlouho tvorba webu trvá?",
+        "answer": "Záleží na velikosti projektu a na tom, jak připravený je obsah. Termíny a body pro zpětnou vazbu si domluvíme ještě před začátkem práce."
+      },
+      {
+        "question": "Můžeme spolupracovat jen na jedné službě?",
+        "answer": "Ano. Můžeme se zaměřit jen na značku, web nebo fotografie, případně vše propojit, pokud to vaše firma potřebuje."
+      },
+      {
+        "question": "Musím mít připravený všechen obsah?",
+        "answer": "Na začátek rozhovoru nemusíte mít nic hotového. Projdeme, co už máte, a rozhodneme, kde pomohou nové texty nebo vlastní fotky."
+      },
+      {
+        "question": "Co se děje po spuštění?",
+        "answer": "Předání webu i případnou další podporu domluvíme už v rámci projektu. Když se vaše firma změní, web spolu projdeme a naplánujeme další vylepšení."
+      }
+    ]
+  },
+  "footer": {
+    "eyebrow": "Vaše další kapitola",
+    "headline": "Máte něco v plánu?",
+    "lead": "Pojďme probrat vaši firmu a to, co ji čeká dál.",
+    "bio": "Nezávislý designér a vývojář z Česka. Propojuji strategii, design a vývoj s osobním přístupem, od prvního nápadu po spuštění.",
+    "explore": "PROCHÁZET",
+    "elsewhere": "JINDE",
+    "privacy": "Ochrana osobních údajů",
+    "backToTop": "Zpět nahoru ↑"
+  },
+  "case": {
+    "metaTitleSuffix": " — Jonas Rech",
+    "breadcrumbHome": "Úvod",
+    "breadcrumbWork": "Práce",
+    "challenge": "Výzva.",
+    "approach": "Přístup.",
+    "solution": "Řešení.",
+    "outcome": "Výsledek.",
+    "client": "KLIENT",
+    "industry": "OBOR",
+    "services": "SLUŽBY",
+    "statusYear": "STAV / ROK",
+    "statusInPreparation": "V přípravě",
+    "statusPublished": "Publikováno",
+    "toConfirm": "Upřesníme",
+    "defaultNotice": "CASE STUDY V PŘÍPRAVĚ · Detaily projektu ještě ladíme s klientem. Obsah a obrázky níže jsou zástupné.",
+    "contentToFollow": "OBSAH BRZY",
+    "contentPlaceholder": "Tuto část dopíšeme, jakmile s klientem potvrdíme detaily projektu.",
+    "heroVisualLabel": "zástupný úvodní vizuál",
+    "projectImageLabel": "zástupný obrázek projektu",
+    "visualMarker": "VIZUÁL /",
+    "visualPlaceholderLabel": "Místo pro vizuál",
+    "captionToFollow": "FINÁLNÍ UKÁZKA PROJEKTU BRZY",
+    "mobileView": "Mobilní\nzobrazení",
+    "fallbackVisuals": [
+      {
+        "title": "Ukázka projektu.",
+        "brief": "Zástupný obrázek, finální ukázka projektu brzy."
+      },
+      {
+        "title": "Desktop a mobil.",
+        "brief": "Zástupný obrázek, finální ukázka projektu brzy."
+      },
+      {
+        "title": "Detail.",
+        "brief": "Zástupný obrázek, finální ukázka projektu brzy."
+      }
+    ],
+    "moreTitle": "Další vybraná práce.",
+    "moreLabel": "Další práce",
+    "back": "← Zpět na všechny projekty",
+    "footerHeadline": "Váš projekt může být další.",
+    "footerLead": "Máte něco v plánu? Pojďme to probrat."
+  }
+}

@@ -5,7 +5,9 @@
  * Without it the frame stays a neutral surface.
  */
 import CtaButton from '../ui/CtaButton.astro';
-import { site } from '@/data/site';
+import { useT } from '@/i18n';
+
+const t = useT(Astro);
 ---
 
 <section class="hero" aria-labelledby="hero-title">
@@ -17,18 +19,18 @@ import { site } from '@/data/site';
   <div class="hero__inner container">
     <div class="hero__message">
       <h1 id="hero-title" class="hero__title">
-        Distinctive websites that help businesses win more enquiries.
+        {t.hero.title}
       </h1>
       <p class="hero__intro">
-        I design and build strategic websites that make your business stand out and earn trust.
+        {t.hero.intro}
       </p>
       <div class="hero__actions">
-        <CtaButton href="#contact" class="hero__cta" />
-        <a class="hero__explore" href="#work">Explore the work ↓</a>
+        <CtaButton href="#contact" label={t.cta.startProject} class="hero__cta" />
+        <a class="hero__explore" href="#work">{t.hero.explore}</a>
       </div>
     </div>
 
-    <p class="hero__baseline caption">{site.location.toUpperCase()}</p>
+    <p class="hero__baseline caption">{t.hero.location.toUpperCase()}</p>
   </div>
 </section>
 

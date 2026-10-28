@@ -7,6 +7,7 @@ import { Image } from 'astro:assets';
 import MediaFrame from '../ui/MediaFrame.astro';
 import Lines from '../ui/Lines.astro';
 import { formatServices, type ProjectEntry } from '@/lib/projects';
+import { getLocale, localePath, useT } from '@/i18n';
 
 interface Props {
   project: ProjectEntry;
@@ -15,24 +16,24 @@ interface Props {
 const { title, heroTitle, positioning, client, industry, services, year, status, notice, cover } =
   Astro.props.project.data;
 
-const statusLabel = status === 'published' ? 'Published' : 'In preparation';
+const t = useT(Astro).case;
+const locale = getLocale(Astro);
+const statusLabel = status === 'published' ? t.statusPublished : t.statusInPreparation;
 const metadata = [
-  { key: 'Client', value: client },
-  { key: 'Industry', value: industry },
-  { key: 'Services', value: formatServices(services) },
-  { key: 'Status / Year', value: `${statusLabel} / ${year ?? 'To confirm'}` },
+  { key: t.client, value: client },
+  { key: t.industry, value: industry ?? t.toConfirm },
+  { key: t.services, value: formatServices(services) },
+  { key: t.statusYear, value: `${statusLabel} / ${year ?? t.toConfirm}` },
 ];
 
-const defaultNotice =
-  'CASE STUDY IN PREPARATION · Project details are being confirmed with the client. Content and image slots below are placeholders.';
-const noticeText = status === 'in-preparation' ? (notice ?? defaultNotice) : notice;
+const noticeText = status === 'in-preparation' ? (notice ?? t.defaultNotice) : notice;
 ---
 
 <section class="case-hero container" aria-labelledby="case-title">
-  <nav class="case-hero__breadcrumb" aria-label="Breadcrumb">
+  <nav class="case-hero__breadcrumb" aria-label={useT(Astro).a11y.breadcrumb}>
     <ol role="list">
-      <li><a href="/">Home</a></li>
-      <li><a href="/#work">Work</a></li>
+      <li><a href={localePath(locale, '/')}>{t.breadcrumbHome}</a></li>
+      <li><a href={localePath(locale, '/#work')}>{t.breadcrumbWork}</a></li>
       <li aria-current="page">{title}</li>
     </ol>
   </nav>
@@ -44,14 +45,14 @@ const noticeText = status === 'in-preparation' ? (notice ?? defaultNotice) : not
     {
       metadata.map(({ key, value }) => (
         <div class="case-hero__meta-item">
-          <dt class="caption">{key.toUpperCase()}</dt>
+          <dt class="caption">{key}</dt>
           <dd>{value}</dd>
         </div>
       ))
     }
   </dl>
 
-  <MediaFrame class="case-hero__visual" label={`${title} — hero visual placeholder`}>
+  <MediaFrame class="case-hero__visual" label={`${title} — ${t.heroVisualLabel}`}>
     {cover && <Image src={cover.src} alt={cover.alt} widths={[800, 1440, 2640]} sizes="100vw" />}
   </MediaFrame>
 

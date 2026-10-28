@@ -26,11 +26,14 @@ src/
     case/      CaseHero, CaseSection, CaseDecisions, CaseVisual, RelatedWork, RelatedCard
   layouts/CaseStudyLayout.astro
   data/site.ts             nav items, email, socials
-  data/home.ts             homepage copy
-  content/projects/*.md    one file per project (schema in content.config.ts)
+  i18n/en.json, cs.json    every visitor-facing string; cs.json mirrors en.json key for key
+  i18n/index.ts            locale helpers, localePath(), Czech non-breaking-space typesetting
+  content/projects/<cs|en>/*.md  one file per project and language (schema in content.config.ts)
   lib/projects.ts          sorting, related projects, published check
-  pages/index.astro
-  pages/work/[slug].astro  case-study pages
+  components/pages/HomePage.astro  homepage body shared by both languages
+  pages/index.astro, pages/en/index.astro
+  pages/work/[slug].astro, pages/en/work/[slug].astro  case studies
+middleware.ts              Vercel Routing Middleware: first-visit geo redirect to /en/
 ```
 
 Design reference: `DESIGN_SYSTEM.md`, `portfo.pen`, `pen_exports/`.
@@ -40,3 +43,7 @@ Status: Phase 1 (foundation), Phase 2 (homepage) and Phase 3 (case-study templat
 ## Publishing a case study
 
 Case studies are built but hidden until their content is ready: `status: in-preparation` keeps the homepage card unlinked and the page `noindex`. Preview them directly at `/work/<slug>`. Fill in the Markdown file in `src/content/projects/`, then set `status: published`.
+
+## Languages
+
+Czech is the default at `/`, English lives under `/en/` (Astro i18n). Visitors outside CZ/SK are redirected to `/en/` by `middleware.ts` (Vercel only, header `x-vercel-ip-country`); bots are never redirected, and the EN / CZ switch stores the choice in a `lang` cookie that the redirect respects. Locally (`npm run dev`) there is no geo redirect; open `/en/` directly.

@@ -1,0 +1,54 @@
+---
+/**
+ * "EN / CZ" switch (menu + footer baseline). Links to the same page in the other
+ * language and stores the choice in a `lang` cookie, which the geo redirect
+ * (middleware.ts) respects on later visits.
+ */
+import { getLocale, localeMeta, switchLocalePath, useT, type Locale } from '@/i18n';
+
+interface Props {
+  class?: string;
+}
+
+const current = getLocale(Astro);
+const t = useT(Astro);
+const order: Locale[] = ['en', 'cs'];
+---
+
+<nav class:list={['lang-switch caption', Astro.props.class]} aria-label={t.a11y.languageSwitch}>
+  {
+    order.map((locale, i) => (
+      <Fragment>
+        {i > 0 && <span aria-hidden="true"> / </span>}
+        <a
+          href={switchLocalePath(Astro.url.pathname, locale)}
+          hreflang={localeMeta[locale].htmlLang}
+          lang={localeMeta[locale].htmlLang}
+          aria-current={locale === current ? 'true' : undefined}
+          data-set-lang={locale}
+        >
+          {localeMeta[locale].label}
+        </a>
+      </Fragment>
+    ))
+  }
+</nav>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>('[data-set-lang]').forEach((link) =>
+    link.addEventListener('click', () => {
+      document.cookie = `lang=${link.dataset.setLang}; path=/; max-age=31536000; samesite=lax`;
+    }),
+  );
+</script>
+
+<style>
+  .lang-switch a {
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .lang-switch a:hover,
+  .lang-switch a[aria-current='true'] {
+    color: var(--color-text-primary);
+  }
+</style>

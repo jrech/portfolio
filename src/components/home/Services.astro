@@ -1,16 +1,20 @@
 ---
 import Eyebrow from '../ui/Eyebrow.astro';
-import { services } from '@/data/home';
+import Lines from '../ui/Lines.astro';
+import { useT } from '@/i18n';
+
+const t = useT(Astro);
+const services = t.services.items;
 ---
 
 <section id="services" class="services theme-cream" aria-labelledby="services-title">
   <div class="services__inner container">
     <header class="services__intro">
       <div class="services__headline">
-        <Eyebrow index="[02]">What we can build together</Eyebrow>
-        <h2 id="services-title" class="services__title">Everything you need.<br />Under one roof.</h2>
+        <Eyebrow index="[02]">{t.services.eyebrow}</Eyebrow>
+        <h2 id="services-title" class="services__title"><Lines text={t.services.title} /></h2>
       </div>
-      <p class="services__lead">Strategy, design and development.<br />One clear direction.</p>
+      <p class="services__lead"><Lines text={t.services.lead} /></p>
     </header>
 
     <ol class="services__list" role="list">

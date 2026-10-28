@@ -5,27 +5,29 @@
  */
 import RelatedCard from './RelatedCard.astro';
 import type { ProjectEntry } from '@/lib/projects';
+import { getLocale, localePath, useT } from '@/i18n';
 
 interface Props {
   projects: ProjectEntry[];
 }
 
 const { projects } = Astro.props;
+const t = useT(Astro).case;
 ---
 
-<section class="more" aria-labelledby={projects.length ? 'more-title' : undefined} aria-label={projects.length ? undefined : 'More work'}>
+<section class="more" aria-labelledby={projects.length ? 'more-title' : undefined} aria-label={projects.length ? undefined : t.moreLabel}>
   <div class="more__inner container">
     {
       projects.length > 0 && (
         <Fragment>
-          <h2 id="more-title" class="more__title">More selected work.</h2>
+          <h2 id="more-title" class="more__title">{t.moreTitle}</h2>
           <div class:list={['more__grid', { 'more__grid--single': projects.length === 1 }]}>
             {projects.map((project) => <RelatedCard project={project} />)}
           </div>
         </Fragment>
       )
     }
-    <a class="more__back" href="/#work">← Back to all projects</a>
+    <a class="more__back" href={localePath(getLocale(Astro), '/#work')}>{t.back}</a>
   </div>
 </section>
 

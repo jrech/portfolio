@@ -4,10 +4,13 @@ interface Props {
   testimonial: { quote: string; name: string; company: string; lang: string };
 }
 
+import { useT } from '@/i18n';
+
 const { testimonial } = Astro.props;
+const t = useT(Astro);
 ---
 
-<section class="testimonial theme-deep" aria-label="Client testimonial">
+<section class="testimonial theme-deep" aria-label={t.a11y.testimonialLabel}>
   <div class="testimonial__inner container">
     <figure class="testimonial__content">
       <span class="testimonial__mark" aria-hidden="true">“</span>

@@ -288,7 +288,7 @@ Honor `prefers-reduced-motion`: no parallax, reveals, text-roll or autoplay prev
 
 ## Clarifications still needed
 
-1. EN / CZ: decided — Czech primary, English secondary, EN outside CZ by IP. Planned as its own phase.
+1. EN / CZ: implemented — Czech at `/`, English at `/en/`, geo redirect for visitors outside CZ/SK (`middleware.ts`), working EN / CZ switch, hreflang. Czech one-letter words are bound to the next word with a non-breaking space. Longer Czech copy wraps the Services title to three lines on desktop (two in Pen).
 2. Instagram URL: set to `instagram.com/jonasrech.design/` from Jonas's note; confirm the handle. LinkedIn confirmed.
 3. Privacy policy page (linked to `/privacy`, not built — 404).
 4. ~~mailto vs #contact~~ decided: every "Start a project" goes to `#contact`; mailto only on the plain email text. A short questionnaire + Cal.com comes later.

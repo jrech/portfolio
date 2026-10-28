@@ -6,6 +6,7 @@
 import MediaFrame from '../ui/MediaFrame.astro';
 import ArrowBadge from '../ui/ArrowBadge.astro';
 import { formatServices, isPublished, projectUrl, type ProjectEntry } from '@/lib/projects';
+import { getLocale } from '@/i18n';
 
 interface Props {
   project: ProjectEntry;
@@ -15,7 +16,7 @@ interface Props {
 
 const { project, featured = false } = Astro.props;
 const { title, cardTitle, description, services, descriptionWidth } = project.data;
-const href = isPublished(project) ? projectUrl(project) : undefined;
+const href = isPublished(project) ? projectUrl(project, getLocale(Astro)) : undefined;
 const disciplines = formatServices(services);
 ---
 

@@ -4,6 +4,7 @@
  * Orange pill, dark label, pale circle with arrow-up-right.
  */
 import Icon from './Icon.astro';
+import { useT } from '@/i18n';
 
 interface Props {
   href: string;
@@ -13,7 +14,7 @@ interface Props {
   class?: string;
 }
 
-const { href, label = 'Start a project', block = false, class: className } = Astro.props;
+const { href, label = useT(Astro).cta.startProject, block = false, class: className } = Astro.props;
 ---
 
 <a class:list={['cta', { 'cta--block': block }, className]} href={href}>

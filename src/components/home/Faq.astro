@@ -5,15 +5,19 @@
  */
 import Eyebrow from '../ui/Eyebrow.astro';
 import Icon from '../ui/Icon.astro';
-import { faqs } from '@/data/home';
+import Lines from '../ui/Lines.astro';
+import { useT } from '@/i18n';
+
+const t = useT(Astro);
+const faqs = t.faq.items;
 ---
 
 <section id="faq" class="faq" aria-labelledby="faq-title">
   <div class="faq__inner container">
     <header class="faq__intro">
-      <Eyebrow index="[05]">You might be wondering</Eyebrow>
-      <h2 id="faq-title" class="faq__title">Before we<br />get started.</h2>
-      <p class="faq__note">Still wondering about something?<br />Let’s talk it through.</p>
+      <Eyebrow index="[05]">{t.faq.eyebrow}</Eyebrow>
+      <h2 id="faq-title" class="faq__title"><Lines text={t.faq.title} /></h2>
+      <p class="faq__note"><Lines text={t.faq.note} /></p>
     </header>
 
     <div class="faq__list">

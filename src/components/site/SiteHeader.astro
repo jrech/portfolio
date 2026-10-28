@@ -1,6 +1,7 @@
 ---
 import Wordmark from '../ui/Wordmark.astro';
 import MenuOverlay from './MenuOverlay.astro';
+import { useT } from '@/i18n';
 
 interface Props {
   /** Sit on top of the hero (homepage) instead of taking space in the flow (case studies). */
@@ -10,6 +11,7 @@ interface Props {
 }
 
 const { overlay = false, current } = Astro.props;
+const t = useT(Astro);
 ---
 
 <header class:list={['site-header', { 'site-header--overlay': overlay }]}>
@@ -23,9 +25,9 @@ const { overlay = false, current } = Astro.props;
       aria-controls="site-menu"
       data-menu-open
     >
-      <span class="menu-toggle__label caption" aria-hidden="true">MENU</span>
+      <span class="menu-toggle__label caption" aria-hidden="true">{t.menu.open}</span>
       <span class="menu-toggle__icon" aria-hidden="true"><span></span><span></span></span>
-      <span class="visually-hidden">Open menu</span>
+      <span class="visually-hidden">{t.a11y.openMenu}</span>
     </button>
   </div>
 </header>

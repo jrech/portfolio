@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import MediaFrame from '../ui/MediaFrame.astro';
 import ArrowBadge from '../ui/ArrowBadge.astro';
 import { formatServices, projectUrl, type ProjectEntry } from '@/lib/projects';
+import { getLocale, useT } from '@/i18n';
 
 interface Props {
   project: ProjectEntry;
@@ -14,13 +15,13 @@ const { title, cardTitle, services, cover } = project.data;
 ---
 
 <article class="related">
-  <MediaFrame class="related__media" label={`${title} — project image placeholder`}>
+  <MediaFrame class="related__media" label={`${title} — ${useT(Astro).case.projectImageLabel}`}>
     {cover && <Image src={cover.src} alt={cover.alt} widths={[640, 1320]} sizes="(min-width: 1024px) 50vw, 100vw" />}
   </MediaFrame>
   <div class="related__details">
     <div class="related__text">
       <h3 class="related__title">
-        <a class="related__link" href={projectUrl(project)}>{cardTitle ?? title}</a>
+        <a class="related__link" href={projectUrl(project, getLocale(Astro))}>{cardTitle ?? title}</a>
       </h3>
       <p class="related__disciplines">{formatServices(services)}</p>
     </div>

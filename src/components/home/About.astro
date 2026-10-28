@@ -3,41 +3,45 @@ import Eyebrow from '../ui/Eyebrow.astro';
 import CtaButton from '../ui/CtaButton.astro';
 import Icon from '../ui/Icon.astro';
 import MediaFrame from '../ui/MediaFrame.astro';
+import Lines from '../ui/Lines.astro';
+import { getLocale, localePath, useT } from '@/i18n';
+
+const t = useT(Astro);
+const locale = getLocale(Astro);
 ---
 
 <section id="about" class="about" aria-labelledby="about-title">
   <div class="about__inner container">
     <header class="about__heading">
-      <Eyebrow index="[03]">The person behind the pixels</Eyebrow>
-      <h2 id="about-title" class="about__title">Not an agency.<br />A person in your corner.</h2>
+      <Eyebrow index="[03]">{t.about.eyebrow}</Eyebrow>
+      <h2 id="about-title" class="about__title"><Lines text={t.about.title} /></h2>
     </header>
 
     <div class="about__story">
       <div class="about__portrait">
-        <MediaFrame class="about__media" label="Jonas in Wanaka, New Zealand">
+        <MediaFrame class="about__media" label={t.about.photoLabel}>
           <slot name="media" />
         </MediaFrame>
-        <p class="about__location caption">WANAKA, NEW ZEALAND</p>
+        <p class="about__location caption">{t.about.location}</p>
       </div>
 
       <div class="about__intro">
-        <h3 class="about__hello">Hi, I’m Jonas.</h3>
+        <h3 class="about__hello">{t.about.hello}</h3>
         <p class="about__description">
-          The person you talk to is the person doing the work. From the first idea to the final
-          detail, I connect strategy, design and development without the handoffs.
+          {t.about.description}
         </p>
         <p class="about__detail">
-          And when your story needs original photography, I bring my camera along.
+          {t.about.detail}
         </p>
 
         <!-- Desktop frame: CTA button. Tablet/mobile frames: text links + signature. -->
-        <CtaButton href="#contact" class="about__cta" />
+        <CtaButton href="#contact" label={t.cta.startProject} class="about__cta" />
         <div class="about__links">
-          <a class="about__link-primary" href="#contact">Let’s work together ↗</a>
-          <a class="about__link-secondary" href="/about">More about me</a>
+          <a class="about__link-primary" href="#contact">{t.about.linkPrimary}</a>
+          <a class="about__link-secondary" href={localePath(locale, '/about')}>{t.about.linkSecondary}</a>
           <p class="about__signature">
             <Icon name="arrow-up-right" size={20} />
-            <span class="caption">ONE PERSON. A SHARED DIRECTION.</span>
+            <span class="caption">{t.about.signature}</span>
           </p>
         </div>
       </div>

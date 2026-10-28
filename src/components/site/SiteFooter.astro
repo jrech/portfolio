@@ -9,7 +9,12 @@
 import CtaButton from '../ui/CtaButton.astro';
 import Eyebrow from '../ui/Eyebrow.astro';
 import Icon from '../ui/Icon.astro';
+import LangSwitch from '../ui/LangSwitch.astro';
 import { footerNav, site, socials } from '@/data/site';
+import { getLocale, localePath, useT } from '@/i18n';
+
+const t = useT(Astro);
+const locale = getLocale(Astro);
 
 interface Props {
   variant?: 'centered' | 'split';
@@ -22,13 +27,12 @@ interface Props {
 const {
   variant = 'centered',
   index = '[06]',
-  eyebrow = 'Your next chapter',
-  headline = 'Have something in mind?',
-  lead = 'Let’s talk about your business and what comes next.',
+  eyebrow = t.footer.eyebrow,
+  headline = t.footer.headline,
+  lead = t.footer.lead,
 } = Astro.props;
 
-const bio =
-  'Independent designer and developer based in the Czech Republic. I bring strategy, design and development together — with a personal approach, from first idea to launch.';
+const bio = t.footer.bio;
 ---
 
 <footer id="contact" class:list={['footer', `footer--${variant}`]}>
@@ -38,7 +42,7 @@ const bio =
       <Eyebrow accent class="footer__eyebrow footer__eyebrow--accent">{eyebrow.toUpperCase()}</Eyebrow>
       <div class="footer__invite-main">
         <h2 id="footer-title" class="footer__title">{headline}</h2>
-        <CtaButton href="#contact" />
+        <CtaButton href="#contact" label={t.cta.startProject} />
       </div>
       {lead && <p class="footer__lead">{lead}</p>}
     </section>
@@ -48,12 +52,12 @@ const bio =
       <a class="footer__email" href={`mailto:${site.email}`}>{site.email}</a>
     </div>
 
-    <nav class="footer__nav" aria-label="Footer">
+    <nav class="footer__nav" aria-label={t.a11y.footerNavigation}>
       <div class="footer__col">
-        <p class="footer__col-label caption" id="footer-explore">EXPLORE</p>
+        <p class="footer__col-label caption" id="footer-explore">{t.footer.explore}</p>
         <ul class="footer__links" role="list" aria-labelledby="footer-explore">
           {
-            footerNav.map((item) => (
+            footerNav(t, locale).map((item) => (
               <li>
                 <a class="footer__link" href={item.href}>{item.label}</a>
               </li>
@@ -62,7 +66,7 @@ const bio =
         </ul>
       </div>
       <div class="footer__col">
-        <p class="footer__col-label caption" id="footer-elsewhere">ELSEWHERE</p>
+        <p class="footer__col-label caption" id="footer-elsewhere">{t.footer.elsewhere}</p>
         <ul class="footer__links footer__links--social" role="list" aria-labelledby="footer-elsewhere">
           {
             socials.map((s) => (
@@ -80,9 +84,9 @@ const bio =
 
     <div class="footer__legal">
       <p class="caption">© {site.year} JONAS RECH</p>
-      <a class="footer__small" href="/privacy">Privacy policy</a>
-      <p class="caption footer__lang" lang="en">EN / CZ</p>
-      <a class="footer__small footer__top" href="#top">Back to top ↑</a>
+      <a class="footer__small" href={localePath(locale, '/privacy')}>{t.footer.privacy}</a>
+      <LangSwitch class="footer__lang" />
+      <a class="footer__small footer__top" href="#top">{t.footer.backToTop}</a>
     </div>
   </div>
 </footer>

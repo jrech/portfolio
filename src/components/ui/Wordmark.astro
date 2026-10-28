@@ -1,14 +1,16 @@
 ---
 import { site } from '@/data/site';
+import { getLocale, localePath, useT } from '@/i18n';
 
 interface Props {
   href?: string;
 }
 
-const { href = '/' } = Astro.props;
+const t = useT(Astro);
+const { href = localePath(getLocale(Astro), '/') } = Astro.props;
 ---
 
-<a class="wordmark" href={href} aria-label={`${site.name} — home`}>
+<a class="wordmark" href={href} aria-label={t.a11y.home}>
   {site.wordmark}<span class="wordmark__reg" aria-hidden="true">®</span>
 </a>
 

@@ -1,0 +1,198 @@
+{
+  "meta": {
+    "title": "Jonas Rech — Web designer for small businesses",
+    "description": "Websites for small businesses that stand out, earn trust and bring in more enquiries. Strategy, design and development from one person."
+  },
+  "a11y": {
+    "skipLink": "Skip to content",
+    "home": "Jonas Rech — home",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "siteNavigation": "Site navigation",
+    "mainNavigation": "Main",
+    "footerNavigation": "Footer",
+    "breadcrumb": "Breadcrumb",
+    "propositionLabel": "Why it matters",
+    "testimonialLabel": "Client testimonial",
+    "languageSwitch": "Language"
+  },
+  "nav": {
+    "work": "Work",
+    "services": "Services",
+    "about": "About",
+    "process": "Process",
+    "contact": "Contact",
+    "faq": "FAQ"
+  },
+  "menu": {
+    "open": "MENU",
+    "close": "CLOSE",
+    "eyebrow": "TAKE A LOOK AROUND",
+    "emailEyebrow": "HAVE A PROJECT IN MIND?"
+  },
+  "cta": {
+    "startProject": "Start a project"
+  },
+  "hero": {
+    "title": "Distinctive websites that help businesses win more enquiries.",
+    "intro": "I design and build strategic websites that make your business stand out and earn trust.",
+    "explore": "Explore the work ↓",
+    "location": "Based in Czech Republic / Working everywhere"
+  },
+  "work": {
+    "eyebrow": "A few things I’ve made",
+    "title": "Good work. Real impact.",
+    "years": "2024 — 2026"
+  },
+  "proposition": {
+    "text": "A good website shows what makes you different and why customers should choose you."
+  },
+  "services": {
+    "eyebrow": "What we can build together",
+    "title": "Everything you need.\nUnder one roof.",
+    "lead": "Strategy, design and development.\nOne clear direction.",
+    "items": [
+      {
+        "name": "Brand & visual direction",
+        "description": "A clear, distinctive identity that makes your business memorable and helps the right people see what sets you apart.",
+        "shortDescription": "A clear identity that makes your business stand out."
+      },
+      {
+        "name": "Web design & development",
+        "description": "A thoughtful website shaped around your goals and customers — from structure and design through development and launch.",
+        "shortDescription": "Thoughtful websites, from first idea to launch."
+      },
+      {
+        "name": "Content & photography",
+        "description": "Original photography and clear content that bring your business to life, feel authentic and build trust.",
+        "shortDescription": "Original words and images that tell your story."
+      },
+      {
+        "name": "Ongoing support",
+        "description": "Updates, improvements and practical support to keep your website useful as your business grows.",
+        "shortDescription": "Updates and support as your business grows."
+      }
+    ]
+  },
+  "about": {
+    "eyebrow": "The person behind the pixels",
+    "title": "Not an agency.\nA person in your corner.",
+    "photoLabel": "Jonas in Wanaka, New Zealand",
+    "location": "WANAKA, NEW ZEALAND",
+    "hello": "Hi, I’m Jonas.",
+    "description": "The person you talk to is the person doing the work. From the first idea to the final detail, I connect strategy, design and development without the handoffs.",
+    "detail": "And when your story needs original photography, I bring my camera along.",
+    "linkPrimary": "Let’s work together ↗",
+    "linkSecondary": "More about me",
+    "signature": "ONE PERSON. A SHARED DIRECTION."
+  },
+  "process": {
+    "eyebrow": "From hello to launch",
+    "title": "Good work starts\nwith good questions.",
+    "text": "Understand first. Design second. One person to guide the work, with you involved at every step.",
+    "promise": "No handoffs. No guesswork.",
+    "steps": [
+      {
+        "title": "Start with a conversation",
+        "description": "We talk about your business, your customers and what needs to change. The first calls are free and with no obligation.",
+        "outcome": "A shared understanding"
+      },
+      {
+        "title": "Find the right direction",
+        "description": "We agree on the offer, scope and visual direction before design begins.",
+        "outcome": "An agreed plan"
+      },
+      {
+        "title": "Bring it to life",
+        "description": "Design, content and development come together, with your feedback along the way.",
+        "outcome": "A website taking shape"
+      },
+      {
+        "title": "Launch with confidence",
+        "description": "We test, refine and launch — then agree on the support you need next.",
+        "outcome": "Ready for the real world"
+      }
+    ]
+  },
+  "faq": {
+    "eyebrow": "You might be wondering",
+    "title": "Before we\nget started.",
+    "note": "Still wondering about something?\nLet’s talk it through.",
+    "items": [
+      {
+        "question": "How much does a project cost?",
+        "answer": "It depends on what you need and how big the project is. We usually talk it through over two or three calls, and at the end I’ll send you a quote with a clear scope."
+      },
+      {
+        "question": "How long does a website take?",
+        "answer": "The timeline depends on the size of the project and how ready the content is. We agree on milestones and feedback points before work begins."
+      },
+      {
+        "question": "Can we work together on just one service?",
+        "answer": "Yes. We can focus on your brand, website or photography — or bring them together if that’s what your business needs."
+      },
+      {
+        "question": "Do I need to prepare all the content?",
+        "answer": "You don’t need everything ready to start a conversation. We’ll look at what you already have and decide where copy or original photography would help."
+      },
+      {
+        "question": "What happens after launch?",
+        "answer": "We agree on a handover and any ongoing support as part of the project. If your business changes, we can revisit the website and plan the next improvements."
+      }
+    ]
+  },
+  "footer": {
+    "eyebrow": "Your next chapter",
+    "headline": "Have something in mind?",
+    "lead": "Let’s talk about your business and what comes next.",
+    "bio": "Independent designer and developer based in the Czech Republic. I bring strategy, design and development together — with a personal approach, from first idea to launch.",
+    "explore": "EXPLORE",
+    "elsewhere": "ELSEWHERE",
+    "privacy": "Privacy policy",
+    "backToTop": "Back to top ↑"
+  },
+  "case": {
+    "metaTitleSuffix": " — Jonas Rech",
+    "breadcrumbHome": "Home",
+    "breadcrumbWork": "Work",
+    "challenge": "The challenge.",
+    "approach": "The approach.",
+    "solution": "The solution.",
+    "outcome": "The outcome.",
+    "client": "CLIENT",
+    "industry": "INDUSTRY",
+    "services": "SERVICES",
+    "statusYear": "STATUS / YEAR",
+    "statusInPreparation": "In preparation",
+    "statusPublished": "Published",
+    "toConfirm": "To confirm",
+    "defaultNotice": "CASE STUDY IN PREPARATION · Project details are being confirmed with the client. Content and image slots below are placeholders.",
+    "contentToFollow": "CONTENT TO FOLLOW",
+    "contentPlaceholder": "This section will be written once the project details are confirmed with the client.",
+    "heroVisualLabel": "hero visual placeholder",
+    "projectImageLabel": "project image placeholder",
+    "visualMarker": "VISUAL /",
+    "visualPlaceholderLabel": "Placeholder for visual",
+    "captionToFollow": "FINAL PROJECT CAPTURE TO FOLLOW",
+    "mobileView": "Mobile\nview",
+    "fallbackVisuals": [
+      {
+        "title": "Project capture.",
+        "brief": "Placeholder — final project capture to follow."
+      },
+      {
+        "title": "Desktop and mobile.",
+        "brief": "Placeholder — final project capture to follow."
+      },
+      {
+        "title": "Detail.",
+        "brief": "Placeholder — final project capture to follow."
+      }
+    ],
+    "moreTitle": "More selected work.",
+    "moreLabel": "More work",
+    "back": "← Back to all projects",
+    "footerHeadline": "Your project could be next.",
+    "footerLead": "Have something in mind? Let’s talk."
+  }
+}

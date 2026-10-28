@@ -6,6 +6,7 @@
  * Without `content` it renders a clearly marked "content to follow" placeholder.
  */
 import Eyebrow from '../ui/Eyebrow.astro';
+import { useT } from '@/i18n';
 
 interface Props {
   index: string;
@@ -13,10 +14,13 @@ interface Props {
   content?: { heading?: string; paragraphs: string[] };
   /** Outcome: no bottom padding on mobile, equal padding on desktop. */
   last?: boolean;
+  /** Stable id for aria-labelledby (labels are translated). */
+  id: string;
 }
 
 const { index, label, content, last = false } = Astro.props;
-const id = `case-${label.toLowerCase().replace(/[^a-z]+/g, '-').replace(/-$/, '')}`;
+const id = `case-${Astro.props.id}`;
+const t = useT(Astro).case;
 ---
 
 <section class:list={['case-section container', { 'case-section--last': last }]} aria-labelledby={id}>
@@ -29,8 +33,8 @@ const id = `case-${label.toLowerCase().replace(/[^a-z]+/g, '-').replace(/-$/, ''
           content.paragraphs.map((p) => <p>{p}</p>)
         ) : (
           <Fragment>
-            <p class="caption caption--accent">CONTENT TO FOLLOW</p>
-            <p>This section will be written once the project details are confirmed with the client.</p>
+            <p class="caption caption--accent">{t.contentToFollow}</p>
+            <p>{t.contentPlaceholder}</p>
           </Fragment>
         )
       }

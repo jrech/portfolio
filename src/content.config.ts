@@ -1,10 +1,11 @@
-import { defineCollection, reference } from 'astro:content';
+import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 /**
- * Projects: one Markdown file per project in src/content/projects/.
- * The file name is the URL slug (/work/<slug>) and the id used by `related`.
+ * Projects: one Markdown file per project and locale in src/content/projects/<cs|en>/.
+ * The file name is the URL slug (/work/<slug>, /en/work/<slug>) and the value used by `related`.
+ * A project missing in cs/ falls back to its en/ file.
  *
  * Copy only goes in here once it is verified or clearly marked as draft.
  * Never add metrics, results or quotes the client has not confirmed.
@@ -31,7 +32,8 @@ const projects = defineCollection({
       /** Case-study h1; `\n` forces the approved line break. Defaults to `title`. */
       heroTitle: z.string().optional(),
       client: z.string(),
-      industry: z.string().default('To confirm'),
+      /** Omitted = "To confirm" in the page language. */
+      industry: z.string().optional(),
       services: z.array(z.string()).min(1),
       /** Year as shown in the metadata row; omitted = "To confirm". */
       year: z.union([z.number(), z.string()]).optional(),
@@ -89,7 +91,7 @@ const projects = defineCollection({
         .optional(),
 
       /** Hand-picked related projects; falls back to the next projects by order. */
-      related: z.array(reference('projects')).max(2).optional(),
+      related: z.array(z.string()).max(2).optional(),
     }),
 });
 

@@ -1,24 +1,27 @@
 ---
 import Eyebrow from '../ui/Eyebrow.astro';
 import Icon from '../ui/Icon.astro';
-import { steps } from '@/data/home';
+import Lines from '../ui/Lines.astro';
+import { useT } from '@/i18n';
+
+const t = useT(Astro);
+const steps = t.process.steps;
 ---
 
 <section id="process" class="process theme-cream" aria-labelledby="process-title">
   <div class="process__inner container">
     <header class="process__intro">
       <div class="process__heading">
-        <Eyebrow index="[04]">From hello to launch</Eyebrow>
-        <h2 id="process-title" class="process__title">Good work starts<br />with good questions.</h2>
+        <Eyebrow index="[04]">{t.process.eyebrow}</Eyebrow>
+        <h2 id="process-title" class="process__title"><Lines text={t.process.title} /></h2>
       </div>
       <div class="process__summary">
         <p class="process__text">
-          Understand first. Design second. One person to guide the work, with you involved at every
-          step.
+          {t.process.text}
         </p>
         <p class="process__promise">
           <Icon name="messages-square" size={20} />
-          No handoffs. No guesswork.
+          {t.process.promise}
         </p>
       </div>
     </header>

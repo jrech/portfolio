@@ -3,8 +3,8 @@ import CaseStudyLayout from '@/layouts/CaseStudyLayout.astro';
 import { getProjects } from '@/lib/projects';
 
 export async function getStaticPaths() {
-  const projects = await getProjects();
-  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+  const projects = await getProjects('cs');
+  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
 }
 
 const { project } = Astro.props;

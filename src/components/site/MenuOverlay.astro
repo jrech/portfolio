@@ -5,30 +5,34 @@
  */
 import Wordmark from '../ui/Wordmark.astro';
 import Icon from '../ui/Icon.astro';
+import LangSwitch from '../ui/LangSwitch.astro';
 import { menuNav, site, socials } from '@/data/site';
+import { getLocale, useT } from '@/i18n';
 
 interface Props {
   current?: string;
 }
 
 const { current } = Astro.props;
+const t = useT(Astro);
+const nav = menuNav(t, getLocale(Astro));
 ---
 
-<dialog id="site-menu" class="menu" aria-label="Site navigation">
+<dialog id="site-menu" class="menu" aria-label={t.a11y.siteNavigation}>
   <div class="menu__header container">
     <Wordmark />
     <button class="menu__close" type="button" data-menu-close autofocus>
-      <span class="menu__close-label caption" aria-hidden="true">CLOSE</span>
+      <span class="menu__close-label caption" aria-hidden="true">{t.menu.close}</span>
       <span class="menu__close-icon"><Icon name="x" size={26} /></span>
-      <span class="visually-hidden">Close menu</span>
+      <span class="visually-hidden">{t.a11y.closeMenu}</span>
     </button>
   </div>
 
-  <nav class="menu__body container" aria-label="Main">
-    <p class="caption">TAKE A LOOK AROUND</p>
+  <nav class="menu__body container" aria-label={t.a11y.mainNavigation}>
+    <p class="caption">{t.menu.eyebrow}</p>
     <ol class="menu__links" role="list">
       {
-        menuNav.map((item, i) => (
+        nav.map((item, i) => (
           <li>
             <a
               class="menu__link"
@@ -51,7 +55,7 @@ const { current } = Astro.props;
   <div class="menu__baseline">
     <div class="menu__baseline-inner container">
       <div class="menu__email">
-        <p class="caption">HAVE A PROJECT IN MIND?</p>
+        <p class="caption">{t.menu.emailEyebrow}</p>
         <a class="menu__email-link" href={`mailto:${site.email}`}>{site.email}</a>
       </div>
       <div class="menu__meta">
@@ -67,7 +71,7 @@ const { current } = Astro.props;
             ))
           }
         </ul>
-        <p class="caption" lang="en">EN / CZ</p>
+        <LangSwitch />
       </div>
     </div>
   </div>

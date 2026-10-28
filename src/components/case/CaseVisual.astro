@@ -10,6 +10,7 @@ import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Icon from '../ui/Icon.astro';
 import Lines from '../ui/Lines.astro';
+import { useT } from '@/i18n';
 
 interface Props {
   index: number;
@@ -20,10 +21,11 @@ interface Props {
   image?: { src: ImageMetadata; alt: string };
 }
 
-const { index, variant, title, brief, mobileLabel = 'Mobile\nview', image } = Astro.props;
+const t = useT(Astro).case;
+const { index, variant, title, brief, mobileLabel = t.mobileView, image } = Astro.props;
 const number = String(index).padStart(2, '0');
 const flatTitle = title.replace(/\n/g, ' ').toUpperCase();
-const caption = image ? `/ ${flatTitle}` : `/ ${flatTitle} — FINAL PROJECT CAPTURE TO FOLLOW`;
+const caption = image ? `/ ${flatTitle}` : `/ ${flatTitle} — ${t.captionToFollow}`;
 const isResponsive = variant === 'responsive';
 ---
 
@@ -34,16 +36,16 @@ const isResponsive = variant === 'responsive';
         <Image class="visual__image" src={image.src} alt={image.alt} widths={[800, 1440, 2640]} sizes="100vw" />
       </div>
     ) : (
-      <div class="visual__frame" role="img" aria-label={`Placeholder for visual ${number}: ${title.replace(/\n/g, ' ')}`}>
+      <div class="visual__frame" role="img" aria-label={`${t.visualPlaceholderLabel} ${number}: ${title.replace(/\n/g, ' ')}`}>
         {!isResponsive && (
           <p class="visual__marker caption">
-            VISUAL /<span class="caption--accent">{number}</span>
+            {t.visualMarker}<span class="caption--accent">{number}</span>
           </p>
         )}
         <div class="visual__brief">
           {isResponsive && (
             <p class="visual__marker caption">
-              VISUAL /<span class="caption--accent">{number}</span>
+              {t.visualMarker}<span class="caption--accent">{number}</span>
             </p>
           )}
           <p class="visual__title">

@@ -1,3 +1,5 @@
+import { localePath, type Dict, type Locale } from '@/i18n';
+
 export interface NavItem {
   label: string;
   href: string;
@@ -7,26 +9,25 @@ export const site = {
   name: 'Jonas Rech',
   wordmark: 'JONAS RECH',
   email: 'hello@jonasrech.com',
-  location: 'Based in Czech Republic / Working everywhere',
   year: 2026,
 };
 
 /** Fullscreen menu, numbered 01–05 in the approved frames. */
-export const menuNav: NavItem[] = [
-  { label: 'Work', href: '/#work' },
-  { label: 'Services', href: '/#services' },
-  { label: 'About', href: '/#about' },
-  { label: 'Process', href: '/#process' },
-  { label: 'Contact', href: '#contact' },
+export const menuNav = (t: Dict, locale: Locale): NavItem[] => [
+  { label: t.nav.work, href: localePath(locale, '/#work') },
+  { label: t.nav.services, href: localePath(locale, '/#services') },
+  { label: t.nav.about, href: localePath(locale, '/#about') },
+  { label: t.nav.process, href: localePath(locale, '/#process') },
+  { label: t.nav.contact, href: '#contact' },
 ];
 
 /** Footer "Explore" list. */
-export const footerNav: NavItem[] = [
-  { label: 'Work', href: '/#work' },
-  { label: 'Services', href: '/#services' },
-  { label: 'About', href: '/#about' },
-  { label: 'Process', href: '/#process' },
-  { label: 'FAQ', href: '/#faq' },
+export const footerNav = (t: Dict, locale: Locale): NavItem[] => [
+  { label: t.nav.work, href: localePath(locale, '/#work') },
+  { label: t.nav.services, href: localePath(locale, '/#services') },
+  { label: t.nav.about, href: localePath(locale, '/#about') },
+  { label: t.nav.process, href: localePath(locale, '/#process') },
+  { label: t.nav.faq, href: localePath(locale, '/#faq') },
 ];
 
 // From Jonas (2026-10-28). Instagram handle "jonasrech.design" still to be confirmed.
