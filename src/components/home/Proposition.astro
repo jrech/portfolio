@@ -1,5 +1,8 @@
 ---
-/** "A clear reason to choose you" — single editorial statement. */
+/**
+ * "A clear reason to choose you" — single editorial statement, a full-viewport section.
+ * motion.ts pins it and lights the words up one by one as the visitor scrolls.
+ */
 import { useT } from '@/i18n';
 
 const t = useT(Astro);
@@ -7,7 +10,7 @@ const t = useT(Astro);
 
 <section class="proposition theme-deep" aria-label={t.a11y.propositionLabel}>
   <div class="proposition__inner container">
-    <p class="proposition__text" data-reveal="fade">
+    <p class="proposition__text" data-reveal="scrub">
       {t.proposition.text}
     </p>
   </div>
@@ -15,6 +18,13 @@ const t = useT(Astro);
 
 <style>
   /* Mobile (390) */
+  .proposition {
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+
   .proposition__inner {
     display: flex;
     justify-content: center;
@@ -45,7 +55,7 @@ const t = useT(Astro);
   /* Desktop (1440) */
   @media (min-width: 1024px) {
     .proposition__inner {
-      padding-block: 240px;
+      padding-block: 96px;
     }
 
     .proposition__text {

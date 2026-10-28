@@ -5,6 +5,7 @@
  *
  *   [data-reveal="heading"] headings: lines slide up from a mask, light blur, 1100 ms expo-like out, stagger 90 ms
  *   .hero                   headline, then intro (+350 ms), then CTAs (+150 ms)
+ *   [data-reveal="scrub"]   statement: section pinned for 100vh, words dim → full with scroll
  *   [data-reveal="fade"]    content: opacity + 24 px, 800 ms, stagger 160 ms
  *   .cta, .wordmark         magnetic hover (pointer: fine, not in the menu)
  *   .faq__item              accordion: height + opacity, one open at a time
@@ -49,6 +50,25 @@ function slideUp(heading: HTMLElement) {
 
 function revealHeadings() {
   document.querySelectorAll<HTMLElement>('[data-reveal="heading"]').forEach(slideUp);
+}
+
+// Proposition: pinned for one viewport of scroll while its words go from dim to full.
+function scrubStatement() {
+  document.querySelectorAll<HTMLElement>('[data-reveal="scrub"]').forEach((text) => {
+    const section = text.closest('section') ?? text;
+    const split = SplitText.create(text, { type: 'words', aria: 'auto' });
+    gsap.set(text, { opacity: 1 });
+    gsap.fromTo(
+      split.words,
+      { opacity: 0.15 },
+      {
+        opacity: 1,
+        stagger: 0.1,
+        ease: 'none',
+        scrollTrigger: { trigger: section, start: 'top top', end: '+=100%', scrub: 0.6, pin: true },
+      },
+    );
+  });
 }
 
 // Hero entrance runs in order: headline, then intro, then CTAs, each a beat later.
@@ -233,6 +253,7 @@ function menu() {
 }
 
 document.fonts.ready.then(() => {
+  scrubStatement(); // pins first, so later triggers measure the added scroll distance
   revealHeadings();
   revealHero();
   revealContent();
