@@ -1,6 +1,6 @@
 /**
  * Shared editorial motion: 900 ms content/rules, 1050 ms masked headings,
- * 85 ms stagger, one soft easing curve. Native scrolling; no pinned reading.
+ * 85 ms stagger, one soft easing curve. Scroll-scrubbed statement with word-by-word focus.
  * Content remains available without JS and with reduced motion.
  */
 import { gsap } from 'gsap';
@@ -22,7 +22,7 @@ const visible = (el: HTMLElement) => el.getClientRects().length > 0;
 
 // Split only at entry: off-screen headings keep natural wrapping until needed.
 function revealHeadings() {
-  document.querySelectorAll<HTMLElement>('[data-reveal="heading"], [data-reveal="scrub"]').forEach((heading) => {
+  document.querySelectorAll<HTMLElement>('[data-reveal="heading"]').forEach((heading) => {
     const play = () => {
       gsap.set(heading, { opacity: 1 });
       SplitText.create(heading, {
@@ -42,6 +42,25 @@ function revealHeadings() {
     };
     if (heading.closest('.hero')) play();
     else ScrollTrigger.create({ trigger: heading, start: 'top 88%', once: true, onEnter: play });
+  });
+}
+
+
+function scrubStatement() {
+  document.querySelectorAll<HTMLElement>('[data-reveal="scrub"]').forEach(text => {
+    const section = text.closest('section') ?? text;
+    const split = SplitText.create(text, { type: 'words', aria: 'auto' });
+    gsap.set(text, { opacity: 1 });
+    gsap.fromTo(split.words,
+      { opacity: 0.15, filter: 'blur(4px)' },
+      {
+        opacity: 1, filter: 'blur(0px)', stagger: 0.1, ease: 'none',
+        scrollTrigger: {
+          trigger: section, start: 'top top', end: '+=100%',
+          scrub: 0.6, pin: true, invalidateOnRefresh: true,
+        },
+      },
+    );
   });
 }
 
@@ -254,6 +273,7 @@ document.fonts.ready.then(() => {
   // The head timeout deliberately wins: never hide content again after a slow load.
   if (!root.classList.contains('js-motion')) return;
   try {
+    scrubStatement();
     revealHeadings();
     revealHero();
     revealContent();

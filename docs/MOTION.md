@@ -14,7 +14,7 @@
 - Content and rules: 900 ms, 20 px content lift, 85 ms stagger, batches capped at four.
 - Headings: 1050 ms masked line reveal, 85 ms stagger, smoke blur resolving from 6 px to zero.
 - Heading splitting happens on entry and adapts to width changes until completion.
-- Statement follows the heading language with native scrolling.
+- Statement retains its pinned, scroll-scrubbed word reveal over one viewport. Each word resolves from 15% opacity / 4 px blur to full opacity / sharp focus; reversing scroll reverses the effect.
 - One-pixel top rules draw left to right; border geometry is preserved.
 - No parent/child double reveal for content groups.
 - Magnetic strength reduced to 0.12, with the shared soft return.
