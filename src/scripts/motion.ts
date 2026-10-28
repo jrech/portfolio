@@ -5,7 +5,9 @@
  *
  *   [data-reveal="heading"] headings: lines slide up from a mask, light blur, 1100 ms expo-like out, stagger 90 ms
  *   .hero                   headline, then intro (+350 ms), then CTAs (+150 ms)
- *   [data-reveal="fade"]    content: opacity + 12 px, 700 ms, stagger 60 ms
+ *   [data-reveal="fade"]    content: opacity + 24 px, 800 ms, stagger 160 ms
+ *   .cta, .wordmark         magnetic hover (pointer: fine, not in the menu)
+ *   .faq__item              accordion: height + opacity, one open at a time
  *   [data-cursor]           custom cursor states (pointer: fine only); arrow circle over the card image
  *   #site-menu              fullscreen menu: rolls down from the top (clip-path), links from below; rolls back up on close
  */
@@ -61,12 +63,13 @@ function revealHero() {
 
 function revealContent() {
   const items = gsap.utils.toArray<HTMLElement>('[data-reveal="fade"]').filter((el) => !el.closest('.hero'));
-  gsap.set(items, { opacity: 0, y: 12 });
+  gsap.set(items, { opacity: 0, y: 24 });
   ScrollTrigger.batch(items, {
     start: 'top 85%',
     once: true,
+    // Items entering together (process steps, services, FAQ rows) come in one after another.
     onEnter: (batch) =>
-      gsap.to(batch, { opacity: 1, y: 0, duration: 0.7, stagger: 0.06, ease: EASE, clearProps: 'transform' }),
+      gsap.to(batch, { opacity: 1, y: 0, duration: 0.8, stagger: 0.16, ease: EASE, clearProps: 'transform' }),
   });
 }
 
@@ -108,6 +111,78 @@ function cursor() {
 
 const MENU_HIDDEN = 'inset(0% 0% 100% 0%)';
 const MENU_SHOWN = 'inset(0% 0% 0% 0%)';
+
+// Magnetic hover on CTAs and the logo (not inside the menu): the element leans
+// toward the pointer by a fraction of the distance and springs back on leave.
+function magnet() {
+  if (!matchMedia('(pointer: fine)').matches) return;
+  const STRENGTH = 0.3;
+  document.querySelectorAll<HTMLElement>('.cta, .wordmark').forEach((el) => {
+    if (el.closest('#site-menu')) return;
+    el.classList.add('magnet');
+    el.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      // Measure without the current offset, so the pull doesn't feed back into itself.
+      const r = el.getBoundingClientRect();
+      const mx = parseFloat(el.style.getPropertyValue('--mx')) || 0;
+      const my = parseFloat(el.style.getPropertyValue('--my')) || 0;
+      gsap.to(el, {
+        '--mx': `${(e.clientX - (r.left - mx + r.width / 2)) * STRENGTH}px`,
+        '--my': `${(e.clientY - (r.top - my + r.height / 2)) * STRENGTH}px`,
+        duration: 0.5,
+        ease: EASE,
+        overwrite: true,
+      });
+    });
+    el.addEventListener('pointerleave', () => {
+      gsap.to(el, { '--mx': '0px', '--my': '0px', duration: 0.8, ease: 'elastic.out(1, 0.5)', overwrite: true });
+    });
+  });
+}
+
+// FAQ accordion: smooth height on open/close; one open at a time is handled here
+// (the native `name` grouping would close the previous item without animation).
+function faq() {
+  const items = gsap.utils.toArray<HTMLDetailsElement>('.faq__item');
+  const answer = (item: HTMLDetailsElement) => item.querySelector<HTMLElement>('.faq__answer')!;
+
+  const collapse = (item: HTMLDetailsElement) => {
+    gsap.killTweensOf(answer(item));
+    gsap.to(answer(item), {
+      height: 0,
+      paddingTop: 0,
+      opacity: 0,
+      overflow: 'hidden',
+      duration: 0.45,
+      ease: EASE_MENU,
+      onComplete: () => {
+        item.open = false;
+        gsap.set(answer(item), { clearProps: 'all' });
+      },
+    });
+  };
+
+  const expand = (item: HTMLDetailsElement) => {
+    item.open = true;
+    gsap.killTweensOf(answer(item));
+    gsap.fromTo(
+      answer(item),
+      { height: 0, paddingTop: 0, opacity: 0, overflow: 'hidden' },
+      { height: 'auto', paddingTop: '', opacity: 1, duration: 0.55, ease: EASE_MENU, clearProps: 'all' },
+    );
+    gsap.fromTo(item.querySelector('.faq__icon--minus'), { rotate: -90 }, { rotate: 0, duration: 0.45, ease: EASE });
+  };
+
+  items.forEach((item) => {
+    item.removeAttribute('name');
+    item.querySelector('summary')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (item.open) return collapse(item);
+      items.filter((other) => other !== item && other.open).forEach(collapse);
+      expand(item);
+    });
+  });
+}
 
 function menu() {
   const dialog = document.getElementById('site-menu') as HTMLDialogElement | null;
@@ -163,5 +238,7 @@ document.fonts.ready.then(() => {
   revealContent();
   root.classList.add('motion-ready');
   cursor();
+  magnet();
+  faq();
   menu();
 });

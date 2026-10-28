@@ -245,6 +245,11 @@ body {
   transform: none;
 }
 
+/* Magnetic hover: `translate` stacks with each element's own `transform` (CTA press, etc.). */
+.magnet {
+  translate: var(--mx, 0px) var(--my, 0px);
+}
+
 /* SplitText line masks: room for accents and descenders under the tight heading line-heights.
    Flex keeps the negative margins from collapsing, so lines stay exactly where they end up. */
 .is-split {
