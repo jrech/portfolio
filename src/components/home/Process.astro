@@ -53,8 +53,8 @@ const steps = t.process.steps;
   .process__inner {
     display: flex;
     flex-direction: column;
-    gap: 36px;
-    padding-block: 64px;
+    gap: var(--section-stack);
+    padding-block: var(--section-space);
   }
 
   .process__intro,
@@ -100,7 +100,7 @@ const steps = t.process.steps;
   .process__steps {
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 48px;
   }
 
   .step {
@@ -152,10 +152,6 @@ const steps = t.process.steps;
 
   /* Tablet (834) */
   @media (min-width: 640px) {
-    .process__inner {
-      gap: 44px;
-      padding-block: 80px;
-    }
 
     .process__title {
       font-size: 52px;
@@ -182,8 +178,7 @@ const steps = t.process.steps;
   /* Desktop (1440) */
   @media (min-width: 1024px) {
     .process__inner {
-      gap: 126px;
-      padding-block: 160px;
+      gap: 144px;
     }
 
     .process__intro {

@@ -77,7 +77,14 @@ Caption size/tracking is tokenised (`--caption-size`, `--caption-tracking`) and 
 
 Pen variables `space/1 4 · /2 8 · /3 12 · /4 16 · /6 24 · /8 32 · /12 48 · /16 64` → `--space-1 … --space-16`. Frames also use 26, 28, 30, 36, 44, 60, 80, 90, 104, 120, 160 px; those stay as literal values in the component that owns them rather than being forced onto the 4/8 scale.
 
-Section rhythm (Selected projects): desktop `160px 60px`, tablet `80px 40px`, mobile `64px 24px`.
+Section rhythm — **deviates from Pen on purpose** (Jonas, 2026-10-28: "more whitespace, it feels crammed"). All homepage sections share two tokens in `tokens.css`:
+
+| Token | Mobile | Tablet | Desktop | Pen frames had |
+|---|---|---|---|---|
+| `--section-space` (section padding-block) | 104 | 136 | 192 | 56–64 · 80 · 120–160 |
+| `--section-stack` (intro → content) | 56 | 72 | 96 | 36–40 · 44 · 44–64 |
+
+Item spacing also grew: work grid rows 36/44/44 → 56/72/80, service rows padding 24/28 → 32/40, FAQ rows 26+30 → 32+36, process steps (mobile) 32 → 48, About story 32/100 → 48/120, FAQ intro↔list 90 → 120, Process intro→steps 126 → 144. Footer: invite block 104/108 → 160/168 and wider gaps around the contact and nav. To tune globally, change the two tokens. The Proposition section is a full viewport (100svh) instead.
 
 ### Grid, containers, breakpoints
 
@@ -246,7 +253,9 @@ Case-study decisions and deviations:
 
 Tokens: `--ease-out: cubic-bezier(0.22, 1, 0.36, 1)`, `--duration-fast: 160ms`, `--duration-base: 220ms`. `prefers-reduced-motion: reduce` collapses all transitions and disables smooth scrolling.
 
-**Proposed for later phases (not applied):**
+**Implemented (Phase 4, GSAP — `src/scripts/motion.ts`, approved by Jonas 2026-10-28):** headings slide up line by line from a mask with a light blur (1.1 s, expo-like out); hero runs headline → intro → CTAs; grouped content rises 24 px with 160 ms stagger; Proposition is pinned for one viewport while words go from dim to full; menu rolls down from the top and back up on close; FAQ animates height, one item open at a time; magnetic hover on CTAs and the logo; custom follower cursor that becomes an 88 px arrow circle over card images. Project titles turn accent on hover (no underline, no image zoom). Reduced motion: none of this loads.
+
+**Earlier proposals (superseded where the list above differs):**
 
 | Effect | Proposed specification |
 |---|---|

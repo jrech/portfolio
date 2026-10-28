@@ -39,8 +39,8 @@ const services = t.services.items;
   .services__inner {
     display: flex;
     flex-direction: column;
-    gap: 36px;
-    padding-block: 64px;
+    gap: var(--section-stack);
+    padding-block: var(--section-space);
   }
 
   .services__intro,
@@ -67,7 +67,7 @@ const services = t.services.items;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding-block: 24px;
+    padding-block: 32px;
     border-top: 1px solid var(--color-rule);
   }
 
@@ -96,10 +96,6 @@ const services = t.services.items;
 
   /* Tablet (834) */
   @media (min-width: 640px) {
-    .services__inner {
-      gap: 44px;
-      padding-block: 80px;
-    }
 
     .services__title {
       font-size: 52px;
@@ -131,10 +127,6 @@ const services = t.services.items;
 
   /* Desktop (1440) */
   @media (min-width: 1024px) {
-    .services__inner {
-      gap: 64px;
-      padding-block: 120px;
-    }
 
     .services__headline {
       max-width: 640px;
@@ -154,7 +146,7 @@ const services = t.services.items;
     .service {
       justify-content: space-between;
       gap: 30px;
-      padding-block: 28px;
+      padding-block: 40px;
     }
 
     .service__index {

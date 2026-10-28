@@ -33,7 +33,7 @@ const t = useT(Astro);
 <style>
   /* Mobile (390) */
   .testimonial__inner {
-    padding-block: 56px;
+    padding-block: var(--section-space);
   }
 
   .testimonial__content {
@@ -106,9 +106,6 @@ const t = useT(Astro);
 
   /* Tablet (834) */
   @media (min-width: 640px) {
-    .testimonial__inner {
-      padding-block: 80px;
-    }
 
     .testimonial__content {
       gap: 28px;
@@ -132,9 +129,6 @@ const t = useT(Astro);
 
   /* Desktop (1440) */
   @media (min-width: 1024px) {
-    .testimonial__inner {
-      padding-block: 160px;
-    }
 
     .testimonial__content {
       gap: 56px;

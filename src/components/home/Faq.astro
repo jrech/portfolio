@@ -42,8 +42,8 @@ const faqs = t.faq.items;
   .faq__inner {
     display: flex;
     flex-direction: column;
-    gap: 40px;
-    padding-block: 64px;
+    gap: var(--section-stack);
+    padding-block: var(--section-space);
   }
 
   .faq__intro {
@@ -71,7 +71,7 @@ const faqs = t.faq.items;
   }
 
   .faq__item {
-    padding: 26px 0 30px;
+    padding: 32px 0 36px;
   }
 
   .faq__item + .faq__item {
@@ -130,7 +130,7 @@ const faqs = t.faq.items;
   }
 
   .faq__answer {
-    padding-top: 14px;
+    padding-top: 16px;
     font-size: 16px;
     line-height: 24px;
     color: var(--color-text-secondary);
@@ -138,9 +138,6 @@ const faqs = t.faq.items;
 
   /* Tablet (834) */
   @media (min-width: 640px) {
-    .faq__inner {
-      padding-block: 80px;
-    }
 
     .faq__title {
       font-size: 52px;
@@ -158,8 +155,7 @@ const faqs = t.faq.items;
   @media (min-width: 1024px) {
     .faq__inner {
       flex-direction: row;
-      gap: 90px;
-      padding-block: 140px;
+      gap: 120px;
     }
 
     .faq__intro {

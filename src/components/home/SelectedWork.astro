@@ -29,8 +29,8 @@ const projects = await getProjects(getLocale(Astro));
   .work__inner {
     display: flex;
     flex-direction: column;
-    gap: 36px;
-    padding-block: 64px;
+    gap: var(--section-stack);
+    padding-block: var(--section-space);
   }
 
   .work__heading {
@@ -55,15 +55,11 @@ const projects = await getProjects(getLocale(Astro));
 
   .work__grid {
     display: grid;
-    gap: 36px;
+    gap: 56px;
   }
 
   /* Tablet (834) */
   @media (min-width: 640px) {
-    .work__inner {
-      gap: 44px;
-      padding-block: 80px;
-    }
 
     .work__title {
       font-size: 48px;
@@ -71,15 +67,12 @@ const projects = await getProjects(getLocale(Astro));
 
     .work__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 44px 24px;
+      gap: 72px 24px;
     }
   }
 
   /* Desktop (1440) */
   @media (min-width: 1024px) {
-    .work__inner {
-      padding-block: 160px;
-    }
 
     .work__heading {
       flex-direction: row;
@@ -97,7 +90,7 @@ const projects = await getProjects(getLocale(Astro));
     }
 
     .work__grid {
-      gap: 44px 28px;
+      gap: 80px 28px;
     }
   }
 </style>

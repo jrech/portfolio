@@ -54,8 +54,8 @@ const locale = getLocale(Astro);
   .about__inner {
     display: flex;
     flex-direction: column;
-    gap: 36px;
-    padding-block: 64px;
+    gap: var(--section-stack);
+    padding-block: var(--section-space);
   }
 
   .about__heading {
@@ -75,7 +75,7 @@ const locale = getLocale(Astro);
   .about__story {
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 48px;
   }
 
   .about__portrait {
@@ -175,10 +175,6 @@ const locale = getLocale(Astro);
 
   /* Tablet (834) */
   @media (min-width: 640px) {
-    .about__inner {
-      gap: 44px;
-      padding-block: 80px;
-    }
 
     .about__title {
       font-size: 56px;
@@ -226,10 +222,6 @@ const locale = getLocale(Astro);
       background: var(--color-background-deep);
     }
 
-    .about__inner {
-      gap: 56px;
-      padding-block: 120px;
-    }
 
     .about__title {
       font-size: 76px;
@@ -238,7 +230,7 @@ const locale = getLocale(Astro);
     }
 
     .about__story {
-      gap: 100px;
+      gap: 120px;
     }
 
     /* 640px at 1440; shrinks first on narrower desktops so the copy keeps ≥ 360px. */

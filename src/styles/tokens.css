@@ -54,6 +54,9 @@
   --content-max: 1320px;          /* 1440 canvas − 2 × 60 gutter */
   --grid-gap: 36px;               /* project grid: mobile 36 (stack) · tablet 24 · desktop 28 */
   --header-height: 80px;          /* mobile/tablet 80 · desktop 96 */
+  /* Section rhythm — deliberately roomier than the Pen frames (Jonas, 2026-10-28). */
+  --section-space: 104px;         /* section padding-block: mobile 104 · tablet 136 · desktop 192 */
+  --section-stack: 56px;          /* intro → content inside a section: 56 · 72 · 96 */
 
   /* ---------- Shape ---------- */
   --radius-pill: 28px;
@@ -77,6 +80,8 @@
     --caption-tracking: 1.2px;
     --gutter: 40px;
     --grid-gap: 24px;
+    --section-space: 136px;
+    --section-stack: 72px;
   }
 }
 
@@ -85,5 +90,7 @@
     --gutter: 60px;
     --grid-gap: 28px;
     --header-height: 96px;
+    --section-space: 192px;
+    --section-stack: 96px;
   }
 }
