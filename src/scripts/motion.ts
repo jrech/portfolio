@@ -27,7 +27,9 @@ function revealHeadings() {
     if (heading.closest('.footer') || (heading.closest('.faq') && matchMedia('(min-width: 1024px)').matches)) return;
     if (passed(heading)) return;
     gsap.set(heading, { opacity: 0 });
-    const play = () => {
+    const play = async () => {
+      await document.fonts.ready;
+      if (!root.classList.contains('js-motion')) return;
       // Hide the lines before showing their parent to avoid a one-frame flash.
       const split = SplitText.create(heading, {
         type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
@@ -135,7 +137,9 @@ function revealSequences() {
   gsap.set(questions, { opacity: 0, y: MOTION.distance });
   ScrollTrigger.create({
     trigger: heading, start: 'top 82%', once: true,
-    onEnter: () => {
+    onEnter: async () => {
+      await document.fonts.ready;
+      if (!root.classList.contains('js-motion')) return;
       const split = SplitText.create(heading, {
         type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
       });
@@ -181,7 +185,9 @@ function revealFooter() {
 
     ScrollTrigger.create({
     trigger: invite, start: 'top 82%', once: true,
-    onEnter: () => {
+    onEnter: async () => {
+      await document.fonts.ready;
+      if (!root.classList.contains('js-motion')) return;
       const split = SplitText.create(heading, {
         type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
       });
