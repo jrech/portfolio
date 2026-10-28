@@ -23,7 +23,7 @@ const visible = (el: HTMLElement) => el.getClientRects().length > 0;
 // Split only at entry: off-screen headings keep natural wrapping until needed.
 function revealHeadings() {
   document.querySelectorAll<HTMLElement>('[data-reveal="heading"]').forEach((heading) => {
-    if (heading.closest('.faq') && matchMedia('(min-width: 1024px)').matches) return;
+    if (heading.closest('.footer') || (heading.closest('.faq') && matchMedia('(min-width: 1024px)').matches)) return;
     const play = () => {
       gsap.set(heading, { opacity: 1 });
       SplitText.create(heading, {
@@ -76,7 +76,7 @@ function revealHero() {
 function revealContent() {
   const selector = '[data-reveal="fade"], .eyebrow, .footer__lead, .footer__bio, .footer__email, .footer__col, .footer__legal, .footer__invite .cta';
   const candidates = gsap.utils.toArray<HTMLElement>(selector).filter(el =>
-    !el.closest('.hero, #site-menu') && visible(el) &&
+    !el.closest('.hero, #site-menu, .footer') && visible(el) &&
     !(matchMedia('(min-width: 1024px)').matches && el.matches('.step, .faq__item')));
   // Animate the owning block once; never stack parent and child translations.
   const items = candidates.filter(el => !candidates.some(parent => parent !== el && parent.contains(el)));
@@ -149,6 +149,67 @@ function revealSequences() {
         '--rule-progress': 1, duration: MOTION.duration, stagger: 0.22, ease: EASE,
       }, '<0.22');
     },
+  });
+}
+
+
+function revealFooter() {
+  const footer = document.querySelector<HTMLElement>('.footer');
+  if (!footer) return;
+  const heading = footer.querySelector<HTMLElement>('.footer__title');
+  const invite = footer.querySelector<HTMLElement>('.footer__invite');
+  if (!heading || !invite) return;
+  const eyebrow = [...footer.querySelectorAll<HTMLElement>('.footer__invite .eyebrow')].filter(visible);
+  const action = footer.querySelector<HTMLElement>('.footer__invite .cta');
+  const lead = footer.querySelector<HTMLElement>('.footer__lead');
+  const opening = [...eyebrow, action, lead].filter((el): el is HTMLElement => !!el && visible(el));
+  gsap.set(opening, { opacity: 0, y: MOTION.distance });
+  gsap.set(heading, { opacity: 0 });
+
+  ScrollTrigger.create({
+    trigger: invite, start: 'top 82%', once: true,
+    onEnter: () => {
+      const timeline = gsap.timeline();
+      if (eyebrow.length) timeline.to(eyebrow, {
+        opacity: 1, y: 0, duration: 0.55, ease: EASE, clearProps: 'transform,opacity',
+      });
+      gsap.set(heading, { opacity: 1 });
+      const split = SplitText.create(heading, {
+        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
+      });
+      timeline.fromTo(split.lines,
+        { yPercent: 104, opacity: 0, filter: 'blur(6px)' },
+        { yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading,
+          stagger: MOTION.stagger, ease: EASE, onComplete: () => split.revert() },
+        eyebrow.length ? '-=0.12' : 0,
+      );
+      for (const el of [action, lead]) {
+        if (el && visible(el)) timeline.to(el, {
+          opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
+          clearProps: 'transform,opacity',
+        }, '+=0.04');
+      }
+    },
+  });
+
+  const groups: [string, string][] = [
+    ['.footer__contact', '.footer__contact > *'],
+    ['.footer__nav', '.footer__col-label, .footer__nav li'],
+    ['.footer__legal', '.footer__legal > *'],
+  ];
+  groups.forEach(([containerSelector, itemSelector]) => {
+    const container = footer.querySelector<HTMLElement>(containerSelector);
+    if (!container) return;
+    const items = [...container.querySelectorAll<HTMLElement>(itemSelector)].filter(visible);
+    if (!items.length) return;
+    gsap.set(items, { opacity: 0, y: MOTION.distance });
+    ScrollTrigger.create({
+      trigger: container, start: 'top 88%', once: true,
+      onEnter: () => gsap.to(items, {
+        opacity: 1, y: 0, duration: MOTION.duration, stagger: 0.12,
+        ease: EASE, clearProps: 'transform,opacity',
+      }),
+    });
   });
 }
 
@@ -322,6 +383,7 @@ document.fonts.ready.then(() => {
     revealContent();
     revealRules();
     revealSequences();
+    revealFooter();
     root.classList.add('motion-ready');
     cursor();
     magnet();
