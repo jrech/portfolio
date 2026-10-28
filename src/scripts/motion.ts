@@ -24,7 +24,7 @@ const passed = (el: HTMLElement) => el.getBoundingClientRect().bottom <= 0;
 // Split only at entry: off-screen headings keep natural wrapping until needed.
 function revealHeadings() {
   document.querySelectorAll<HTMLElement>('[data-reveal="heading"]').forEach((heading) => {
-    if (heading.closest('.footer') || (heading.closest('.faq') && matchMedia('(min-width: 1024px)').matches)) return;
+    if (heading.closest('.footer, .services') || (heading.closest('.faq') && matchMedia('(min-width: 1024px)').matches)) return;
     if (passed(heading)) return;
     gsap.set(heading, { opacity: 0 });
     const play = async () => {
@@ -79,7 +79,7 @@ function revealHero() {
 function revealContent() {
   const selector = '[data-reveal="fade"], .eyebrow, .footer__lead, .footer__bio, .footer__email, .footer__col, .footer__legal, .footer__invite .cta';
   const candidates = gsap.utils.toArray<HTMLElement>(selector).filter(el =>
-    !el.closest('.hero, #site-menu, .footer') && visible(el) &&
+    !el.closest('.hero, #site-menu, .footer, .services') && visible(el) &&
     !(matchMedia('(min-width: 1024px)').matches && el.matches('.step, .faq__item')));
   // Animate the owning block once; never stack parent and child translations.
   const items = candidates.filter(el => !passed(el) && !candidates.some(parent => parent !== el && parent.contains(el)));
@@ -106,7 +106,8 @@ function revealRules() {
     rules.push(el);
   });
   const pending = rules.filter(el => !passed(el));
-  const generic = pending.filter(el => !(el.matches('.faq__item') && matchMedia('(min-width: 1024px)').matches));
+  const generic = pending.filter(el => !el.matches('.service') &&
+    !(el.matches('.faq__item') && matchMedia('(min-width: 1024px)').matches));
   gsap.set(pending, { '--rule-progress': 0 });
   if (!generic.length) return;
   ScrollTrigger.batch(generic, {
@@ -118,6 +119,82 @@ function revealRules() {
   });
 }
 
+
+function revealServices() {
+  const section = document.querySelector<HTMLElement>('.services');
+  if (!section || passed(section)) return;
+  const intro = section.querySelector<HTMLElement>('.services__intro');
+  const heading = section.querySelector<HTMLElement>('[data-reveal="heading"]');
+  if (!intro || !heading) return;
+  const eyebrow = [...intro.querySelectorAll<HTMLElement>('.eyebrow')].filter(visible);
+  const lead = [...intro.querySelectorAll<HTMLElement>('.services__lead')].filter(visible);
+  const rows = [...section.querySelectorAll<HTMLElement>('.service')].filter(visible);
+
+  let previous: Promise<void> = Promise.resolve();
+  if (!passed(intro)) {
+    gsap.set([...eyebrow, ...lead], { opacity: 0, y: MOTION.distance });
+    gsap.set(heading, { opacity: 0 });
+    previous = new Promise<void>(resolve => {
+      ScrollTrigger.create({
+        trigger: intro, start: 'top 82%', once: true,
+        onEnter: async () => {
+          await document.fonts.ready;
+          if (!root.classList.contains('js-motion') || passed(intro)) {
+            gsap.set([heading, ...eyebrow, ...lead], { clearProps: 'opacity,transform' });
+            resolve();
+            return;
+          }
+          const split = SplitText.create(heading, {
+            type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
+          });
+          gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
+          const timeline = gsap.timeline({ onComplete: resolve });
+          if (eyebrow.length) timeline.to(eyebrow, {
+            opacity: 1, y: 0, duration: 0.55, ease: EASE, clearProps: 'transform,opacity',
+          });
+          timeline.set(heading, { opacity: 1 });
+          timeline.to(split.lines, {
+            yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading,
+            stagger: MOTION.stagger, ease: EASE,
+            onComplete: () => {
+              split.revert();
+              gsap.set(heading, { opacity: 1 });
+            },
+          }, eyebrow.length ? '-=0.12' : 0);
+          if (lead.length) timeline.to(lead, {
+            opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
+            clearProps: 'transform,opacity',
+          }, '+=0.04');
+        },
+      });
+    });
+  }
+
+  rows.forEach(row => {
+    if (passed(row)) return;
+    gsap.set(row, { opacity: 0, y: MOTION.distance });
+    const waitForPrevious = previous;
+    previous = new Promise<void>(resolve => {
+      ScrollTrigger.create({
+        trigger: row, start: 'top 88%', once: true,
+        onEnter: async () => {
+          await waitForPrevious;
+          if (!root.classList.contains('js-motion') || passed(row)) {
+            gsap.set(row, { clearProps: 'opacity,transform', '--rule-progress': 1 });
+            resolve();
+            return;
+          }
+          gsap.timeline({ onComplete: resolve })
+            .to(row, {
+              opacity: 1, y: 0, duration: 0.76, ease: EASE,
+              clearProps: 'transform,opacity',
+            })
+            .to(row, { '--rule-progress': 1, duration: 0.76, ease: EASE }, '<');
+        },
+      });
+    });
+  });
+}
 
 function revealSequences() {
   if (!matchMedia('(min-width: 1024px)').matches) return;
@@ -423,6 +500,7 @@ function initializeMotion() {
     revealHero();
     revealContent();
     revealRules();
+    revealServices();
     revealSequences();
     revealFooter();
     root.classList.add('motion-ready');

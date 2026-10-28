@@ -250,16 +250,15 @@ body {
   translate: var(--mx, 0px) var(--my, 0px);
 }
 
-/* SplitText line masks: room for accents and descenders under the tight heading line-heights.
-   Flex keeps the negative margins from collapsing, so lines stay exactly where they end up. */
+/* SplitText line masks keep the heading's original geometry through the reveal. */
 .is-split {
   display: flex;
   flex-direction: column;
 }
 
 .split-line-mask {
-  padding-block: 0.14em;
-  margin-block: -0.14em;
+  /* Extra clip room without adding height to the heading during SplitText. */
+  overflow-clip-margin: 0.14em;
 }
 
 /* Shared line reveal: border geometry remains unchanged. */
