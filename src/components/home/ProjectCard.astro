@@ -1,6 +1,6 @@
 ---
 /**
- * Selected-work card: media, title, description, disciplines + orange arrow.
+ * Selected-work card: media, title, description, disciplines + arrow badge.
  * The whole card is clickable via the title link's stretched hit area.
  */
 import { Image } from 'astro:assets';
@@ -22,7 +22,7 @@ const disciplines = formatServices(services);
 ---
 
 <article
-  class:list={['project', { 'project--featured': featured, 'project--static': !href }]}
+  class:list={['project', { 'project--featured': featured, 'project--static': !href }, 'arrow-host']}
   data-reveal="fade"
   data-cursor="project"
 >
@@ -127,11 +127,6 @@ const disciplines = formatServices(services);
   .project__disciplines {
     display: none;
     text-transform: uppercase;
-  }
-
-  .project:not(.project--static):hover :global(.arrow-badge),
-  .project:not(.project--static):focus-within :global(.arrow-badge) {
-    transform: rotate(45deg);
   }
 
   /* Tablet (834) */

@@ -1,5 +1,9 @@
 ---
-/** 42px orange arrow circle used on project cards; the card rotates it on hover/focus. */
+/**
+ * Arrow circle on project cards, styled like the main CTA's icon: cream circle,
+ * dark arrow. A card marked `.arrow-host` drives the hover: the circle turns
+ * orange and the arrow nudges up-right, same 400 ms as the CTA.
+ */
 import Icon from './Icon.astro';
 ---
 
@@ -15,12 +19,30 @@ import Icon from './Icon.astro';
     width: 42px;
     height: 42px;
     border-radius: var(--radius-round);
-    background: var(--color-accent);
+    background: var(--color-text-display);
     color: var(--color-ink);
-    transition: transform var(--duration-base) var(--ease-out);
+    transition: background-color 400ms var(--ease-out);
   }
 
   .arrow-badge :global(svg) {
     stroke-width: 1.75;
+    transition: transform 400ms var(--ease-out);
+  }
+
+  :global(.arrow-host:hover) .arrow-badge,
+  :global(.arrow-host:focus-within) .arrow-badge {
+    background: var(--color-accent);
+  }
+
+  :global(.arrow-host:hover) .arrow-badge :global(svg),
+  :global(.arrow-host:focus-within) .arrow-badge :global(svg) {
+    transform: translate(2px, -2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .arrow-badge,
+    .arrow-badge :global(svg) {
+      transition: none;
+    }
   }
 </style>

@@ -14,7 +14,7 @@ const { project } = Astro.props;
 const { title, cardTitle, services, cover } = project.data;
 ---
 
-<article class="related" data-reveal="fade" data-cursor="project">
+<article class="related arrow-host" data-reveal="fade" data-cursor="project">
   <MediaFrame class="related__media" label={`${title} — ${useT(Astro).case.projectImageLabel}`}>
     {cover && <Image src={cover.src} alt={cover.alt} widths={[640, 1320]} sizes="(min-width: 1024px) 50vw, 100vw" />}
   </MediaFrame>
@@ -83,11 +83,6 @@ const { title, cardTitle, services, cover } = project.data;
     font-size: 14px;
     line-height: normal;
     color: var(--color-text-secondary);
-  }
-
-  .related:hover :global(.arrow-badge),
-  .related:focus-within :global(.arrow-badge) {
-    transform: rotate(45deg);
   }
 
   /* Tablet (interpolated) */
