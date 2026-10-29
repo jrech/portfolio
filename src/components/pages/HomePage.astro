@@ -14,6 +14,7 @@ import Process from '@/components/home/Process.astro';
 import Faq from '@/components/home/Faq.astro';
 import portrait from '@/assets/images/jonas-portrait.webp';
 import wanaka from '@/assets/images/about-wanaka.webp';
+import marketa from '@/assets/images/marketa-blahova.webp';
 import { getProjects } from '@/lib/projects';
 import { getLocale, useT } from '@/i18n';
 
@@ -27,13 +28,28 @@ const quote = (await getProjects(getLocale(Astro))).find((p) => p.slug === 'prad
 <BaseLayout>
   <SiteHeader slot="header" overlay />
   <Hero>
-    {/* Cover crop needs far more than the viewport width on mobile/tablet; the full file is only ~35 KB. */}
-    <Image slot="media" src={portrait} alt="" loading="eager" fetchpriority="high" />
+    {/* Cover crop is wider than the viewport on mobile/tablet (the media keeps the photo's height). */}
+    <Image
+      slot="media"
+      src={portrait}
+      alt=""
+      loading="eager"
+      fetchpriority="high"
+      widths={[1080, 1440, 1920, 2880]}
+      sizes="(max-width: 1023px) 1080px, 70vw"
+    />
   </Hero>
   <SelectedWork />
   <Proposition />
   <Services />
-  {quote && <Testimonial testimonial={quote} />}
+  {
+    quote && (
+      <Testimonial testimonial={quote}>
+        {/* Decorative: her name is printed right beside it. */}
+        <Image slot="avatar" src={marketa} alt="" widths={[48, 96, 144]} sizes="48px" />
+      </Testimonial>
+    )
+  }
   <About>
     <Image
       slot="media"
