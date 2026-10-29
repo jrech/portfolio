@@ -639,6 +639,14 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
     overflow: hidden;
   }
 
+  /* Bars span the full width (rule and backdrop edge to edge); their content still
+     lines up with the centred column (Jonas, 2026-10-29). */
+  .inq__top.container,
+  .inq__nav.container {
+    max-width: none;
+    padding-inline: max(var(--gutter), (100% - var(--content-max)) / 2);
+  }
+
   /* ---------- Bottom navigation ---------- */
   .inq__nav {
     position: relative;
