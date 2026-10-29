@@ -41,7 +41,7 @@ CSS custom properties live in `src/styles/tokens.css`. Names follow the Pen vari
 | `--color-cream-muted` | `#595A53` | — | Secondary text on cream |
 | `--color-cream-rule` | `#C9C5BA` | — | Dividers on cream |
 
-**Approved application:** dark is the default. Cream is used only for Services and Process (all three breakpoints). Preserve orange accents. No gradients or ambient glow on approved pages, except the hero portrait readability shade and the footer aurora glow (WebGL, `scripts/aurora.ts`, port of React Bits Aurora, rising from the bottom in orange; replaced the CSS glow and then Threads at Jonas's request, 2026-10-29; not in Pen).
+**Approved application:** dark is the default. The landing page is fully dark (Jonas, 2026-10-29: Services and Process moved off cream; `.theme-cream` kept in global.css for later use). Preserve orange accents. No gradients or ambient glow on approved pages, except the hero portrait readability shade and the footer aurora glow (WebGL, `scripts/aurora.ts`, port of React Bits Aurora, rising from the bottom in orange; replaced the CSS glow and then Threads at Jonas's request, 2026-10-29; not in Pen).
 
 ### Typography
 
