@@ -7,8 +7,7 @@
 
 :root {
   /* ---------- Color: dark (default) ---------- */
-  --color-background: #10100f;      /* page; approved frames (Pen variable says #171817) */
-  --color-background-deep: #0f0f0e; /* Selected projects section */
+  --color-background: #10100f;      /* the one page background, every section (Jonas, 2026-10-29) */
   --color-surface: #20211f;         /* raised surfaces, media placeholders */
   --color-text-display: #f2efe9;    /* hero headline, wordmark, CTA arrow circle */
   --color-text-primary: #eae9e5;

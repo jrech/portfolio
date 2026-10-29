@@ -26,7 +26,6 @@ CSS custom properties live in `src/styles/tokens.css`. Names follow the Pen vari
 | CSS variable | HEX | Pen variable | Use |
 |---|---:|---|---|
 | `--color-background` | `#10100F` | `color/background` (*#171817*, see discrepancies) | Page background, menu, footer |
-| `--color-background-deep` | `#0F0F0E` | — | Selected projects section |
 | `--color-surface` | `#20211F` | `color/surface` | Raised surfaces, media placeholders |
 | `--color-text-display` | `#F2EFE9` | — | Hero headline, wordmark, hamburger lines, CTA arrow circle |
 | `--color-text-primary` | `#EAE9E5` | `color/text-primary` | Primary text, headings, links |
@@ -175,7 +174,7 @@ Top rule, `--color-background`, `id="contact"`.
 
 Order (from the Pen frame): Hero → Selected work → Proposition → Services → Testimonial → About → Process → FAQ → Contact/footer. Copy lives in `src/data/home.ts`; components in `src/components/home/`.
 
-Surface themes: `.theme-deep` = `--color-background-deep`; `.theme-cream` = cream surface that **remaps** `--color-text-primary/-display/-secondary` and `--color-rule` to the cream tokens, so captions, eyebrows and rules adapt without variants.
+Every section sits on the one `--color-background` (#10100F; Jonas, 2026-10-29). `.theme-cream` = cream surface that **remaps** `--color-text-primary/-display/-secondary` and `--color-rule` to the cream tokens, so captions, eyebrows and rules adapt without variants.
 
 | Section (id) | Surface | Padding D / T / M | Key values D · T · M |
 |---|---|---|---|

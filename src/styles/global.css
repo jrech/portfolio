@@ -122,10 +122,6 @@ body {
   color-scheme: light;
 }
 
-.theme-deep {
-  background: var(--color-background-deep);
-}
-
 /* ---------- Layout utilities ---------- */
 .container {
   width: 100%;
