@@ -15,11 +15,6 @@ const steps = t.process.steps;
         <Eyebrow index="[04]">{t.process.eyebrow}</Eyebrow>
         <h2 id="process-title" class="process__title" data-reveal="heading"><Lines text={t.process.title} /></h2>
       </div>
-      <div class="process__summary" data-reveal="fade">
-        <p class="process__text">
-          {t.process.text}
-        </p>
-      </div>
     </header>
 
     <ol class="process__steps" role="list">
@@ -65,18 +60,6 @@ const steps = t.process.steps;
     font-weight: var(--weight-medium);
     line-height: 42px;
     letter-spacing: var(--heading-tracking);
-  }
-
-  .process__summary {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .process__text {
-    font-size: 17px;
-    line-height: 26px;
-    color: var(--color-text-secondary);
   }
 
   .process__steps {
@@ -178,10 +161,6 @@ const steps = t.process.steps;
       font-size: 64px;
       line-height: 67px;
       letter-spacing: var(--heading-tracking);
-    }
-
-    .process__summary {
-      flex: 1 0 280px;
     }
 
     .process__steps {
