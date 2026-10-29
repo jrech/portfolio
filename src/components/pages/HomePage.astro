@@ -28,15 +28,17 @@ const quote = (await getProjects(getLocale(Astro))).find((p) => p.slug === 'prad
 <BaseLayout>
   <SiteHeader slot="header" overlay />
   <Hero>
-    {/* Cover crop is wider than the viewport on mobile/tablet (the media keeps the photo's height). */}
+    {/* Cover crop is wider than the viewport on mobile/tablet (the media keeps the photo's height).
+        Quality 90: at the default, the dark gradients broke into visible bands (Jonas, 2026-10-29). */}
     <Image
       slot="media"
       src={portrait}
       alt=""
       loading="eager"
       fetchpriority="high"
-      widths={[1080, 1440, 1920, 2880]}
+      widths={[1080, 1440, 1920, 2400, 2880]}
       sizes="(max-width: 1023px) 1080px, 70vw"
+      quality={90}
     />
   </Hero>
   <SelectedWork />
