@@ -47,3 +47,19 @@ Case studies are built but hidden until their content is ready: `status: in-prep
 ## Languages
 
 Czech is the default at `/`, English lives under `/en/` (Astro i18n). Visitors outside CZ/SK are redirected to `/en/` by `middleware.ts` (Vercel only, header `x-vercel-ip-country`); bots are never redirected, and the EN / CZ switch stores the choice in a `lang` cookie that the redirect respects. Locally (`npm run dev`) there is no geo redirect; open `/en/` directly.
+
+## Project inquiry
+
+The main CTA on Czech pages opens a fullscreen questionnaire (`src/components/site/InquiryDialog.astro`, `src/scripts/inquiry.ts`; questions in `src/data/inquiry.ts`). English pages keep linking to `#contact`.
+
+Answers are posted to `api/inquiry.ts`, a Vercel Function that validates them against `src/data/inquiry.ts`, applies spam checks (honeypot, minimum fill time, same-origin, per-IP rate limit) and sends the email through [Resend](https://resend.com). It does not run under `astro dev`/`astro preview`; use `vercel dev` or a preview deploy.
+
+Set these in Vercel → Project → Settings → Environment Variables:
+
+| Variable | Required | Example |
+| --- | --- | --- |
+| `RESEND_API_KEY` | yes | `re_…` |
+| `INQUIRY_FROM_EMAIL` | yes | `Poptávka <poptavka@jonasrech.com>` (domain verified in Resend) |
+| `INQUIRY_TO_EMAIL` | no | defaults to `hello@jonasrech.com` |
+
+Without them the endpoint answers 503 and the form shows its error state; the draft stays saved in the browser.

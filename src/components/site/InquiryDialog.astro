@@ -1,0 +1,659 @@
+---
+/**
+ * Fullscreen project inquiry (Czech). Opens from the "Pojďme to probrat" CTAs
+ * (a.cta[href="#contact"]); without JS those links keep going to the contact footer.
+ * Steps come from src/data/inquiry.ts; behaviour lives in src/scripts/inquiry.ts and
+ * submission in api/inquiry.ts (Vercel Function).
+ */
+import Icon from '../ui/Icon.astro';
+import { inquirySteps, type TextField } from '@/data/inquiry';
+import { site } from '@/data/site';
+
+const total = inquirySteps.length;
+const pad = (n: number) => String(n).padStart(2, '0');
+const fieldId = (f: TextField) => `inq-${f.name}`;
+---
+
+<dialog id="inquiry" class="inq" aria-labelledby="inq-title-1">
+  <div class="inq__glow" aria-hidden="true"><span></span><span></span></div>
+
+  <div class="inq__shell">
+    <header class="inq__top container">
+      <p class="caption caption--accent">Poptávka</p>
+      <div class="inq__progress" aria-hidden="true"><span class="inq__progress-bar"></span></div>
+      <p class="inq__count caption" aria-live="polite"><span data-inq-count>1</span> / {total}</p>
+      <button class="inq__close" type="button" data-inq-close>
+        <span class="caption" aria-hidden="true">Zavřít</span>
+        <Icon name="x" size={24} />
+        <span class="visually-hidden">Zavřít dotazník (rozpracované odpovědi se uloží)</span>
+      </button>
+    </header>
+
+    <form class="inq__form" novalidate data-inq-form>
+      <!-- Honeypot: hidden from people and assistive tech, bots tend to fill it. -->
+      <div class="inq__trap" aria-hidden="true">
+        <label>Web <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+      </div>
+
+      <div class="inq__body container">
+        <section class="inq__panel" data-inq-resume hidden>
+          <p class="caption caption--accent">Rozpracovaná poptávka</p>
+          <h2 class="inq__title" tabindex="-1" id="inq-resume-title">Máte tu rozdělaný dotazník.</h2>
+          <p class="inq__lead">Můžete navázat tam, kde jste skončili, nebo začít znovu.</p>
+          <div class="inq__actions-inline">
+            <button class="inq__next" type="button" data-inq-resume-continue>Pokračovat</button>
+            <button class="inq__ghost" type="button" data-inq-resume-restart>Začít znovu</button>
+          </div>
+        </section>
+
+        {
+          inquirySteps.map((step, i) => (
+            <section class="inq__step" data-inq-step={i} hidden>
+              <fieldset class="inq__fieldset" aria-describedby={`inq-error-${i + 1}`}>
+                <legend class="inq__legend">
+                  <span class="caption caption--accent">{pad(i + 1)} / {pad(total)}</span>
+                  <span class="inq__title" id={`inq-title-${i + 1}`} tabindex="-1">
+                    {step.title}
+                  </span>
+                </legend>
+                {step.lead && <p class="inq__lead">{step.lead}</p>}
+
+                {step.kind !== 'contact' && (
+                  <div class="inq__options" data-inq-group={step.name} data-max={step.max}>
+                    {step.options.map((option) => (
+                      <label class="inq__option">
+                        <input
+                          type={step.kind === 'single' ? 'radio' : 'checkbox'}
+                          name={step.name}
+                          value={option}
+                        />
+                        <span class:list={['inq__mark', { 'inq__mark--square': step.kind === 'multi' }]} aria-hidden="true" />
+                        <span class="inq__option-label">{option}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+
+                {step.kind !== 'contact' && step.max && (
+                  <p class="inq__hint caption" data-inq-limit>Vybráno <span data-inq-picked>0</span> ze {step.max}</p>
+                )}
+
+                {step.kind !== 'contact' && step.other && (
+                  <div class="inq__field" data-inq-other={step.otherOption} hidden>
+                    <label for={fieldId(step.other)}>{step.other.label} <span class="inq__optional">nepovinné</span></label>
+                    <input id={fieldId(step.other)} name={step.other.name} type="text" maxlength={step.other.maxLength} />
+                  </div>
+                )}
+
+                {step.kind !== 'contact' && step.note && <p class="inq__note">{step.note}</p>}
+
+                {(step.kind === 'contact' ? step.fields : step.field ? [step.field] : []).map((f) => (
+                  <div class:list={['inq__field', { 'inq__field--wide': f.type === 'textarea' }]}>
+                    <label for={fieldId(f)}>
+                      {f.label} {!f.required && <span class="inq__optional">nepovinné</span>}
+                    </label>
+                    {f.type === 'textarea' ? (
+                      <textarea
+                        id={fieldId(f)}
+                        name={f.name}
+                        rows="4"
+                        maxlength={f.maxLength}
+                        aria-describedby={f.help ? `${fieldId(f)}-help` : undefined}
+                      />
+                    ) : (
+                      <input
+                        id={fieldId(f)}
+                        name={f.name}
+                        type={f.type === 'url' ? 'text' : f.type}
+                        inputmode={f.type === 'url' ? 'url' : undefined}
+                        autocomplete={f.autocomplete}
+                        placeholder={f.placeholder}
+                        maxlength={f.maxLength}
+                        required={f.required}
+                        aria-describedby={`${fieldId(f)}-error`}
+                        data-error={f.error}
+                      />
+                    )}
+                    {f.help && (
+                      <p class="inq__help" id={`${fieldId(f)}-help`}>
+                        {f.help}
+                      </p>
+                    )}
+                    {f.required && <p class="inq__field-error" id={`${fieldId(f)}-error`} />}
+                  </div>
+                ))}
+
+                <p class="inq__error" id={`inq-error-${i + 1}`} role="alert" data-error={'error' in step ? step.error : ''} />
+              </fieldset>
+            </section>
+          ))
+        }
+
+        <section class="inq__panel" data-inq-done hidden>
+          <p class="caption caption--accent">Odesláno</p>
+          <h2 class="inq__title" tabindex="-1" id="inq-done-title">Díky, mám vše potřebné pro první představu. Ozvu se vám.</h2>
+          <div class="inq__actions-inline">
+            <button class="inq__ghost" type="button" data-inq-close>Zpět na web</button>
+          </div>
+        </section>
+
+        <section class="inq__panel" data-inq-failed hidden>
+          <p class="caption caption--accent">Nepovedlo se</p>
+          <h2 class="inq__title" tabindex="-1" id="inq-failed-title">Poptávku se nepodařilo odeslat.</h2>
+          <p class="inq__lead">
+            Odpovědi máte uložené, nic se neztratilo. Zkuste to prosím znovu, případně mi napište na {site.email}.
+          </p>
+          <div class="inq__actions-inline">
+            <button class="inq__next" type="button" data-inq-retry>Zkusit znovu</button>
+            <button class="inq__ghost" type="button" data-inq-back-to-form>Upravit odpovědi</button>
+          </div>
+        </section>
+      </div>
+
+      <footer class="inq__nav container" data-inq-nav>
+        <button class="inq__back" type="button" data-inq-prev>
+          <Icon name="arrow-up-right" size={16} class="inq__back-icon" />
+          Zpět
+        </button>
+        <p class="inq__keys caption" aria-hidden="true">Enter pokračuje</p>
+        <button class="inq__next" type="submit" data-inq-next>
+          <span data-inq-next-label>Další</span>
+          <span class="inq__next-icon" aria-hidden="true"><Icon name="arrow-up-right" size={16} /></span>
+        </button>
+      </footer>
+    </form>
+  </div>
+</dialog>
+
+<script>
+  import '@/scripts/inquiry';
+</script>
+
+<style>
+  .inq {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--color-background);
+    color: var(--color-text-primary);
+    overflow: hidden;
+  }
+
+  .inq[open] {
+    display: block;
+  }
+
+  /* Component display rules below would otherwise override the hidden attribute. */
+  .inq [hidden]:not(.inq__back) {
+    display: none;
+  }
+
+  .inq::backdrop {
+    background: transparent;
+  }
+
+  :global(html:has(#inquiry[open])) {
+    overflow: hidden;
+  }
+
+  /* Static version of the footer glow, kept low behind the form. */
+  .inq__glow {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .inq__glow span {
+    position: absolute;
+    bottom: -55%;
+    width: 90vw;
+    height: 90vh;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgb(255 77 24 / 0.55), rgb(120 32 8 / 0.25) 40%, transparent 70%);
+    filter: blur(5rem);
+    opacity: 0.32;
+  }
+
+  .inq__glow span:first-child {
+    left: -40%;
+  }
+
+  .inq__glow span:last-child {
+    right: -45%;
+    bottom: -65%;
+    opacity: 0.22;
+  }
+
+  .inq__shell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  /* ---------- Top bar ---------- */
+  .inq__top {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: var(--space-4);
+    height: var(--header-height);
+    flex-shrink: 0;
+  }
+
+  .inq__progress {
+    height: 1px;
+    background: var(--color-rule);
+    overflow: hidden;
+  }
+
+  .inq__progress-bar {
+    display: block;
+    height: 100%;
+    background: var(--color-accent);
+    transform: scaleX(var(--inq-progress, 0.14));
+    transform-origin: left center;
+    transition: transform 600ms var(--ease-out);
+  }
+
+  .inq__count {
+    min-width: 4ch;
+    text-align: right;
+  }
+
+  .inq__close {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 44px;
+    padding-left: var(--space-2);
+  }
+
+  .inq__close .caption {
+    display: none;
+  }
+
+  .inq__close :global(svg) {
+    stroke-width: 1.75;
+  }
+
+  /* ---------- Form body ---------- */
+  .inq__form {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .inq__body {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-top: clamp(24px, 6vh, 72px);
+    padding-bottom: 48px;
+  }
+
+  .inq__step,
+  .inq__panel {
+    max-width: 760px;
+  }
+
+  .inq__fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  .inq__legend {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: 0;
+    margin-bottom: var(--space-4);
+  }
+
+  .inq__title {
+    display: block;
+    font-family: var(--font-display);
+    font-size: clamp(32px, 6vw, 60px);
+    font-weight: var(--weight-medium);
+    line-height: 1.04;
+    letter-spacing: -0.04em;
+    color: var(--color-text-display);
+    outline: none;
+  }
+
+  .inq__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .inq__lead {
+    max-width: 560px;
+    font-size: 17px;
+    line-height: 26px;
+    color: var(--color-text-secondary);
+  }
+
+  /* ---------- Options ---------- */
+  .inq__options {
+    display: flex;
+    flex-direction: column;
+    margin-top: 32px;
+    border-bottom: 1px solid var(--color-rule);
+  }
+
+  .inq__option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    min-height: 60px;
+    padding: 14px 4px;
+    border-top: 1px solid var(--color-rule);
+    font-size: clamp(17px, 2.2vw, 21px);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    transition: color var(--duration-base) var(--ease-out), padding-left 300ms var(--ease-out);
+  }
+
+  .inq__option input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .inq__mark {
+    position: relative;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid var(--color-text-secondary);
+    border-radius: 50%;
+    transition: border-color var(--duration-base) var(--ease-out), background-color var(--duration-base) var(--ease-out);
+  }
+
+  .inq__mark--square {
+    border-radius: 4px;
+  }
+
+  .inq__mark::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: inherit;
+    background: var(--color-ink);
+    transform: scale(0);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .inq__option:hover {
+    color: var(--color-text-display);
+    padding-left: 10px;
+  }
+
+  .inq__option:hover .inq__mark {
+    border-color: var(--color-text-display);
+  }
+
+  .inq__option:has(input:checked) {
+    color: var(--color-accent);
+    padding-left: 10px;
+  }
+
+  .inq__option:has(input:checked) .inq__mark {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+  }
+
+  .inq__option:has(input:checked) .inq__mark::after {
+    transform: scale(1);
+  }
+
+  .inq__option:has(input:focus-visible) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .inq__option:has(input:disabled) {
+    color: var(--color-rule);
+    cursor: not-allowed;
+  }
+
+  .inq__option:has(input:disabled) .inq__mark {
+    border-color: var(--color-rule);
+  }
+
+  .inq__hint {
+    margin-top: var(--space-4);
+  }
+
+  .inq__note {
+    max-width: 560px;
+    margin-top: var(--space-6);
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--color-accent);
+    font-size: 15px;
+    line-height: 23px;
+    color: var(--color-text-secondary);
+  }
+
+  /* ---------- Text fields ---------- */
+  .inq__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: 32px;
+  }
+
+  .inq__field label {
+    font-size: 15px;
+    color: var(--color-text-secondary);
+  }
+
+  .inq__optional {
+    margin-left: 6px;
+    font-family: var(--font-caption);
+    font-size: var(--caption-size);
+    letter-spacing: var(--caption-tracking);
+    text-transform: uppercase;
+    color: var(--color-rule);
+  }
+
+  .inq__field input,
+  .inq__field textarea {
+    width: 100%;
+    padding: 10px 0 12px;
+    border: 0;
+    border-bottom: 1px solid var(--color-rule);
+    border-radius: 0;
+    background: transparent;
+    color: var(--color-text-display);
+    font: inherit;
+    font-size: 20px;
+    line-height: 1.4;
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  .inq__field textarea {
+    resize: vertical;
+    min-height: 120px;
+    font-size: 17px;
+  }
+
+  .inq__field input::placeholder {
+    color: var(--color-rule);
+  }
+
+  .inq__field input:focus,
+  .inq__field textarea:focus {
+    outline: none;
+    border-bottom-color: var(--color-accent);
+  }
+
+  .inq__field input[aria-invalid='true'] {
+    border-bottom-color: var(--color-accent);
+  }
+
+  .inq__help {
+    font-size: 14px;
+    line-height: 21px;
+    color: var(--color-text-secondary);
+  }
+
+  .inq__error,
+  .inq__field-error {
+    min-height: 1.2em;
+    margin-top: var(--space-3);
+    font-size: 15px;
+    color: var(--color-accent);
+  }
+
+  .inq__field-error {
+    margin-top: 0;
+    font-size: 14px;
+  }
+
+  .inq__error:empty,
+  .inq__field-error:empty {
+    visibility: hidden;
+  }
+
+  .inq__trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  /* ---------- Bottom navigation ---------- */
+  .inq__nav {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-4);
+    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+    border-top: 1px solid var(--color-rule);
+    background: rgb(16 16 15 / 0.86);
+    backdrop-filter: blur(12px);
+  }
+
+  .inq__back {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    font-size: 15px;
+    color: var(--color-text-secondary);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .inq__back :global(.inq__back-icon) {
+    transform: rotate(-135deg);
+    stroke-width: 1.75;
+  }
+
+  .inq__back:hover {
+    color: var(--color-text-display);
+  }
+
+  .inq__back[hidden] {
+    display: flex;
+    visibility: hidden;
+  }
+
+  .inq__keys {
+    display: none;
+  }
+
+  .inq__next,
+  .inq__ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 52px;
+    padding: 6px 6px 6px 22px;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+    color: var(--color-ink);
+    font-size: 17px;
+    font-weight: var(--weight-medium);
+    transition: background-color var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out);
+  }
+
+  .inq__next:hover {
+    background: var(--color-text-display);
+  }
+
+  .inq__next[disabled] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .inq__next-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-text-display);
+    color: var(--color-ink);
+  }
+
+  .inq__ghost {
+    padding: 6px 22px;
+    background: transparent;
+    color: var(--color-text-display);
+    box-shadow: inset 0 0 0 1px var(--color-rule);
+  }
+
+  .inq__ghost:hover {
+    box-shadow: inset 0 0 0 1px var(--color-text-display);
+  }
+
+  .inq__panel .inq__next {
+    padding-right: 22px;
+  }
+
+  .inq__actions-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 640px) {
+    .inq__close .caption {
+      display: block;
+    }
+
+    .inq__keys {
+      display: block;
+      margin-left: auto;
+      color: var(--color-rule);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .inq__body {
+      padding-top: clamp(48px, 10vh, 120px);
+    }
+
+    .inq__step,
+    .inq__panel {
+      margin-left: calc((100% - 760px) / 2 - 120px);
+    }
+  }
+</style>

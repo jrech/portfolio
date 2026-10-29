@@ -2,6 +2,7 @@
 import '@fontsource-variable/rethink-sans';
 import '@fontsource/space-mono/700.css';
 import '@/styles/global.css';
+import InquiryDialog from '@/components/site/InquiryDialog.astro';
 import { getLocale, localeMeta, locales, switchLocalePath, useT } from '@/i18n';
 
 interface Props {
@@ -58,6 +59,7 @@ const xDefault = new URL(switchLocalePath(pathname, 'cs'), Astro.site).href;
       <slot />
     </main>
     <slot name="footer" />
+    {locale === 'cs' && <InquiryDialog />}
 
     <script>
       // Start as soon as the deferred Astro script runs; another frame of

@@ -20,6 +20,9 @@ const root = document.documentElement;
 // Kept short and triggered early: content should already be moving as it enters view.
 const MOTION = { duration: 0.7, heading: 0.85, stagger: 0.06, distance: 20 };
 const START = 'top 92%';
+// Separator lines draw slower and on an even in-out curve, so the whole stroke is seen
+// travelling across instead of jumping to ~70% in the first frames (Jonas, 2026-10-29).
+const RULE = { duration: 1.4, ease: 'power2.inOut' };
 const visible = (el: HTMLElement) => el.getClientRects().length > 0;
 const passed = (el: HTMLElement) => el.getBoundingClientRect().bottom <= 0;
 
@@ -122,8 +125,8 @@ function revealRules() {
   ScrollTrigger.batch(generic, {
     start: 'top 90%', once: true, batchMax: 4, interval: 0.06,
     onEnter: batch => gsap.to(batch, {
-      '--rule-progress': 1, duration: MOTION.duration,
-      stagger: MOTION.stagger, ease: EASE,
+      '--rule-progress': 1, duration: RULE.duration,
+      stagger: MOTION.stagger, ease: RULE.ease,
     }),
   });
 }
@@ -199,7 +202,7 @@ function revealServices() {
               opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
               clearProps: 'transform,opacity',
             })
-            .to(row, { '--rule-progress': 1, duration: MOTION.duration, ease: EASE }, '<')
+            .to(row, { '--rule-progress': 1, duration: RULE.duration, ease: RULE.ease }, '<')
             .call(resolve, [], 0.07); // next row follows a beat later, overlapping
         },
       });
@@ -246,7 +249,7 @@ function revealSequences() {
         ease: EASE, clearProps: 'transform,opacity',
       }, '-=0.55');
       timeline.to(questions.filter(el => el.classList.contains('motion-rule-top')), {
-        '--rule-progress': 1, duration: MOTION.duration, stagger: 0.07, ease: EASE,
+        '--rule-progress': 1, duration: RULE.duration, stagger: 0.07, ease: RULE.ease,
       }, '<0.22');
     },
   });
