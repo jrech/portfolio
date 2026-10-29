@@ -62,7 +62,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
             <li>
               <a class="footer__social" href={s.href} rel="noopener">
                 {s.label}
-                <Icon name="arrow-up-right" size={14} />
+                <span class="footer__badge" aria-hidden="true"><Icon name="arrow-up-right" size={10} /></span>
               </a>
             </li>
           ))
@@ -120,7 +120,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   @media (hover: hover) {
     .footer:has(a:hover) .footer__ambient :global(canvas) {
-      filter: brightness(1.35) saturate(1.1);
+      filter: brightness(1.15) saturate(1.05);
     }
   }
 
@@ -243,8 +243,19 @@ const pad = (n: number) => String(n).padStart(2, '0');
     transition: color var(--duration-fast) var(--ease-out);
   }
 
-  .footer__social :global(svg) {
-    stroke-width: 1.75;
+  /* Small filled square with the arrow knocked out (Pen social links). */
+  .footer__badge {
+    display: grid;
+    place-items: center;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    background: currentColor;
+  }
+
+  .footer__badge :global(svg) {
+    color: var(--color-background);
+    stroke-width: 3;
   }
 
   .footer__link:hover,
