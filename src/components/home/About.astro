@@ -1,7 +1,6 @@
 ---
 import Eyebrow from '../ui/Eyebrow.astro';
 import CtaButton from '../ui/CtaButton.astro';
-import Icon from '../ui/Icon.astro';
 import MediaFrame from '../ui/MediaFrame.astro';
 import Lines from '../ui/Lines.astro';
 import { getLocale, localePath, useT } from '@/i18n';
@@ -34,15 +33,11 @@ const locale = getLocale(Astro);
           {t.about.detail}
         </p>
 
-        <!-- Desktop frame: CTA button. Tablet/mobile frames: text links + signature. -->
+        <!-- Desktop frame: CTA button. Tablet/mobile frames: text links. -->
         <CtaButton href="#contact" label={t.cta.startProject} class="about__cta" />
         <div class="about__links">
           <a class="about__link-primary" href="#contact">{t.about.linkPrimary}</a>
           <a class="about__link-secondary" href={localePath(locale, '/about')}>{t.about.linkSecondary}</a>
-          <p class="about__signature">
-            <Icon name="arrow-up-right" size={20} />
-            <span class="caption">{t.about.signature}</span>
-          </p>
         </div>
       </div>
     </div>
@@ -177,20 +172,6 @@ const locale = getLocale(Astro);
     color: var(--color-text-primary);
   }
 
-  .about__signature {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    align-self: stretch;
-    margin-top: 32px;
-    padding-top: 24px;
-    border-top: 1px solid var(--color-rule);
-    color: var(--color-accent);
-  }
-
-  .about__signature :global(svg) {
-    stroke-width: 1.75;
-  }
 
   /* Tablet (834) */
   @media (min-width: 640px) {
