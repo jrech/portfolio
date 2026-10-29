@@ -1,7 +1,7 @@
 /**
  * Project inquiry questionnaire (Czech). Single source for the fullscreen form
- * (InquiryDialog.astro + scripts/inquiry.ts) and the server check (api/inquiry.ts):
- * the endpoint only accepts option values listed here.
+ * (InquiryDialog.astro + scripts/inquiry.ts), the final answer check and the
+ * labelled fields sent to Formspree.
  *
  * Each step is an ordered list of blocks: choice groups and text fields.
  */
@@ -196,6 +196,9 @@ export const inquirySteps: InquiryStep[] = [
   },
 ];
 
+/** Jonas's Formspree form. The ID is a public endpoint by design, not a secret. */
+export const FORMSPREE_ENDPOINT = 'https://formspree.io/f/maeebnqp';
+
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export type InquiryAnswers = Record<string, string | string[]>;
@@ -239,4 +242,29 @@ export function validateInquiry(input: unknown): { ok: true; answers: InquiryAns
     }
   }
   return { ok: true, answers };
+}
+
+/** Answers as (Czech label, value) pairs: contact first, then the project in question order. */
+export function inquiryRows(answers: InquiryAnswers): [string, string][] {
+  const value = (key: string) => {
+    const v = answers[key];
+    return (Array.isArray(v) ? v.join(', ') : v) || '—';
+  };
+  const collect = (contact: boolean) =>
+    inquirySteps
+      .filter((step) => (step.id === 'contact') === contact)
+      .flatMap((step) =>
+        step.blocks.flatMap((block): [string, string][] => {
+          if (block.kind === 'field') {
+            const f = block.field;
+            // Conditional fields that were never shown stay out.
+            return f.showWhen && !answers[f.name] ? [] : [[f.label, value(f.name)]];
+          }
+          const label = block.label ?? step.title;
+          const rows: [string, string][] = [[label, value(block.name)]];
+          if (block.other && answers[block.other.name]) rows.push([`${label}: ${block.other.label}`, value(block.other.name)]);
+          return rows;
+        }),
+      );
+  return [...collect(true), ...collect(false)];
 }

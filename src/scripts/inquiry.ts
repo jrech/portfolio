@@ -1,10 +1,11 @@
 /**
  * Project inquiry dialog (markup: components/site/InquiryDialog.astro).
  * Opens from every `a.cta[href="#contact"]`; keeps a draft in localStorage so an
- * unfinished questionnaire can be resumed; validates each step; posts to /api/inquiry.
+ * unfinished questionnaire can be resumed; validates each step; sends the answers
+ * to Formspree as labelled fields (straight from the browser, Formspree's AJAX mode).
  * Step transitions use GSAP (loaded on first open), skipped for reduced motion.
  */
-import { EMAIL_PATTERN, inquirySteps } from '@/data/inquiry';
+import { EMAIL_PATTERN, FORMSPREE_ENDPOINT, inquiryRows, inquirySteps, validateInquiry } from '@/data/inquiry';
 
 type Answers = Record<string, string | string[]>;
 interface Draft {
@@ -196,19 +197,25 @@ if (dialog) {
     sending = true;
     next.disabled = true;
     nextLabel.textContent = 'Odesílám…';
-    const payload = {
-      ...collect(),
-      website: (form.elements.namedItem('website') as HTMLInputElement).value,
-      startedAt,
-    };
     try {
-      const response = await fetch('/api/inquiry', {
+      // Same check the form already enforced; it also drops fields that were hidden.
+      const checked = validateInquiry(collect());
+      if (!checked.ok) throw new Error('invalid');
+      const { answers } = checked;
+      const payload: Record<string, string> = {
+        _subject: `Nová poptávka: ${answers.name}`,
+        _replyto: String(answers.email),
+        // Formspree's honeypot: filled only by bots, then silently dropped.
+        _gotcha: (form.elements.namedItem('website') as HTMLInputElement).value,
+        email: String(answers.email),
+        ...Object.fromEntries(inquiryRows(answers)),
+      };
+      const response = await fetch(FORMSPREE_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(payload),
       });
-      const result = await response.json().catch(() => ({ ok: false }));
-      if (!response.ok || !result.ok) throw new Error(String(response.status));
+      if (!response.ok) throw new Error(String(response.status));
       clearDraft();
       form.reset();
       steps.forEach(syncStepUi);

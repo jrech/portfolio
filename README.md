@@ -52,14 +52,4 @@ Czech is the default at `/`, English lives under `/en/` (Astro i18n). Visitors o
 
 The main CTA on Czech pages opens a fullscreen questionnaire (`src/components/site/InquiryDialog.astro`, `src/scripts/inquiry.ts`; questions in `src/data/inquiry.ts`). English pages keep linking to `#contact`.
 
-Answers are posted to `api/inquiry.ts`, a Vercel Function that validates them against `src/data/inquiry.ts`, applies spam checks (honeypot, minimum fill time, same-origin, per-IP rate limit) and sends the email through [Resend](https://resend.com). It does not run under `astro dev`/`astro preview`; use `vercel dev` or a preview deploy.
-
-Set these in Vercel → Project → Settings → Environment Variables:
-
-| Variable | Required | Example |
-| --- | --- | --- |
-| `RESEND_API_KEY` | yes | `re_…` |
-| `INQUIRY_FROM_EMAIL` | yes | `Poptávka <poptavka@jonasrech.com>` (domain verified in Resend) |
-| `INQUIRY_TO_EMAIL` | no | defaults to `hello@jonasrech.com` |
-
-Without them the endpoint answers 503 and the form shows its error state; the draft stays saved in the browser.
+On the last step the answers go straight from the browser to Jonas's Formspree form (`FORMSPREE_ENDPOINT` in `src/data/inquiry.ts`, a public form ID, no keys or env vars). Each answer is sent as a field named by its Czech question, contact first, with `_subject` "Nová poptávka: <name>" and `_replyto` set to the visitor's e-mail so a reply goes straight back. Spam protection: Formspree's `_gotcha` honeypot plus its own filtering. Formspree settings (recipient, notifications, allowed domains) live in the Formspree dashboard.

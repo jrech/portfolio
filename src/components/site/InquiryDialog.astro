@@ -3,7 +3,7 @@
  * Fullscreen project inquiry (Czech). Opens from the "Pojďme to probrat" CTAs
  * (a.cta[href="#contact"]); without JS those links keep going to the contact footer.
  * Steps come from src/data/inquiry.ts; behaviour lives in src/scripts/inquiry.ts and
- * submission in api/inquiry.ts (Vercel Function).
+ * submission goes to Formspree (FORMSPREE_ENDPOINT in src/data/inquiry.ts).
  */
 import Icon from '../ui/Icon.astro';
 import { inquirySteps, type TextField } from '@/data/inquiry';
