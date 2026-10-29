@@ -100,7 +100,21 @@ const locale = getLocale(Astro);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 26px;
+  }
+
+  /* Hierarchy, not one even gap: heading, then the two paragraphs as one group,
+     then the action set further apart (Jonas, 2026-10-29). */
+  .about__description {
+    margin-top: 24px;
+  }
+
+  .about__detail {
+    margin-top: 12px;
+  }
+
+  .about__intro :global(.about__cta),
+  .about__link-primary {
+    margin-top: 40px;
   }
 
   .about__hello {
@@ -127,7 +141,6 @@ const locale = getLocale(Astro);
     display: none;
   }
 
-  /* The links share the intro's 26px rhythm. */
   .about__links {
     display: contents;
   }
@@ -140,7 +153,7 @@ const locale = getLocale(Astro);
   }
 
   .about__link-secondary {
-    margin-top: 6px;
+    margin-top: 16px;
     font-size: 14px;
     line-height: normal;
     color: var(--color-text-secondary);
@@ -164,6 +177,7 @@ const locale = getLocale(Astro);
     align-items: center;
     gap: 14px;
     align-self: stretch;
+    margin-top: 32px;
     padding-top: 24px;
     border-top: 1px solid var(--color-rule);
     color: var(--color-accent);
@@ -259,7 +273,12 @@ const locale = getLocale(Astro);
       line-height: 29px;
     }
 
+    .about__description {
+      margin-top: 32px;
+    }
+
     .about__detail {
+      margin-top: 16px;
       max-width: 454px;
       font-size: 17px;
       line-height: 26px;
@@ -267,6 +286,7 @@ const locale = getLocale(Astro);
 
     .about__intro :global(.about__cta) {
       display: inline-flex;
+      margin-top: 48px;
     }
 
     .about__links {
