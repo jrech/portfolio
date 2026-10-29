@@ -19,10 +19,6 @@ const steps = t.process.steps;
         <p class="process__text">
           {t.process.text}
         </p>
-        <p class="process__promise">
-          <Icon name="messages-square" size={20} />
-          {t.process.promise}
-        </p>
       </div>
     </header>
 
@@ -81,20 +77,6 @@ const steps = t.process.steps;
     font-size: 17px;
     line-height: 26px;
     color: var(--color-text-secondary);
-  }
-
-  /* Promise line only appears in the desktop frame. */
-  .process__promise {
-    display: none;
-    align-items: center;
-    gap: 12px;
-    font-size: 14px;
-    line-height: normal;
-  }
-
-  .process__promise :global(svg) {
-    color: var(--color-accent);
-    stroke-width: 1.75;
   }
 
   .process__steps {
@@ -200,10 +182,6 @@ const steps = t.process.steps;
 
     .process__summary {
       flex: 1 0 280px;
-    }
-
-    .process__promise {
-      display: flex;
     }
 
     .process__steps {

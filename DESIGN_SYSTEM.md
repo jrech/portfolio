@@ -41,7 +41,7 @@ CSS custom properties live in `src/styles/tokens.css`. Names follow the Pen vari
 | `--color-cream-muted` | `#595A53` | — | Secondary text on cream |
 | `--color-cream-rule` | `#C9C5BA` | — | Dividers on cream |
 
-**Approved application:** dark is the default. Cream is used only for Services and Process (all three breakpoints). Preserve orange accents. No gradients or ambient glow on approved pages, except the hero portrait readability shade.
+**Approved application:** dark is the default. Cream is used only for Services and Process (all three breakpoints). Preserve orange accents. No gradients or ambient glow on approved pages, except the hero portrait readability shade and the footer ambient glow (ported from the live site at Jonas's request, 2026-10-29; not in Pen).
 
 ### Typography
 
@@ -193,7 +193,7 @@ Components:
 - **Service row**: `<ol>`; index hidden on mobile; desktop copy is longer than tablet/mobile copy (both kept, swapped by CSS).
 - **Testimonial**: `<figure>` + `<blockquote lang="cs">`, 48px avatar placeholder (slot), name 14/700, company Rethink 11 (desktop) / Space Mono caption (tablet, mobile).
 - **About**: desktop uses the CTA button; tablet/mobile use the text link "Let’s work together ↗", "More about me" and the "ONE PERSON. A SHARED DIRECTION." signature (per frame).
-- **Process step**: big index (secondary color), title, description, outcome caption with 15px accent arrow. Promise line ("No handoffs. No guesswork.", Lucide `messages-square`) desktop only.
+- **Process step**: big index (secondary color), title, description, outcome caption with 15px accent arrow. The Pen promise line ("No handoffs. No guesswork.", Lucide `messages-square`) was **removed** at Jonas's request (2026-10-29), CZ and EN.
 - **FAQ**: native `<details name="faq">` — exclusive accordion, keyboard accessible, zero JS; first item open; `+` (primary) / `−` (accent) icons, 22px.
 
 ### Selected work grid (updated 2026-10-28, approved by Jonas)
