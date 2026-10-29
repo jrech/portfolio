@@ -29,7 +29,7 @@ const passed = (el: HTMLElement) => el.getBoundingClientRect().bottom <= 0;
 // Split only at entry: off-screen headings keep natural wrapping until needed.
 function revealHeadings() {
   document.querySelectorAll<HTMLElement>('[data-reveal="heading"]').forEach((heading) => {
-    if (heading.closest('.footer, .services') || (heading.closest('.faq') && matchMedia('(min-width: 1024px)').matches)) return;
+    if (heading.closest('.footer, .services, .about') || (heading.closest('.faq') && matchMedia('(min-width: 1024px)').matches)) return;
     if (passed(heading)) return;
     gsap.set(heading, { opacity: 0 });
     const play = async () => {
@@ -104,7 +104,7 @@ function revealHero() {
 function revealContent() {
   const selector = '[data-reveal="fade"], .eyebrow, .footer__lead, .footer__email, .footer__legal, .footer__invite .cta';
   const candidates = gsap.utils.toArray<HTMLElement>(selector).filter(el =>
-    !el.closest('.hero, #site-menu, .footer, .services') && visible(el) &&
+    !el.closest('.hero, #site-menu, .footer, .services, .about') && visible(el) &&
     !(matchMedia('(min-width: 1024px)').matches && el.matches('.step, .faq__item')));
   // Animate the owning block once; never stack parent and child translations.
   const items = candidates.filter(el => !passed(el) && !candidates.some(parent => parent !== el && parent.contains(el)));
@@ -268,6 +268,60 @@ function revealSequences() {
   });
 }
 
+// About plays in reading order instead of all at once: eyebrow + H2, then the
+// portrait, then the text column beside it (Jonas, 2026-10-29). Each block still
+// waits for its own entry, so on stacked layouts nothing finishes off screen.
+function revealAbout() {
+  const section = document.querySelector<HTMLElement>('.about');
+  const heading = section?.querySelector<HTMLElement>('[data-reveal="heading"]');
+  if (!section || !heading || passed(heading)) return;
+  const eyebrow = [...section.querySelectorAll<HTMLElement>('.about__heading .eyebrow')].filter(visible);
+  const blocks = gsap.utils.toArray<HTMLElement>('.about__portrait, .about__intro').filter(visible);
+  gsap.set(heading, { opacity: 0 });
+  gsap.set([...eyebrow, ...blocks], { opacity: 0, y: MOTION.distance });
+
+  let previous = new Promise<void>(resolve => {
+    ScrollTrigger.create({
+      trigger: heading, start: START, once: true,
+      onEnter: async () => {
+        await document.fonts.ready;
+        if (!root.classList.contains('js-motion')) return resolve();
+        const split = SplitText.create(heading, {
+          type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
+        });
+        gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
+        const timeline = gsap.timeline({ defaults: { ease: EASE } });
+        if (eyebrow.length) timeline.to(eyebrow, { opacity: 1, y: 0, duration: 0.45, clearProps: 'transform,opacity' });
+        timeline.set(heading, { opacity: 1 });
+        timeline.to(split.lines, {
+          yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading, stagger: MOTION.stagger,
+          onComplete: () => {
+            split.revert();
+            gsap.set(heading, { opacity: 1 });
+          },
+        }, eyebrow.length ? '-=0.3' : 0);
+        // The next block may start once the heading is well under way.
+        timeline.call(resolve, [], '-=0.45');
+      },
+    });
+  });
+
+  blocks.forEach(block => {
+    const after = previous;
+    previous = new Promise<void>(resolve => {
+      ScrollTrigger.create({
+        trigger: block, start: START, once: true,
+        onEnter: async () => {
+          await after;
+          gsap.to(block, {
+            opacity: 1, y: 0, duration: 0.9, ease: EASE, clearProps: 'transform,opacity',
+          });
+          gsap.delayedCall(0.22, resolve);
+        },
+      });
+    });
+  });
+}
 
 function revealFooter() {
   const footer = document.querySelector<HTMLElement>('.footer');
@@ -340,7 +394,9 @@ function revealFooter() {
     const waitForPrevious = previous;
     previous = new Promise<void>(resolve => {
       ScrollTrigger.create({
-        trigger: container, start: START, once: true,
+        // The legal row sits at the very bottom: at max scroll it never reaches
+        // START (92%) on tall viewports, so footer groups start once visible.
+        trigger: container, start: 'top bottom', once: true,
         onEnter: async () => {
           await waitForPrevious;
           if (!root.classList.contains('js-motion') || passed(container)) {
@@ -544,6 +600,7 @@ function initializeMotion() {
     revealRules();
     revealServices();
     revealSequences();
+    revealAbout();
     revealFooter();
     root.classList.add('motion-ready');
     cursor();
