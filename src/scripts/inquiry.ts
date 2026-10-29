@@ -13,7 +13,9 @@ interface Draft {
   startedAt: number;
 }
 
-const STORAGE_KEY = 'jr-inquiry-draft-v1';
+// v2: six steps (2026-10-29). Older seven-step drafts are ignored, not migrated.
+const STORAGE_KEY = 'jr-inquiry-draft-v2';
+const OLD_KEYS = ['jr-inquiry-draft-v1'];
 const dialog = document.getElementById('inquiry') as HTMLDialogElement | null;
 
 if (dialog) {
@@ -41,6 +43,7 @@ if (dialog) {
   /* ---------- Draft storage (best effort; private mode may throw) ---------- */
   const readDraft = (): Draft | null => {
     try {
+      OLD_KEYS.forEach((key) => localStorage.removeItem(key));
       const raw = localStorage.getItem(STORAGE_KEY);
       return raw ? (JSON.parse(raw) as Draft) : null;
     } catch {
@@ -97,46 +100,48 @@ if (dialog) {
     steps.forEach(syncStepUi);
   }
 
-  /** Max-choice limit and the "Něco jiného" field follow the current selection. */
+  /** Max-choice limits, "Něco jiného" fields and conditional fields follow the selection. */
   function syncStepUi(step: HTMLElement) {
-    const group = step.querySelector<HTMLElement>('[data-inq-group]');
-    if (!group) return;
-    const boxes = [...group.querySelectorAll<HTMLInputElement>('input')];
-    const picked = boxes.filter((b) => b.checked);
-    const max = Number(group.dataset.max) || 0;
-    if (max) {
-      boxes.forEach((b) => (b.disabled = !b.checked && picked.length >= max));
-      const counter = step.querySelector('[data-inq-picked]');
-      if (counter) counter.textContent = String(picked.length);
-    }
-    const other = step.querySelector<HTMLElement>('[data-inq-other]');
-    if (other) other.hidden = !picked.some((b) => b.value === other.dataset.inqOther);
+    step.querySelectorAll<HTMLElement>('[data-inq-group]').forEach((group) => {
+      const boxes = [...group.querySelectorAll<HTMLInputElement>('.inq__options input')];
+      const picked = boxes.filter((b) => b.checked);
+      const max = Number(group.dataset.max) || 0;
+      if (max) {
+        boxes.forEach((b) => (b.disabled = !b.checked && picked.length >= max));
+        const counter = group.querySelector('[data-inq-picked]');
+        if (counter) counter.textContent = String(picked.length);
+      }
+      const other = group.querySelector<HTMLElement>('[data-inq-other]');
+      if (other) other.hidden = !picked.some((b) => b.value === other.dataset.inqOther);
+    });
+    step.querySelectorAll<HTMLElement>('[data-show-name]').forEach((field) => {
+      const values = (field.dataset.showValues ?? '').split('|');
+      const checked = form.querySelector<HTMLInputElement>(`[name="${field.dataset.showName}"]:checked`);
+      field.hidden = !checked || !values.includes(checked.value);
+    });
   }
 
   /* ---------- Validation ---------- */
   function validate(index: number): boolean {
     const step = steps[index];
-    const def = inquirySteps[index];
-    const error = step.querySelector<HTMLElement>('.inq__error')!;
     let firstInvalid: HTMLElement | null = null;
-
-    if (def.kind === 'contact') {
-      for (const f of def.fields) {
+    for (const block of inquirySteps[index].blocks) {
+      if (block.kind === 'field') {
+        const f = block.field;
         const input = step.querySelector<HTMLInputElement>(`[name="${f.name}"]`)!;
         const value = input.value.trim();
-        const bad = (f.required && !value) || (f.type === 'email' && value !== '' && !EMAIL_PATTERN.test(value));
+        const bad = (!!f.required && !value) || (f.type === 'email' && value !== '' && !EMAIL_PATTERN.test(value));
         const fieldError = step.querySelector<HTMLElement>(`#inq-${f.name}-error`);
         input.setAttribute('aria-invalid', String(bad));
         if (fieldError) fieldError.textContent = bad ? (f.error ?? '') : '';
         if (bad && !firstInvalid) firstInvalid = input;
+        continue;
       }
-      error.textContent = '';
-    } else {
-      const picked = step.querySelectorAll(`[name="${def.name}"]:checked`).length;
-      const bad = picked === 0;
-      error.textContent = bad ? def.error : '';
-      step.querySelector('.inq__fieldset')?.setAttribute('aria-invalid', String(bad));
-      if (bad) firstInvalid = step.querySelector<HTMLInputElement>(`[name="${def.name}"]`);
+      const group = step.querySelector<HTMLElement>(`[data-inq-group="${block.name}"]`)!;
+      const bad = block.required && !group.querySelector('.inq__options input:checked');
+      group.querySelector<HTMLElement>('.inq__error')!.textContent = bad ? block.error : '';
+      group.setAttribute('aria-invalid', String(bad));
+      if (bad && !firstInvalid) firstInvalid = group.querySelector<HTMLInputElement>('.inq__options input');
     }
     if (firstInvalid) {
       firstInvalid.focus();
@@ -280,11 +285,11 @@ if (dialog) {
     const step = (e.target as HTMLElement).closest<HTMLElement>('[data-inq-step]');
     if (step) {
       syncStepUi(step);
-      // Clear the step error as soon as a choice is made.
-      const error = step.querySelector<HTMLElement>('.inq__error');
-      if (error && step.querySelector('input:checked')) {
-        error.textContent = '';
-        step.querySelector('.inq__fieldset')?.setAttribute('aria-invalid', 'false');
+      // Clear a group's error as soon as a choice is made in it.
+      const group = (e.target as HTMLElement).closest<HTMLElement>('[data-inq-group]');
+      if (group?.querySelector('.inq__options input:checked')) {
+        group.querySelector<HTMLElement>('.inq__error')!.textContent = '';
+        group.setAttribute('aria-invalid', 'false');
       }
     }
     writeDraft();

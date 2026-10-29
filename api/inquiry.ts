@@ -12,7 +12,7 @@ import { inquirySteps, validateInquiry, type InquiryAnswers } from '../src/data/
 declare const process: { env: Record<string, string | undefined> };
 const DEFAULT_TO = 'hello@jonasrech.com';
 
-const MIN_FILL_MS = 4000; // faster than any human can finish seven steps
+const MIN_FILL_MS = 4000; // faster than any human can finish six steps
 const MAX_BODY = 20_000;
 const RATE = { windowMs: 10 * 60 * 1000, max: 5 };
 const hits = new Map<string, number[]>(); // best effort: per serverless instance
@@ -32,29 +32,32 @@ const escapeHtml = (value: string) =>
   value.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
 /** Ordered rows (question, answer) for the email, following the questionnaire. */
-function rows(answers: InquiryAnswers): [string, string][] {
+function rows(answers: InquiryAnswers, contact: boolean): [string, string][] {
   const out: [string, string][] = [];
   const value = (key: string) => {
     const v = answers[key];
-    return Array.isArray(v) ? v.join(', ') : v || '—';
+    return (Array.isArray(v) ? v.join(', ') : v) || '—';
   };
   for (const step of inquirySteps) {
-    if (step.kind === 'contact') {
-      step.fields.forEach((f) => out.push([f.label, value(f.name)]));
-      continue;
+    if ((step.id === 'contact') !== contact) continue;
+    for (const block of step.blocks) {
+      if (block.kind === 'field') {
+        const f = block.field;
+        // Conditional fields that were never shown stay out of the email.
+        if (f.showWhen && !answers[f.name]) continue;
+        out.push([f.label, value(f.name)]);
+        continue;
+      }
+      out.push([block.label ?? step.title, value(block.name)]);
+      if (block.other && answers[block.other.name]) out.push([`${block.label ?? step.title}: ${block.other.label}`, value(block.other.name)]);
     }
-    out.push([step.title, value(step.name)]);
-    if (step.other && answers[step.other.name]) out.push([`${step.title} — ${step.other.label}`, value(step.other.name)]);
-    if (step.field) out.push([step.field.label, value(step.field.name)]);
   }
   return out;
 }
 
 function buildEmail(answers: InquiryAnswers) {
-  const contact = ['name', 'email', 'company', 'phone'];
-  const all = rows(answers);
-  const contactRows = all.slice(-contact.length);
-  const projectRows = all.slice(0, -contact.length);
+  const contactRows = rows(answers, true);
+  const projectRows = rows(answers, false);
   const block = (title: string, list: [string, string][]) =>
     `${title}\n${'-'.repeat(title.length)}\n` + list.map(([q, a]) => `${q}\n  ${a}`).join('\n\n');
   const text = `${block('Kontakt', contactRows)}\n\n${block('Projekt', projectRows)}\n`;
@@ -70,8 +73,7 @@ function buildEmail(answers: InquiryAnswers) {
       .join('') +
     '</table>';
   const html = `<div>${table('Kontakt', contactRows)}${table('Projekt', projectRows)}</div>`;
-  const project = Array.isArray(answers.project) ? answers.project[0] : answers.project;
-  const subject = `Nová poptávka: ${answers.name} — ${project}`;
+  const subject = `Nová poptávka: ${answers.name} — ${answers.project}`;
   return { subject, text, html };
 }
 

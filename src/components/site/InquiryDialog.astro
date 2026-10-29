@@ -51,92 +51,101 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
         {
           inquirySteps.map((step, i) => (
             <section class="inq__step" data-inq-step={i} hidden>
-              <fieldset class="inq__fieldset" aria-describedby={`inq-error-${i + 1}`}>
-                <legend class="inq__legend">
-                  <span class="caption caption--accent">{pad(i + 1)} / {pad(total)}</span>
-                  <span class="inq__title" id={`inq-title-${i + 1}`} tabindex="-1">
-                    {step.title}
-                  </span>
-                </legend>
-                {step.lead && <p class="inq__lead">{step.lead}</p>}
+              <p class="caption caption--accent">{pad(i + 1)} / {pad(total)}</p>
+              <h2 class="inq__title" id={`inq-title-${i + 1}`} tabindex="-1">
+                {step.title}
+              </h2>
+              {step.lead && <p class="inq__lead">{step.lead}</p>}
 
-                {step.kind !== 'contact' && (
-                  <div class="inq__options" data-inq-group={step.name} data-max={step.max}>
-                    {step.options.map((option, n) => (
-                      <label class="inq__option">
-                        <input
-                          type={step.kind === 'single' ? 'radio' : 'checkbox'}
-                          name={step.name}
-                          value={option}
-                        />
-                        <span class="inq__option-index" aria-hidden="true">{pad(n + 1)}</span>
-                        <span class="inq__option-label">{option}</span>
-                        <span class:list={['inq__mark', { 'inq__mark--square': step.kind === 'multi' }]} aria-hidden="true" />
+              <div class:list={['inq__blocks', { 'inq__fields--grid': step.grid }]}>
+                {step.blocks.map((block) =>
+                  block.kind === 'field' ? (
+                    <div
+                      class="inq__field"
+                      data-inq-field={block.field.name}
+                      data-show-name={block.field.showWhen?.name}
+                      data-show-values={block.field.showWhen?.values.join('|')}
+                      hidden={!!block.field.showWhen}
+                    >
+                      <label for={fieldId(block.field)}>
+                        {block.field.label} {!block.field.required && <span class="inq__optional">nepovinné</span>}
                       </label>
-                    ))}
-                  </div>
+                      {block.field.type === 'textarea' ? (
+                        <textarea
+                          id={fieldId(block.field)}
+                          name={block.field.name}
+                          rows="5"
+                          maxlength={block.field.maxLength}
+                          aria-describedby={block.field.help ? `${fieldId(block.field)}-help` : undefined}
+                        />
+                      ) : (
+                        <input
+                          id={fieldId(block.field)}
+                          name={block.field.name}
+                          type={block.field.type === 'url' ? 'text' : block.field.type}
+                          inputmode={block.field.type === 'url' ? 'url' : undefined}
+                          autocomplete={block.field.autocomplete}
+                          placeholder={block.field.placeholder}
+                          maxlength={block.field.maxLength}
+                          required={block.field.required}
+                          aria-describedby={block.field.required ? `${fieldId(block.field)}-error` : undefined}
+                        />
+                      )}
+                      {block.field.help && (
+                        <p class="inq__help" id={`${fieldId(block.field)}-help`}>
+                          {block.field.help}
+                        </p>
+                      )}
+                      {block.field.required && <p class="inq__field-error" id={`${fieldId(block.field)}-error`} />}
+                    </div>
+                  ) : (
+                    <fieldset
+                      class="inq__group"
+                      data-inq-group={block.name}
+                      data-max={block.max}
+                      aria-describedby={`inq-${block.name}-error`}
+                    >
+                      <legend class:list={['inq__group-label', { 'visually-hidden': !block.label }]}>
+                        {block.label ?? step.title}
+                      </legend>
+                      {block.hint && <p class="inq__group-hint">{block.hint}</p>}
+                      <div class="inq__options">
+                        {block.options.map((option, n) => (
+                          <label class="inq__option">
+                            <input type={block.kind === 'single' ? 'radio' : 'checkbox'} name={block.name} value={option} />
+                            <span class="inq__option-index" aria-hidden="true">{pad(n + 1)}</span>
+                            <span class="inq__option-label">{option}</span>
+                            <span class:list={['inq__mark', { 'inq__mark--square': block.kind === 'multi' }]} aria-hidden="true" />
+                          </label>
+                        ))}
+                      </div>
+                      {block.max && (
+                        <p class="inq__hint caption">
+                          Vybráno <span data-inq-picked>0</span> ze {block.max}
+                        </p>
+                      )}
+                      {block.other && (
+                        <div class="inq__field" data-inq-other={block.otherOption} hidden>
+                          <label for={fieldId(block.other)}>
+                            {block.other.label} <span class="inq__optional">nepovinné</span>
+                          </label>
+                          <input id={fieldId(block.other)} name={block.other.name} type="text" maxlength={block.other.maxLength} />
+                        </div>
+                      )}
+                      <p class="inq__error" id={`inq-${block.name}-error`} role="alert" />
+                    </fieldset>
+                  ),
                 )}
+              </div>
 
-                {step.kind !== 'contact' && step.max && (
-                  <p class="inq__hint caption" data-inq-limit>Vybráno <span data-inq-picked>0</span> ze {step.max}</p>
-                )}
+              {step.note && <p class="inq__note">{step.note}</p>}
 
-                {step.kind !== 'contact' && step.other && (
-                  <div class="inq__field" data-inq-other={step.otherOption} hidden>
-                    <label for={fieldId(step.other)}>{step.other.label} <span class="inq__optional">nepovinné</span></label>
-                    <input id={fieldId(step.other)} name={step.other.name} type="text" maxlength={step.other.maxLength} />
-                  </div>
-                )}
-
-                {step.kind !== 'contact' && step.note && <p class="inq__note">{step.note}</p>}
-
-                <div class:list={['inq__fields', { 'inq__fields--grid': step.kind === 'contact' }]}>
-                {(step.kind === 'contact' ? step.fields : step.field ? [step.field] : []).map((f) => (
-                  <div class:list={['inq__field', { 'inq__field--wide': f.type === 'textarea' }]}>
-                    <label for={fieldId(f)}>
-                      {f.label} {!f.required && <span class="inq__optional">nepovinné</span>}
-                    </label>
-                    {f.type === 'textarea' ? (
-                      <textarea
-                        id={fieldId(f)}
-                        name={f.name}
-                        rows="4"
-                        maxlength={f.maxLength}
-                        aria-describedby={f.help ? `${fieldId(f)}-help` : undefined}
-                      />
-                    ) : (
-                      <input
-                        id={fieldId(f)}
-                        name={f.name}
-                        type={f.type === 'url' ? 'text' : f.type}
-                        inputmode={f.type === 'url' ? 'url' : undefined}
-                        autocomplete={f.autocomplete}
-                        placeholder={f.placeholder}
-                        maxlength={f.maxLength}
-                        required={f.required}
-                        aria-describedby={`${fieldId(f)}-error`}
-                        data-error={f.error}
-                      />
-                    )}
-                    {f.help && (
-                      <p class="inq__help" id={`${fieldId(f)}-help`}>
-                        {f.help}
-                      </p>
-                    )}
-                    {f.required && <p class="inq__field-error" id={`${fieldId(f)}-error`} />}
-                  </div>
-                ))}
-                </div>
-
-                {step.kind === 'contact' && (
-                  <p class="inq__privacy">
-                    <Icon name="lock" size={14} />
-                    Údaje použiji jen k odpovědi na vaši poptávku.
-                  </p>
-                )}
-
-                <p class="inq__error" id={`inq-error-${i + 1}`} role="alert" data-error={'error' in step ? step.error : ''} />
-              </fieldset>
+              {step.id === 'contact' && (
+                <p class="inq__privacy">
+                  <Icon name="lock" size={14} />
+                  Údaje použiji jen k odpovědi na vaši poptávku.
+                </p>
+              )}
             </section>
           ))
         }
@@ -329,19 +338,38 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
     margin-inline: auto;
   }
 
-  .inq__fieldset {
-    margin: 0;
+  .inq__step > .caption {
+    margin-bottom: var(--space-4);
+  }
+
+  .inq__step > .inq__title {
+    margin-bottom: var(--space-4);
+  }
+
+  .inq__group {
+    margin: 32px 0 0;
     padding: 0;
     border: 0;
     min-width: 0;
   }
 
-  .inq__legend {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
+  .inq__group + .inq__group,
+  .inq__field + .inq__group {
+    margin-top: 40px;
+  }
+
+  .inq__group-label {
     padding: 0;
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-2);
+    font-size: 19px;
+    font-weight: var(--weight-medium);
+    color: var(--color-text-display);
+  }
+
+  .inq__group-hint {
+    margin-bottom: var(--space-2);
+    font-size: 15px;
+    color: var(--color-text-secondary);
   }
 
   .inq__title {
@@ -372,7 +400,7 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
   .inq__options {
     display: flex;
     flex-direction: column;
-    margin-top: 32px;
+    margin-top: var(--space-3);
     border-bottom: 1px solid var(--color-rule);
   }
 
