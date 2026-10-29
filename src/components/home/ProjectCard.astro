@@ -3,6 +3,7 @@
  * Selected-work card: media, title, description, disciplines + orange arrow.
  * The whole card is clickable via the title link's stretched hit area.
  */
+import { Image } from 'astro:assets';
 import MediaFrame from '../ui/MediaFrame.astro';
 import ArrowBadge from '../ui/ArrowBadge.astro';
 import { formatServices, isPublished, projectUrl, type ProjectEntry } from '@/lib/projects';
@@ -15,7 +16,7 @@ interface Props {
 }
 
 const { project, featured = false } = Astro.props;
-const { title, cardTitle, description, services, descriptionWidth } = project.data;
+const { title, cardTitle, description, services, descriptionWidth, cover } = project.data;
 const href = isPublished(project) ? projectUrl(project, getLocale(Astro)) : undefined;
 const disciplines = formatServices(services);
 ---
@@ -26,7 +27,18 @@ const disciplines = formatServices(services);
   data-cursor="project"
 >
   <MediaFrame class="project__media">
-    <slot name="media" />
+    {
+      cover ? (
+        <Image
+          src={cover.src}
+          alt={cover.alt}
+          widths={[640, 960, 1320, 1774].filter((w) => w <= cover.src.width)}
+          sizes={featured ? '(min-width: 1440px) 1320px, 100vw' : '(min-width: 1024px) 50vw, 100vw'}
+        />
+      ) : (
+        <slot name="media" />
+      )
+    }
   </MediaFrame>
   <div class="project__details">
     <div class="project__text">

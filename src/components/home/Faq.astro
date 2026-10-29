@@ -29,7 +29,9 @@ const faqs = t.faq.items;
               <Icon name="plus" size={22} class="faq__icon faq__icon--plus" />
               <Icon name="minus" size={22} class="faq__icon faq__icon--minus" />
             </summary>
-            <p class="faq__answer">{faq.answer}</p>
+            <div class="faq__panel">
+              <p class="faq__answer">{faq.answer}</p>
+            </div>
           </details>
         ))
       }

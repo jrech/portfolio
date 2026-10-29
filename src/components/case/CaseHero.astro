@@ -53,7 +53,7 @@ const noticeText = status === 'in-preparation' ? (notice ?? t.defaultNotice) : n
   </dl>
 
   <MediaFrame class="case-hero__visual" label={`${title} — ${t.heroVisualLabel}`}>
-    {cover && <Image src={cover.src} alt={cover.alt} widths={[800, 1440, 2640]} sizes="100vw" />}
+    {cover && <Image src={cover.src} alt={cover.alt} widths={[800, 1440, 2640].filter((w) => w <= cover.src.width)} sizes="100vw" />}
   </MediaFrame>
 
   {noticeText && <p class="case-hero__notice caption">{noticeText}</p>}

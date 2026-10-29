@@ -71,4 +71,7 @@ testimonial:
   lang: cs
 
 related: [starobrnensky-senk, grind]
+cover:
+  src: ../../../assets/images/project-pradelna.webp
+  alt: "Web Prádelny Krkonoše na notebooku v horské krajině při východu slunce"
 ---

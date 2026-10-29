@@ -433,35 +433,48 @@ function magnet() {
   });
 }
 
-// FAQ accordion: smooth height on open/close; one open at a time is handled here
-// (the native `name` grouping would close the previous item without animation).
+// FAQ accordion: one open at a time, handled here because the native `name` grouping
+// would close the previous item without animation. Only the padding-free `.faq__panel`
+// height is tweened (between measured pixel values), so nothing snaps at either end.
 function faq() {
   const items = gsap.utils.toArray<HTMLDetailsElement>('.faq__item');
-  const answer = (item: HTMLDetailsElement) => item.querySelector<HTMLElement>('.faq__answer')!;
+  const panel = (item: HTMLDetailsElement) => item.querySelector<HTMLElement>('.faq__panel')!;
+  const DURATION = 0.5;
 
   const collapse = (item: HTMLDetailsElement) => {
-    gsap.killTweensOf(answer(item));
-    gsap.to(answer(item), {
-      height: 0,
-      paddingTop: 0,
-      opacity: 0,
-      overflow: 'hidden',
-      duration: 0.45,
-      ease: EASE_MENU,
-      onComplete: () => {
-        item.open = false;
-        gsap.set(answer(item), { clearProps: 'all' });
+    const el = panel(item);
+    gsap.killTweensOf(el);
+    gsap.fromTo(
+      el,
+      { height: el.offsetHeight, overflow: 'hidden' },
+      {
+        height: 0,
+        opacity: 0,
+        duration: DURATION,
+        ease: EASE_MENU,
+        onComplete: () => {
+          item.open = false;
+          gsap.set(el, { clearProps: 'height,opacity,overflow' });
+        },
       },
-    });
+    );
   };
 
   const expand = (item: HTMLDetailsElement) => {
+    const el = panel(item);
+    gsap.killTweensOf(el);
     item.open = true;
-    gsap.killTweensOf(answer(item));
+    const target = el.scrollHeight;
     gsap.fromTo(
-      answer(item),
-      { height: 0, paddingTop: 0, opacity: 0, overflow: 'hidden' },
-      { height: 'auto', paddingTop: '', opacity: 1, duration: 0.55, ease: EASE_MENU, clearProps: 'all' },
+      el,
+      { height: 0, opacity: 0, overflow: 'hidden' },
+      {
+        height: target,
+        opacity: 1,
+        duration: DURATION,
+        ease: EASE_MENU,
+        onComplete: () => gsap.set(el, { clearProps: 'height,opacity,overflow' }),
+      },
     );
     gsap.fromTo(item.querySelector('.faq__icon--minus'), { rotate: -90 }, { rotate: 0, duration: 0.45, ease: EASE });
   };
@@ -470,7 +483,8 @@ function faq() {
     item.removeAttribute('name');
     item.querySelector('summary')?.addEventListener('click', (e) => {
       e.preventDefault();
-      if (item.open) return collapse(item);
+      if (item.open && !gsap.isTweening(panel(item))) return collapse(item);
+      if (item.open) return; // mid-animation click: let the current tween finish
       items.filter((other) => other !== item && other.open).forEach(collapse);
       expand(item);
     });

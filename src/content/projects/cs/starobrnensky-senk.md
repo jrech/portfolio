@@ -8,4 +8,7 @@ description: Nová online prezentace, ve které hosté snadno najdou menu, atmos
 descriptionWidth: 501
 positioning: Nová online prezentace, ve které hosté snadno najdou menu, atmosféru i rezervace.
 order: 1
+cover:
+  src: ../../../assets/images/project-starobrnensky-senk.webp
+  alt: "Web Starobrněnského šenku na notebooku na stole v zahrádce"
 ---

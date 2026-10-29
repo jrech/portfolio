@@ -61,4 +61,7 @@ testimonial:
 
 # Order from the Pen frame "More selected work".
 related: [starobrnensky-senk, grind]
+cover:
+  src: ../../../assets/images/project-pradelna.webp
+  alt: "Prádelna Krkonoše website on a laptop in a mountain landscape at sunrise"
 ---
