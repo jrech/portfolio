@@ -34,15 +34,69 @@ const t = useT(Astro);
 
 <MenuOverlay current={current} />
 
+<script>
+  // Header follows the scroll direction (Jonas, 2026-10-29): it shows while scrolling
+  // down and hides while scrolling up; always shown near the top. Flip SHOW_ON_DOWN
+  // for the usual "hide on down, show on up".
+  const SHOW_ON_DOWN = true;
+  const THRESHOLD = 8;
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const menu = document.getElementById('site-menu') as HTMLDialogElement | null;
+  if (header) {
+    let last = scrollY;
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const y = Math.max(0, scrollY);
+      const top = header.offsetHeight * 1.5;
+      header.classList.toggle('is-scrolled', y > top);
+      if (menu?.open) return;
+      if (y <= top) header.classList.remove('is-hidden');
+      else if (Math.abs(y - last) >= THRESHOLD) {
+        const down = y > last;
+        header.classList.toggle('is-hidden', down !== SHOW_ON_DOWN);
+      } else return;
+      last = y;
+    };
+    addEventListener('scroll', () => {
+      if (!ticking) requestAnimationFrame(update);
+      ticking = true;
+    }, { passive: true });
+    update();
+  }
+</script>
+
 <style>
+  /* Pinned to the viewport; slides away per scroll direction (script above). Case
+     studies keep its space in the flow (sticky), the homepage lays it over the hero. */
   .site-header {
-    position: relative;
+    position: sticky;
+    top: 0;
     z-index: var(--z-header);
+    transition:
+      transform 450ms var(--ease-out),
+      background-color 300ms var(--ease-out);
   }
 
   .site-header--overlay {
-    position: absolute;
+    position: fixed;
     inset: 0 0 auto;
+  }
+
+  /* Away from the top it needs its own backdrop to stay readable over content. */
+  .site-header.is-scrolled {
+    background: rgb(16 16 15 / 0.82);
+    backdrop-filter: blur(12px);
+  }
+
+  .site-header.is-hidden {
+    transform: translateY(-100%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header {
+      transition: none;
+    }
   }
 
   .site-header__inner {
