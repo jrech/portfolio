@@ -27,6 +27,7 @@ if (dialog) {
   const next = dialog.querySelector<HTMLButtonElement>('[data-inq-next]')!;
   const nextLabel = dialog.querySelector<HTMLElement>('[data-inq-next-label]')!;
   const count = dialog.querySelector<HTMLElement>('[data-inq-count]')!;
+  const countNav = dialog.querySelector<HTMLElement>('[data-inq-count-nav]');
   const progress = dialog.querySelector<HTMLElement>('.inq__progress')!;
   const body = dialog.querySelector<HTMLElement>('.inq__body')!;
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -163,6 +164,7 @@ if (dialog) {
   function updateChrome() {
     const total = steps.length;
     count.textContent = String(current + 1);
+    if (countNav) countNav.textContent = String(current + 1);
     progress.style.setProperty('--inq-progress', String((current + 1) / total));
     prev.hidden = current === 0;
     nextLabel.textContent = current === total - 1 ? 'Odeslat poptávku' : 'Další';

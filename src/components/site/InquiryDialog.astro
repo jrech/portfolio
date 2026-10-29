@@ -20,7 +20,9 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
   <div class="inq__shell">
     <header class="inq__top container">
       <p class="caption caption--accent">Poptávka</p>
-      <div class="inq__progress" aria-hidden="true"><span class="inq__progress-bar"></span></div>
+      <div class="inq__progress" aria-hidden="true" style={`--inq-total:${total}`}>
+        {inquirySteps.map((_, i) => <span class="inq__segment" style={`--i:${i}`} />)}
+      </div>
       <p class="inq__count caption" aria-live="polite"><span data-inq-count>1</span> / {total}</p>
       <button class="inq__close" type="button" data-inq-close>
         <span class="caption" aria-hidden="true">Zavřít</span>
@@ -60,15 +62,16 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
 
                 {step.kind !== 'contact' && (
                   <div class="inq__options" data-inq-group={step.name} data-max={step.max}>
-                    {step.options.map((option) => (
+                    {step.options.map((option, n) => (
                       <label class="inq__option">
                         <input
                           type={step.kind === 'single' ? 'radio' : 'checkbox'}
                           name={step.name}
                           value={option}
                         />
-                        <span class:list={['inq__mark', { 'inq__mark--square': step.kind === 'multi' }]} aria-hidden="true" />
+                        <span class="inq__option-index" aria-hidden="true">{pad(n + 1)}</span>
                         <span class="inq__option-label">{option}</span>
+                        <span class:list={['inq__mark', { 'inq__mark--square': step.kind === 'multi' }]} aria-hidden="true" />
                       </label>
                     ))}
                   </div>
@@ -87,6 +90,7 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
 
                 {step.kind !== 'contact' && step.note && <p class="inq__note">{step.note}</p>}
 
+                <div class:list={['inq__fields', { 'inq__fields--grid': step.kind === 'contact' }]}>
                 {(step.kind === 'contact' ? step.fields : step.field ? [step.field] : []).map((f) => (
                   <div class:list={['inq__field', { 'inq__field--wide': f.type === 'textarea' }]}>
                     <label for={fieldId(f)}>
@@ -122,6 +126,14 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
                     {f.required && <p class="inq__field-error" id={`${fieldId(f)}-error`} />}
                   </div>
                 ))}
+                </div>
+
+                {step.kind === 'contact' && (
+                  <p class="inq__privacy">
+                    <Icon name="lock" size={14} />
+                    Údaje použiji jen k odpovědi na vaši poptávku.
+                  </p>
+                )}
 
                 <p class="inq__error" id={`inq-error-${i + 1}`} role="alert" data-error={'error' in step ? step.error : ''} />
               </fieldset>
@@ -155,7 +167,7 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
           <Icon name="arrow-up-right" size={16} class="inq__back-icon" />
           Zpět
         </button>
-        <p class="inq__keys caption" aria-hidden="true">Enter pokračuje</p>
+        <p class="inq__keys caption" aria-hidden="true">Krok <span data-inq-count-nav>1</span> ze {total} · Enter pokračuje</p>
         <button class="inq__next" type="submit" data-inq-next>
           <span data-inq-next-label>Další</span>
           <span class="inq__next-icon" aria-hidden="true"><Icon name="arrow-up-right" size={16} /></span>
@@ -240,25 +252,34 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
   .inq__top {
     display: grid;
     grid-template-columns: auto 1fr auto auto;
+    justify-items: start;
     align-items: center;
     gap: var(--space-4);
     height: var(--header-height);
     flex-shrink: 0;
   }
 
+  /* Segmented progress: one dash per step, filled up to the current one. */
   .inq__progress {
-    height: 1px;
+    display: flex;
+    gap: 4px;
+  }
+
+  .inq__segment {
+    position: relative;
+    width: clamp(14px, 2.4vw, 28px);
+    height: 2px;
     background: var(--color-rule);
     overflow: hidden;
   }
 
-  .inq__progress-bar {
-    display: block;
-    height: 100%;
+  .inq__segment::after {
+    content: '';
+    position: absolute;
+    inset: 0;
     background: var(--color-accent);
-    transform: scaleX(var(--inq-progress, 0.14));
-    transform-origin: left center;
-    transition: transform 600ms var(--ease-out);
+    opacity: clamp(0, (var(--inq-progress, 0) * var(--inq-total) - var(--i) - 0.5) * 10, 1);
+    transition: opacity 400ms var(--ease-out);
   }
 
   .inq__count {
@@ -291,7 +312,9 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
   }
 
   .inq__body {
+    display: flex;
     flex: 1;
+    flex-direction: column;
     overflow-y: auto;
     overscroll-behavior: contain;
     padding-top: clamp(24px, 6vh, 72px);
@@ -300,7 +323,10 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
 
   .inq__step,
   .inq__panel {
-    max-width: 760px;
+    width: 100%;
+    max-width: 680px;
+    margin-block: auto;
+    margin-inline: auto;
   }
 
   .inq__fieldset {
@@ -362,7 +388,7 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
     line-height: 1.3;
     letter-spacing: -0.01em;
     cursor: pointer;
-    transition: color var(--duration-base) var(--ease-out), padding-left 300ms var(--ease-out);
+    transition: color var(--duration-base) var(--ease-out);
   }
 
   .inq__option input {
@@ -397,18 +423,31 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
     transition: transform var(--duration-base) var(--ease-out);
   }
 
+  .inq__option-index {
+    flex-shrink: 0;
+    width: 2ch;
+    font-family: var(--font-caption);
+    font-size: var(--caption-size);
+    letter-spacing: var(--caption-tracking);
+    color: var(--color-text-secondary);
+    transition: color var(--duration-base) var(--ease-out);
+  }
+
+  .inq__option-label {
+    flex: 1;
+  }
+
   .inq__option:hover {
     color: var(--color-text-display);
-    padding-left: 10px;
   }
 
   .inq__option:hover .inq__mark {
     border-color: var(--color-text-display);
   }
 
-  .inq__option:has(input:checked) {
+  .inq__option:has(input:checked),
+  .inq__option:has(input:checked) .inq__option-index {
     color: var(--color-accent);
-    padding-left: 10px;
   }
 
   .inq__option:has(input:checked) .inq__mark {
@@ -473,16 +512,15 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
   .inq__field input,
   .inq__field textarea {
     width: 100%;
-    padding: 10px 0 12px;
-    border: 0;
-    border-bottom: 1px solid var(--color-rule);
-    border-radius: 0;
-    background: transparent;
+    padding: 14px 16px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: rgb(242 239 233 / 0.05);
     color: var(--color-text-display);
     font: inherit;
-    font-size: 20px;
+    font-size: 17px;
     line-height: 1.4;
-    transition: border-color var(--duration-base) var(--ease-out);
+    transition: border-color var(--duration-base) var(--ease-out), background-color var(--duration-base) var(--ease-out);
   }
 
   .inq__field textarea {
@@ -498,11 +536,31 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
   .inq__field input:focus,
   .inq__field textarea:focus {
     outline: none;
-    border-bottom-color: var(--color-accent);
+    border-color: var(--color-accent);
+    background: rgb(242 239 233 / 0.07);
   }
 
   .inq__field input[aria-invalid='true'] {
-    border-bottom-color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .inq__fields--grid {
+    display: grid;
+    gap: 0 var(--space-4);
+    margin-top: 8px;
+  }
+
+  .inq__fields--grid .inq__field {
+    margin-top: 12px;
+  }
+
+  .inq__privacy {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    font-size: 14px;
+    color: var(--color-text-secondary);
   }
 
   .inq__help {
@@ -539,6 +597,7 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
 
   /* ---------- Bottom navigation ---------- */
   .inq__nav {
+    position: relative;
     display: flex;
     flex-shrink: 0;
     align-items: center;
@@ -641,8 +700,14 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
 
     .inq__keys {
       display: block;
-      margin-left: auto;
-      color: var(--color-rule);
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--color-text-secondary);
+    }
+
+    .inq__fields--grid {
+      grid-template-columns: 1fr 1fr;
     }
   }
 
@@ -653,7 +718,7 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
 
     .inq__step,
     .inq__panel {
-      margin-left: calc((100% - 760px) / 2 - 120px);
+      max-width: 720px;
     }
   }
 </style>
