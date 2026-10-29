@@ -1,33 +1,45 @@
 ---
 /**
- * Fullscreen project inquiry (Czech). Opens from the "Pojďme to probrat" CTAs
+ * Fullscreen project inquiry, in the page's language. Opens from the main CTAs
  * (a.cta[href="#contact"]); without JS those links keep going to the contact footer.
  * Steps come from src/data/inquiry.ts; behaviour lives in src/scripts/inquiry.ts and
  * submission goes to Formspree (FORMSPREE_ENDPOINT in src/data/inquiry.ts).
  */
 import Icon from '../ui/Icon.astro';
-import { inquirySteps, type TextField } from '@/data/inquiry';
+import { getInquiry, type TextField } from '@/data/inquiry';
 import { site } from '@/data/site';
+import { getLocale } from '@/i18n';
 
+const locale = getLocale(Astro);
+const { steps: inquirySteps, ui } = getInquiry(locale);
 const total = inquirySteps.length;
 const pad = (n: number) => String(n).padStart(2, '0');
 const fieldId = (f: TextField) => `inq-${f.name}`;
 ---
 
-<dialog id="inquiry" class="inq" aria-labelledby="inq-title-1">
+<dialog
+  id="inquiry"
+  class="inq"
+  aria-labelledby="inq-title-1"
+  data-locale={locale}
+  data-next={ui.next}
+  data-submit={ui.submit}
+  data-sending={ui.sending}
+  data-subject={ui.subject}
+>
   <div class="inq__glow" aria-hidden="true"><span></span><span></span></div>
 
   <div class="inq__shell">
     <header class="inq__top container">
-      <p class="caption caption--accent">Poptávka</p>
+      <p class="caption caption--accent">{ui.kicker}</p>
       <div class="inq__progress" aria-hidden="true" style={`--inq-total:${total}`}>
         {inquirySteps.map((_, i) => <span class="inq__segment" style={`--i:${i}`} />)}
       </div>
       <p class="inq__count caption" aria-live="polite"><span data-inq-count>1</span> / {total}</p>
       <button class="inq__close" type="button" data-inq-close>
-        <span class="caption" aria-hidden="true">Zavřít</span>
+        <span class="caption" aria-hidden="true">{ui.close}</span>
         <Icon name="x" size={24} />
-        <span class="visually-hidden">Zavřít dotazník (rozpracované odpovědi se uloží)</span>
+        <span class="visually-hidden">{ui.closeLabel}</span>
       </button>
     </header>
 
@@ -39,12 +51,12 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
 
       <div class="inq__body container">
         <section class="inq__panel" data-inq-resume hidden>
-          <p class="caption caption--accent">Rozpracovaná poptávka</p>
-          <h2 class="inq__title" tabindex="-1" id="inq-resume-title">Máte tu rozdělaný dotazník.</h2>
-          <p class="inq__lead">Můžete navázat tam, kde jste skončili, nebo začít znovu.</p>
+          <p class="caption caption--accent">{ui.resumeKicker}</p>
+          <h2 class="inq__title" tabindex="-1" id="inq-resume-title">{ui.resumeTitle}</h2>
+          <p class="inq__lead">{ui.resumeLead}</p>
           <div class="inq__actions-inline">
-            <button class="inq__next" type="button" data-inq-resume-continue>Pokračovat</button>
-            <button class="inq__ghost" type="button" data-inq-resume-restart>Začít znovu</button>
+            <button class="inq__next" type="button" data-inq-resume-continue>{ui.resumeContinue}</button>
+            <button class="inq__ghost" type="button" data-inq-resume-restart>{ui.resumeRestart}</button>
           </div>
         </section>
 
@@ -68,7 +80,7 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
                       hidden={!!block.field.showWhen}
                     >
                       <label for={fieldId(block.field)}>
-                        {block.field.label} {!block.field.required && <span class="inq__optional">nepovinné</span>}
+                        {block.field.label} {!block.field.required && <span class="inq__optional">{ui.optional}</span>}
                       </label>
                       {block.field.type === 'textarea' ? (
                         <textarea
@@ -121,13 +133,13 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
                       </div>
                       {block.max && (
                         <p class="inq__hint caption">
-                          Vybráno <span data-inq-picked>0</span> ze {block.max}
+                          {ui.picked(block.max)[0]} <span data-inq-picked>0</span> {ui.picked(block.max)[1]}
                         </p>
                       )}
                       {block.other && (
                         <div class="inq__field" data-inq-other={block.otherOption} hidden>
                           <label for={fieldId(block.other)}>
-                            {block.other.label} <span class="inq__optional">nepovinné</span>
+                            {block.other.label} <span class="inq__optional">{ui.optional}</span>
                           </label>
                           <input id={fieldId(block.other)} name={block.other.name} type="text" maxlength={block.other.maxLength} />
                         </div>
@@ -143,7 +155,7 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
               {step.id === 'contact' && (
                 <p class="inq__privacy">
                   <Icon name="lock" size={14} />
-                  Údaje použiji jen k odpovědi na vaši poptávku.
+                  {ui.privacy}
                 </p>
               )}
             </section>
@@ -151,22 +163,22 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
         }
 
         <section class="inq__panel" data-inq-done hidden>
-          <p class="caption caption--accent">Odesláno</p>
-          <h2 class="inq__title" tabindex="-1" id="inq-done-title">Díky, ozvu se vám.</h2>
+          <p class="caption caption--accent">{ui.doneKicker}</p>
+          <h2 class="inq__title" tabindex="-1" id="inq-done-title">{ui.doneTitle}</h2>
           <div class="inq__actions-inline">
-            <button class="inq__ghost" type="button" data-inq-close>Zpět na web</button>
+            <button class="inq__ghost" type="button" data-inq-close>{ui.doneBack}</button>
           </div>
         </section>
 
         <section class="inq__panel" data-inq-failed hidden>
-          <p class="caption caption--accent">Nepovedlo se</p>
-          <h2 class="inq__title" tabindex="-1" id="inq-failed-title">Poptávku se nepodařilo odeslat.</h2>
+          <p class="caption caption--accent">{ui.failedKicker}</p>
+          <h2 class="inq__title" tabindex="-1" id="inq-failed-title">{ui.failedTitle}</h2>
           <p class="inq__lead">
-            Odpovědi máte uložené, nic se neztratilo. Zkuste to prosím znovu, případně mi napište na {site.email}.
+            {ui.failedLead(site.email)}
           </p>
           <div class="inq__actions-inline">
-            <button class="inq__next" type="button" data-inq-retry>Zkusit znovu</button>
-            <button class="inq__ghost" type="button" data-inq-back-to-form>Upravit odpovědi</button>
+            <button class="inq__next" type="button" data-inq-retry>{ui.retry}</button>
+            <button class="inq__ghost" type="button" data-inq-back-to-form>{ui.edit}</button>
           </div>
         </section>
       </div>
@@ -174,11 +186,11 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
       <footer class="inq__nav container" data-inq-nav>
         <button class="inq__back" type="button" data-inq-prev>
           <Icon name="arrow-up-right" size={16} class="inq__back-icon" />
-          Zpět
+          {ui.back}
         </button>
-        <p class="inq__keys caption" aria-hidden="true">Krok <span data-inq-count-nav>1</span> ze {total} · Enter pokračuje</p>
+        <p class="inq__keys caption" aria-hidden="true">{ui.keys(total)[0]} <span data-inq-count-nav>1</span> {ui.keys(total)[1]}</p>
         <button class="inq__next" type="submit" data-inq-next>
-          <span data-inq-next-label>Další</span>
+          <span data-inq-next-label>{ui.next}</span>
           <span class="inq__next-icon" aria-hidden="true"><Icon name="arrow-up-right" size={16} /></span>
         </button>
       </footer>

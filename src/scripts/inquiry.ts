@@ -5,7 +5,7 @@
  * to Formspree as labelled fields (straight from the browser, Formspree's AJAX mode).
  * Step transitions use GSAP (loaded on first open), skipped for reduced motion.
  */
-import { EMAIL_PATTERN, FORMSPREE_ENDPOINT, inquiryRows, inquirySteps, validateInquiry } from '@/data/inquiry';
+import { EMAIL_PATTERN, FORMSPREE_ENDPOINT, getInquiry, inquiryRows, validateInquiry } from '@/data/inquiry';
 
 type Answers = Record<string, string | string[]>;
 interface Draft {
@@ -14,12 +14,18 @@ interface Draft {
   startedAt: number;
 }
 
-// v3: seven single-choice steps (2026-10-29). Older drafts are discarded, not migrated.
-const STORAGE_KEY = 'jr-inquiry-draft-v3';
-const OLD_KEYS = ['jr-inquiry-draft-v1', 'jr-inquiry-draft-v2'];
 const dialog = document.getElementById('inquiry') as HTMLDialogElement | null;
 
 if (dialog) {
+  // The page's language picks the questions; each language keeps its own draft
+  // (option values differ). v3: seven single-choice steps (2026-10-29); older
+  // drafts are discarded, not migrated.
+  const locale = dialog.dataset.locale === 'en' ? 'en' : 'cs';
+  const { steps: inquirySteps } = getInquiry(locale);
+  const label = { next: dialog.dataset.next!, submit: dialog.dataset.submit!, sending: dialog.dataset.sending! };
+  const STORAGE_KEY = locale === 'en' ? 'jr-inquiry-draft-v3-en' : 'jr-inquiry-draft-v3';
+  const OLD_KEYS = ['jr-inquiry-draft-v1', 'jr-inquiry-draft-v2'];
+
   const form = dialog.querySelector<HTMLFormElement>('[data-inq-form]')!;
   const steps = [...dialog.querySelectorAll<HTMLElement>('[data-inq-step]')];
   const resume = dialog.querySelector<HTMLElement>('[data-inq-resume]')!;
@@ -173,7 +179,7 @@ if (dialog) {
     if (countNav) countNav.textContent = String(current + 1);
     progress.style.setProperty('--inq-progress', String((current + 1) / total));
     prev.hidden = current === 0;
-    nextLabel.textContent = current === total - 1 ? 'Odeslat poptávku' : 'Další';
+    nextLabel.textContent = current === total - 1 ? label.submit : label.next;
     dialog!.setAttribute('aria-labelledby', `inq-title-${current + 1}`);
   }
 
@@ -196,19 +202,19 @@ if (dialog) {
     if (sending) return;
     sending = true;
     next.disabled = true;
-    nextLabel.textContent = 'Odesílám…';
+    nextLabel.textContent = label.sending;
     try {
       // Same check the form already enforced; it also drops fields that were hidden.
-      const checked = validateInquiry(collect());
+      const checked = validateInquiry(collect(), inquirySteps);
       if (!checked.ok) throw new Error('invalid');
       const { answers } = checked;
       const payload: Record<string, string> = {
-        _subject: `Nová poptávka: ${answers.name}`,
+        _subject: `${dialog!.dataset.subject}: ${answers.name}`,
         _replyto: String(answers.email),
         // Formspree's honeypot: filled only by bots, then silently dropped.
         _gotcha: (form.elements.namedItem('website') as HTMLInputElement).value,
         email: String(answers.email),
-        ...Object.fromEntries(inquiryRows(answers)),
+        ...Object.fromEntries(inquiryRows(answers, inquirySteps)),
       };
       const response = await fetch(FORMSPREE_ENDPOINT, {
         method: 'POST',
@@ -230,7 +236,7 @@ if (dialog) {
       sending = false;
       next.disabled = false;
       // Not updateChrome(): it would relabel the dialog with a hidden step title.
-      nextLabel.textContent = current === steps.length - 1 ? 'Odeslat poptávku' : 'Další';
+      nextLabel.textContent = current === steps.length - 1 ? label.submit : label.next;
     }
   }
 
