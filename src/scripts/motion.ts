@@ -67,11 +67,14 @@ function scrubStatement() {
     const STEP = 0.1;
     const WORD = 1;
     const span = STEP * (words.length - 1) + WORD;
+    // Touch screens get opacity only: a per-word blur animated on every scroll frame
+    // left flickering purple lines under words on phones (Jonas, 2026-10-29).
+    const blur = matchMedia('(hover: hover) and (pointer: fine)').matches;
     const paint = (progress: number) => {
       words.forEach((word, i) => {
         const p = gsap.utils.clamp(0, 1, (progress * span - i * STEP) / WORD);
         word.style.opacity = String(0.15 + 0.85 * p);
-        word.style.filter = p >= 1 ? 'none' : `blur(${(4 * (1 - p)).toFixed(2)}px)`;
+        if (blur) word.style.filter = p >= 1 ? 'none' : `blur(${(4 * (1 - p)).toFixed(2)}px)`;
       });
     };
     const state = { progress: 0 };
