@@ -307,4 +307,4 @@ Honor `prefers-reduced-motion`: no parallax, reveals, text-roll or autoplay prev
 
 **Heading tracking (Jonas, 2026-10-29):** every display heading and big title uses `--heading-tracking: -1.5px` (tokens.css) at all breakpoints, replacing the per-frame -1.5 to -4px values. Small titles above -1.5px (cards, FAQ questions, wordmark) keep their own values.
 
-**Footer (Jonas, 2026-10-29):** follows Pen "2. Big links bar footer" on every page: centered invitation + CTA, "Write me" + big email, numbered sitemap bar (Work, Services, About, Contact) with socials, legal baseline with location. The availability line from the Pen is left out until Jonas confirms the date; Read.cv is left out until there is a URL.
+**Footer (Jonas, 2026-10-29):** follows Pen "2. Big links bar footer" on every page: centered invitation + CTA, "Write me" + big email, numbered sitemap bar (Work, Services, About, Contact) with socials set like the sitemap links (same size and colour, no icons), legal baseline with location. The availability line from the Pen is left out until Jonas confirms the date; Read.cv is left out until there is a URL.
