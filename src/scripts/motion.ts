@@ -17,7 +17,9 @@ const EASE_MENU = CustomEase.create('site-menu', '0.76, 0, 0.24, 1'); // shutter
 const root = document.documentElement;
 
 
-const MOTION = { duration: 0.9, heading: 1.05, stagger: 0.085, distance: 20 };
+// Kept short and triggered early: content should already be moving as it enters view.
+const MOTION = { duration: 0.7, heading: 0.85, stagger: 0.06, distance: 20 };
+const START = 'top 92%';
 const visible = (el: HTMLElement) => el.getClientRects().length > 0;
 const passed = (el: HTMLElement) => el.getBoundingClientRect().bottom <= 0;
 
@@ -32,7 +34,7 @@ function revealHeadings() {
       if (!root.classList.contains('js-motion')) return;
       // Hide the lines before showing their parent to avoid a one-frame flash.
       const split = SplitText.create(heading, {
-        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
+        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
       });
       gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
       gsap.set(heading, { opacity: 1 });
@@ -46,14 +48,14 @@ function revealHeadings() {
       });
     };
     if (heading.closest('.hero')) play();
-    else ScrollTrigger.create({ trigger: heading, start: 'top 88%', once: true, onEnter: play });
+    else ScrollTrigger.create({ trigger: heading, start: START, once: true, onEnter: play });
   });
 }
 
 function scrubStatement() {
   document.querySelectorAll<HTMLElement>('[data-reveal="scrub"]').forEach(text => {
     const section = text.closest('section') ?? text;
-    const split = SplitText.create(text, { type: 'words', aria: 'auto' });
+    const split = SplitText.create(text, { type: 'words', aria: 'auto', reduceWhiteSpace: false });
     gsap.set(text, { opacity: 1 });
     gsap.fromTo(split.words,
       { opacity: 0.15, filter: 'blur(4px)' },
@@ -68,12 +70,19 @@ function scrubStatement() {
   });
 }
 
+// Hero entrance in one overlapping flow: H1 (revealHeadings) > intro > CTAs > navigation.
 function revealHero() {
-  const items = gsap.utils.toArray<HTMLElement>('.hero [data-reveal="fade"], .hero__baseline');
-  gsap.fromTo(items, { opacity: 0, y: MOTION.distance }, {
-    opacity: 1, y: 0, duration: MOTION.duration, delay: 0.22,
-    stagger: MOTION.stagger, ease: EASE, clearProps: 'transform,opacity',
-  });
+  const content = gsap.utils.toArray<HTMLElement>('.hero [data-reveal="fade"]');
+  const nav = gsap.utils.toArray<HTMLElement>('.site-header--overlay .site-header__inner > *');
+  const baseline = gsap.utils.toArray<HTMLElement>('.hero__baseline');
+  // Start states first, so nothing flashes before the delayed timeline begins.
+  gsap.set(content, { opacity: 0, y: MOTION.distance });
+  gsap.set(nav, { opacity: 0, y: -10 });
+  gsap.set(baseline, { opacity: 0 });
+  gsap.timeline({ delay: 0.3, defaults: { duration: 0.8, ease: EASE, clearProps: 'transform,opacity' } })
+    .to(content, { opacity: 1, y: 0, stagger: 0.14 })
+    .to(nav, { opacity: 1, y: 0, stagger: 0.06 }, '-=0.55')
+    .to(baseline, { opacity: 1 }, '<');
 }
 
 function revealContent() {
@@ -86,7 +95,7 @@ function revealContent() {
   if (!items.length) return;
   gsap.set(items, { opacity: 0, y: MOTION.distance });
   ScrollTrigger.batch(items, {
-    start: 'top 88%', once: true, batchMax: 4, interval: 0.06,
+    start: START, once: true, batchMax: 4, interval: 0.06,
     onEnter: batch => gsap.to(batch, {
       opacity: 1, y: 0, duration: MOTION.duration,
       stagger: MOTION.stagger, ease: EASE, clearProps: 'transform,opacity',
@@ -136,7 +145,7 @@ function revealServices() {
     gsap.set(heading, { opacity: 0 });
     previous = new Promise<void>(resolve => {
       ScrollTrigger.create({
-        trigger: intro, start: 'top 82%', once: true,
+        trigger: intro, start: START, once: true,
         onEnter: async () => {
           await document.fonts.ready;
           if (!root.classList.contains('js-motion') || passed(intro)) {
@@ -145,12 +154,13 @@ function revealServices() {
             return;
           }
           const split = SplitText.create(heading, {
-            type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
+            type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
           });
           gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
-          const timeline = gsap.timeline({ onComplete: resolve });
+          const timeline = gsap.timeline();
+          gsap.delayedCall(0.35, resolve);
           if (eyebrow.length) timeline.to(eyebrow, {
-            opacity: 1, y: 0, duration: 0.55, ease: EASE, clearProps: 'transform,opacity',
+            opacity: 1, y: 0, duration: 0.45, ease: EASE, clearProps: 'transform,opacity',
           });
           timeline.set(heading, { opacity: 1 });
           timeline.to(split.lines, {
@@ -160,11 +170,11 @@ function revealServices() {
               split.revert();
               gsap.set(heading, { opacity: 1 });
             },
-          }, eyebrow.length ? '-=0.12' : 0);
+          }, eyebrow.length ? '-=0.3' : 0);
           if (lead.length) timeline.to(lead, {
             opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
             clearProps: 'transform,opacity',
-          }, '+=0.04');
+          }, '-=0.55');
         },
       });
     });
@@ -176,7 +186,7 @@ function revealServices() {
     const waitForPrevious = previous;
     previous = new Promise<void>(resolve => {
       ScrollTrigger.create({
-        trigger: row, start: 'top 88%', once: true,
+        trigger: row, start: START, once: true,
         onEnter: async () => {
           await waitForPrevious;
           if (!root.classList.contains('js-motion') || passed(row)) {
@@ -184,12 +194,13 @@ function revealServices() {
             resolve();
             return;
           }
-          gsap.timeline({ onComplete: resolve })
+          gsap.timeline()
             .to(row, {
-              opacity: 1, y: 0, duration: 0.76, ease: EASE,
+              opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
               clearProps: 'transform,opacity',
             })
-            .to(row, { '--rule-progress': 1, duration: 0.76, ease: EASE }, '<');
+            .to(row, { '--rule-progress': 1, duration: MOTION.duration, ease: EASE }, '<')
+            .call(resolve, [], 0.07); // next row follows a beat later, overlapping
         },
       });
     });
@@ -202,9 +213,9 @@ function revealSequences() {
   if (steps.length && !passed(steps[steps.length - 1])) {
     gsap.set(steps, { opacity: 0, y: MOTION.distance });
     gsap.to(steps, {
-      opacity: 1, y: 0, duration: MOTION.duration, stagger: 0.28,
+      opacity: 1, y: 0, duration: MOTION.duration, stagger: 0.1,
       ease: EASE, clearProps: 'transform,opacity',
-      scrollTrigger: { trigger: '.process__steps', start: 'top 80%', once: true },
+      scrollTrigger: { trigger: '.process__steps', start: START, once: true },
     });
   }
   const heading = document.querySelector<HTMLElement>('.faq [data-reveal="heading"]');
@@ -213,12 +224,12 @@ function revealSequences() {
   gsap.set(heading, { opacity: 0 });
   gsap.set(questions, { opacity: 0, y: MOTION.distance });
   ScrollTrigger.create({
-    trigger: heading, start: 'top 82%', once: true,
+    trigger: heading, start: START, once: true,
     onEnter: async () => {
       await document.fonts.ready;
       if (!root.classList.contains('js-motion')) return;
       const split = SplitText.create(heading, {
-        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
+        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
       });
       gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
       const timeline = gsap.timeline();
@@ -231,11 +242,11 @@ function revealSequences() {
           } },
       );
       timeline.to(questions, {
-        opacity: 1, y: 0, duration: MOTION.duration, stagger: 0.22,
+        opacity: 1, y: 0, duration: MOTION.duration, stagger: 0.07,
         ease: EASE, clearProps: 'transform,opacity',
-      }, '+=0.1');
+      }, '-=0.55');
       timeline.to(questions.filter(el => el.classList.contains('motion-rule-top')), {
-        '--rule-progress': 1, duration: MOTION.duration, stagger: 0.22, ease: EASE,
+        '--rule-progress': 1, duration: MOTION.duration, stagger: 0.07, ease: EASE,
       }, '<0.22');
     },
   });
@@ -265,7 +276,7 @@ function revealFooter() {
     gsap.set(heading, { opacity: 0 });
     previous = new Promise<void>(resolve => {
       ScrollTrigger.create({
-        trigger: invite, start: 'top 82%', once: true,
+        trigger: invite, start: START, once: true,
         onEnter: async () => {
           await document.fonts.ready;
           if (!root.classList.contains('js-motion') || passed(invite)) {
@@ -274,12 +285,13 @@ function revealFooter() {
             return;
           }
           const split = SplitText.create(heading, {
-            type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto',
+            type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
           });
           gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
-          const timeline = gsap.timeline({ onComplete: resolve });
+          const timeline = gsap.timeline();
+          gsap.delayedCall(0.35, resolve);
           if (eyebrow.length) timeline.to(eyebrow, {
-            opacity: 1, y: 0, duration: 0.55, ease: EASE, clearProps: 'transform,opacity',
+            opacity: 1, y: 0, duration: 0.45, ease: EASE, clearProps: 'transform,opacity',
           });
           timeline.set(heading, { opacity: 1 });
           timeline.to(split.lines, {
@@ -289,11 +301,11 @@ function revealFooter() {
               split.revert();
               gsap.set(heading, { opacity: 1 });
             },
-          }, eyebrow.length ? '-=0.12' : 0);
+          }, eyebrow.length ? '-=0.3' : 0);
           support.forEach(el => timeline.to(el, {
             opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
             clearProps: 'transform,opacity',
-          }, '+=0.04'));
+          }, '-=0.55'));
         },
       });
     });
@@ -313,7 +325,7 @@ function revealFooter() {
     const waitForPrevious = previous;
     previous = new Promise<void>(resolve => {
       ScrollTrigger.create({
-        trigger: container, start: 'top 88%', once: true,
+        trigger: container, start: START, once: true,
         onEnter: async () => {
           await waitForPrevious;
           if (!root.classList.contains('js-motion') || passed(container)) {
@@ -323,8 +335,9 @@ function revealFooter() {
           }
           gsap.to(items, {
             opacity: 1, y: 0, duration: MOTION.duration, stagger,
-            ease: EASE, clearProps: 'transform,opacity', onComplete: resolve,
+            ease: EASE, clearProps: 'transform,opacity',
           });
+          gsap.delayedCall(0.15, resolve);
         },
       });
     });

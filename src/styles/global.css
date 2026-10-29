@@ -188,7 +188,8 @@ body {
 /* ---------- Motion (src/scripts/motion.ts) ---------- */
 
 /* Hidden start state exists only while the motion script is expected (class set inline in <head>). */
-.js-motion:not(.motion-ready) [data-reveal] {
+.js-motion:not(.motion-ready) [data-reveal],
+.js-motion:not(.motion-ready) .site-header--overlay .site-header__inner > * {
   opacity: 0;
 }
 
