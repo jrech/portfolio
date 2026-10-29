@@ -29,8 +29,6 @@ const t = useT(Astro);
         <a class="hero__explore" href="#work">{t.hero.explore}</a>
       </div>
     </div>
-
-    <p class="hero__baseline caption">{t.hero.location.toUpperCase()}</p>
   </div>
 </section>
 
@@ -77,14 +75,14 @@ const t = useT(Astro);
     );
   }
 
-  /* Mobile: message sits above the baseline (bottom 197 at the 830 frame). */
+  /* Mobile: message sits low so the face above stays clear (Jonas, 2026-10-29). */
   .hero__inner {
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     height: 100%;
-    padding-bottom: clamp(96px, 23.7vh, 197px);
+    padding-bottom: clamp(40px, 12vh, 112px);
   }
 
   .hero__message {
@@ -98,7 +96,7 @@ const t = useT(Astro);
     font-family: var(--font-display);
     font-size: 36px;
     font-weight: var(--weight-medium);
-    line-height: 0.98;
+    line-height: 1.08;
     letter-spacing: var(--heading-tracking);
     color: var(--color-text-display);
   }
@@ -130,20 +128,40 @@ const t = useT(Astro);
     letter-spacing: var(--caption-tracking);
     line-height: normal;
     color: var(--color-paper);
+    position: relative;
     white-space: nowrap;
-    text-underline-offset: 4px;
     transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  /* Underline draws in from the left on hover and leaves to the right. */
+  .hero__explore::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -5px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 500ms cubic-bezier(0.45, 0, 0.55, 1);
   }
 
   .hero__explore:hover,
   .hero__explore:focus-visible {
     color: var(--color-text-display);
-    text-decoration: underline;
   }
 
-  .hero__baseline {
-    position: absolute;
-    bottom: 25px;
+  .hero__explore:hover::after,
+  .hero__explore:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__explore::after {
+      transition: none;
+    }
   }
 
   /* Tablet (834 frame) */
@@ -194,10 +212,6 @@ const t = useT(Astro);
 
     .hero__actions :global(.hero__cta) {
       width: auto;
-    }
-
-    .hero__baseline {
-      bottom: 32px;
     }
   }
 
@@ -251,10 +265,6 @@ const t = useT(Astro);
       font-family: var(--font-display);
       font-size: 11px;
       letter-spacing: normal;
-    }
-
-    .hero__baseline {
-      bottom: 53px;
     }
   }
 </style>

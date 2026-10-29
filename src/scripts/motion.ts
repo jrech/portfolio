@@ -90,15 +90,12 @@ function scrubStatement() {
 function revealHero() {
   const content = gsap.utils.toArray<HTMLElement>('.hero [data-reveal="fade"]');
   const nav = gsap.utils.toArray<HTMLElement>('.site-header--overlay .site-header__inner > *');
-  const baseline = gsap.utils.toArray<HTMLElement>('.hero__baseline');
   // Start states first, so nothing flashes before the delayed timeline begins.
   gsap.set(content, { opacity: 0, y: MOTION.distance });
   gsap.set(nav, { opacity: 0, y: -10 });
-  gsap.set(baseline, { opacity: 0 });
   gsap.timeline({ delay: 0.3, defaults: { duration: 0.8, ease: EASE, clearProps: 'transform,opacity' } })
     .to(content, { opacity: 1, y: 0, stagger: 0.14 })
-    .to(nav, { opacity: 1, y: 0, stagger: 0.06 }, '-=0.55')
-    .to(baseline, { opacity: 1 }, '<');
+    .to(nav, { opacity: 1, y: 0, stagger: 0.06 }, '-=0.55');
 }
 
 function revealContent() {
