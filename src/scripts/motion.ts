@@ -59,17 +59,30 @@ function scrubStatement() {
   document.querySelectorAll<HTMLElement>('[data-reveal="scrub"]').forEach(text => {
     const section = text.closest('section') ?? text;
     const split = SplitText.create(text, { type: 'words', aria: 'auto', reduceWhiteSpace: false });
+    const words = split.words as HTMLElement[];
     gsap.set(text, { opacity: 1 });
-    gsap.fromTo(split.words,
-      { opacity: 0.15, filter: 'blur(4px)' },
-      {
-        opacity: 1, filter: 'blur(0px)', stagger: 0.1, ease: 'none',
-        scrollTrigger: {
-          trigger: section, start: 'top top', end: 'bottom bottom',
-          scrub: 0.6, invalidateOnRefresh: true,
-        },
+    // Each word sharpens over WORD of the scroll, starting STEP after the previous one.
+    // Styles are written per word, and a finished word drops its filter entirely:
+    // Chrome sometimes kept painting a stale blur on words tweened to blur(0px).
+    const STEP = 0.1;
+    const WORD = 1;
+    const span = STEP * (words.length - 1) + WORD;
+    const paint = (progress: number) => {
+      words.forEach((word, i) => {
+        const p = gsap.utils.clamp(0, 1, (progress * span - i * STEP) / WORD);
+        word.style.opacity = String(0.15 + 0.85 * p);
+        word.style.filter = p >= 1 ? 'none' : `blur(${(4 * (1 - p)).toFixed(2)}px)`;
+      });
+    };
+    const state = { progress: 0 };
+    paint(0);
+    gsap.to(state, {
+      progress: 1, ease: 'none',
+      onUpdate: () => paint(state.progress),
+      scrollTrigger: {
+        trigger: section, start: 'top top', end: 'bottom bottom', scrub: 0.6,
       },
-    );
+    });
   });
 }
 
