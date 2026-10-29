@@ -38,6 +38,8 @@
   /* Caption (Space Mono, uppercase/bold) */
   --caption-size: 10px;
   --caption-tracking: 0.9px;
+  /* Display headings and big titles at every size (Jonas, 2026-10-29: was -1.5 to -4px). */
+  --heading-tracking: -1.5px;
 
   /* ---------- Spacing (Pen space/*) ---------- */
   --space-1: 4px;

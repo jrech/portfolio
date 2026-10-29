@@ -305,3 +305,7 @@ Honor `prefers-reduced-motion`: no parallax, reveals, text-roll or autoplay prev
 6. Prádelna testimonial: approved by the client (2026-10-28). Prádelna narrative is still draft copy for client review.
 7. "More about me" points to `/about` (no page planned in the designs — 404).
 8. Case-study content for Starobrněnský šenk and GRIND (nothing beyond the homepage card copy exists).
+
+**Heading tracking (Jonas, 2026-10-29):** every display heading and big title uses `--heading-tracking: -1.5px` (tokens.css) at all breakpoints, replacing the per-frame -1.5 to -4px values. Small titles above -1.5px (cards, FAQ questions, wordmark) keep their own values.
+
+**Footer (Jonas, 2026-10-29):** follows Pen "2. Big links bar footer" on every page: centered invitation + CTA, "Write me" + big email, numbered sitemap bar (Work, Services, About, Contact) with socials, legal baseline with location. The availability line from the Pen is left out until Jonas confirms the date; Read.cv is left out until there is a URL.
