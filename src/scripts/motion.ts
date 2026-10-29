@@ -89,7 +89,7 @@ function revealHero() {
 }
 
 function revealContent() {
-  const selector = '[data-reveal="fade"], .eyebrow, .footer__lead, .footer__bio, .footer__email, .footer__col, .footer__legal, .footer__invite .cta';
+  const selector = '[data-reveal="fade"], .eyebrow, .footer__lead, .footer__email, .footer__legal, .footer__invite .cta';
   const candidates = gsap.utils.toArray<HTMLElement>(selector).filter(el =>
     !el.closest('.hero, #site-menu, .footer, .services') && visible(el) &&
     !(matchMedia('(min-width: 1024px)').matches && el.matches('.step, .faq__item')));
@@ -266,8 +266,7 @@ function revealFooter() {
   const eyebrow = [...invite.querySelectorAll<HTMLElement>('.eyebrow')].filter(visible);
   const action = invite.querySelector<HTMLElement>('.cta');
   const lead = invite.querySelector<HTMLElement>('.footer__lead');
-  const centered = footer.classList.contains('footer--centered') && matchMedia('(min-width: 1024px)').matches;
-  const support = (centered ? [lead, action] : [action, lead])
+  const support = [lead, action]
     .filter((el): el is HTMLElement => !!el && visible(el));
 
   // Each scroll entry waits for the section above it. On a fast jump, elements
@@ -316,7 +315,7 @@ function revealFooter() {
 
   const groups: [string, string, number][] = [
     ['.footer__contact', '.footer__contact > *', 0.16],
-    ['.footer__nav', '.footer__col-label, .footer__nav li', 0.12],
+    ['.footer__nav', '.footer__nav li', 0.08],
     ['.footer__legal', '.footer__legal > *', 0.1],
   ];
   groups.forEach(([containerSelector, itemSelector, stagger]) => {

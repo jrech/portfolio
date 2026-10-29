@@ -1,10 +1,9 @@
 ---
 /**
- * Contact invitation + footer (Pen: "Contact and footer" / "Case study final CTA and footer").
- *
- * variant="centered" — homepage: centered invitation on desktop (Cream rhythm frame).
- * variant="split"    — case studies: headline left, CTA right on desktop.
- * Both collapse to the same left-aligned stack on tablet and mobile.
+ * Contact invitation + footer (Pen: "2. Big links bar footer").
+ * Centered invitation and CTA, the email as a big link, a numbered sitemap bar
+ * with socials, and the legal baseline. Used on the homepage and case studies
+ * (which pass their own headline and lead).
  */
 import CtaButton from '../ui/CtaButton.astro';
 import Eyebrow from '../ui/Eyebrow.astro';
@@ -17,113 +16,76 @@ const t = useT(Astro);
 const locale = getLocale(Astro);
 
 interface Props {
-  variant?: 'centered' | 'split';
-  index?: string;
   eyebrow?: string;
   headline?: string;
   lead?: string;
 }
 
-const {
-  variant = 'centered',
-  index = '[06]',
-  eyebrow = t.footer.eyebrow,
-  headline = t.footer.headline,
-  lead = t.footer.lead,
-} = Astro.props;
-
-const bio = t.footer.bio;
+const { eyebrow = t.footer.eyebrow, headline = t.footer.headline, lead = t.footer.lead } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, '0');
 ---
 
-<footer id="contact" class:list={['footer', `footer--${variant}`]}>
+<footer id="contact" class="footer footer--centered">
   <!-- Flowing orange aurora (WebGL2, scripts/aurora.ts) that leans toward the mouse
        and brightens while a link is hovered.
        Without WebGL2 the footer stays plain. -->
   <div class="footer__ambient" aria-hidden="true" data-footer-aurora></div>
   <div class="footer__inner container">
     <section class="footer__invite" aria-labelledby="footer-title">
-      <Eyebrow index={index} class="footer__eyebrow footer__eyebrow--indexed">{eyebrow}</Eyebrow>
-      <Eyebrow accent class="footer__eyebrow footer__eyebrow--accent">{eyebrow.toUpperCase()}</Eyebrow>
-      <div class="footer__invite-main">
-        <h2 id="footer-title" class="footer__title" data-reveal="heading">{headline}</h2>
-        <CtaButton href="#contact" label={t.cta.startProject} />
-      </div>
+      <Eyebrow accent class="footer__eyebrow">{eyebrow.toUpperCase()}</Eyebrow>
+      <h2 id="footer-title" class="footer__title" data-reveal="heading">{headline}</h2>
       {lead && <p class="footer__lead">{lead}</p>}
+      <CtaButton href="#contact" label={t.cta.startProject} />
     </section>
 
     <div class="footer__contact">
-      <p class="footer__bio">{bio}</p>
+      <p class="caption caption--accent">{t.footer.writeMe}</p>
       <a class="footer__email" href={`mailto:${site.email}`}>{site.email}</a>
     </div>
 
     <nav class="footer__nav" aria-label={t.a11y.footerNavigation}>
-      <div class="footer__col">
-        <p class="footer__col-label caption" id="footer-explore">{t.footer.explore}</p>
-        <ul class="footer__links" role="list" aria-labelledby="footer-explore">
-          {
-            footerNav(t, locale).map((item) => (
-              <li>
-                <a class="footer__link" href={item.href}>{item.label}</a>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-      <div class="footer__col">
-        <p class="footer__col-label caption" id="footer-elsewhere">{t.footer.elsewhere}</p>
-        <ul class="footer__links footer__links--social" role="list" aria-labelledby="footer-elsewhere">
-          {
-            socials.map((s) => (
-              <li>
-                <a class="footer__link footer__social" href={s.href} rel="noopener">
-                  {s.label}
-                  <Icon name={s.icon} size={16} />
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
+      <ul class="footer__links" role="list">
+        {
+          footerNav(t, locale).map((item, i) => (
+            <li>
+              <a class="footer__link" href={item.href}>
+                <span class="footer__index" aria-hidden="true">{pad(i + 1)}</span>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <ul class="footer__socials" role="list">
+        {
+          socials.map((s) => (
+            <li>
+              <a class="footer__social" href={s.href} rel="noopener">
+                {s.label}
+                <Icon name="arrow-up-right" size={14} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </nav>
 
     <div class="footer__legal">
-      <p class="caption">© {site.year} JONAS RECH</p>
-      <a class="footer__small" href={localePath(locale, '/privacy')}>{t.footer.privacy}</a>
-      <LangSwitch class="footer__lang" />
-      <a class="footer__small footer__top" href="#top">{t.footer.backToTop}</a>
+      <p class="caption footer__copy">© {site.year} JONAS RECH</p>
+      <div class="footer__legal-mid">
+        <a class="footer__small" href={localePath(locale, '/privacy')}>{t.footer.privacy}</a>
+        <p class="caption">{t.footer.location}</p>
+      </div>
+      <div class="footer__legal-end">
+        <LangSwitch class="footer__lang" />
+        <a class="footer__small footer__top" href="#top">{t.footer.backToTop}</a>
+      </div>
     </div>
   </div>
 </footer>
 
-<script>
-  // Load the WebGL aurora only when the footer gets close to the viewport.
-  const host = document.querySelector<HTMLElement>('[data-footer-aurora]');
-  if (host) {
-    const observer = new IntersectionObserver(
-      async ([entry]) => {
-        if (!entry.isIntersecting) return;
-        observer.disconnect();
-        const { mountAurora } = await import('@/scripts/aurora');
-        const mounted = mountAurora(host, {
-          colorStops: ['#c93b00', '#5e0a00', '#ff6027'],
-          amplitude: 1.5,
-          blend: 0.53,
-          height: 0.59,
-          speed: 1,
-          glow: 0.5,
-          scale: 0.8,
-          direction: 'bottom',
-        });
-        if (mounted) host.classList.add('is-ready');
-      },
-      { rootMargin: '400px 0px' },
-    );
-    observer.observe(host);
-  }
-</script>
-
 <style>
-  /* ---------- Mobile (390 frame) ---------- */
+  /* ---------- Mobile ---------- */
   .footer {
     position: relative;
     isolation: isolate;
@@ -178,112 +140,107 @@ const bio = t.footer.bio;
   .footer__inner {
     display: flex;
     flex-direction: column;
-    gap: 56px;
-    padding-block: 96px 48px;
+    padding-bottom: 32px;
+    text-align: center;
   }
 
   .footer__invite {
     display: flex;
     flex-direction: column;
-    gap: 36px;
-  }
-
-  /* Eyebrow is a child component: reach its root through :global(). */
-  .footer :global(.footer__eyebrow--accent) {
-    display: none;
-  }
-
-  .footer__invite-main {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 28px;
+    align-items: center;
+    gap: 24px;
+    padding-block: 96px 56px;
   }
 
   .footer__title {
-    align-self: stretch;
+    max-width: 560px;
     font-family: var(--font-display);
-    font-size: 42px;
+    font-size: 44px;
     font-weight: var(--weight-medium);
-    line-height: 1.02;
-    letter-spacing: -1.6px;
+    line-height: 1;
+    letter-spacing: var(--heading-tracking);
     color: var(--color-text-primary);
   }
 
-  /* Supporting line only appears in the centered desktop and split case-study frames. */
   .footer__lead {
-    display: none;
-    font-size: 18px;
-    line-height: normal;
+    font-size: 17px;
+    line-height: 1.45;
     color: var(--color-text-secondary);
   }
 
-  .footer--split .footer__lead {
-    display: block;
-    font-size: 16px;
+  .footer__invite :global(.cta) {
+    margin-top: 4px;
   }
 
-  /* Email → nav is 40px in every frame; the outer stack gap differs per breakpoint. */
   .footer__contact {
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    margin-bottom: 4px;
-  }
-
-  .footer__bio {
-    display: none;
+    align-items: center;
+    gap: 14px;
+    padding-block: 40px 48px;
   }
 
   .footer__email {
-    width: fit-content;
-    font-size: 21px;
-    letter-spacing: -0.4px;
-    line-height: normal;
-    color: var(--color-text-secondary);
+    font-family: var(--font-display);
+    font-size: clamp(28px, 8.2vw, 64px);
+    font-weight: var(--weight-medium);
+    line-height: 1.1;
+    letter-spacing: var(--heading-tracking);
+    color: var(--color-text-primary);
     transition: color var(--duration-fast) var(--ease-out);
   }
 
   .footer__email:hover,
   .footer__email:focus-visible {
-    color: var(--color-text-primary);
+    color: var(--color-accent);
   }
 
+  /* ---------- Sitemap bar ---------- */
   .footer__nav {
     display: flex;
     flex-direction: column;
-    gap: 28px;
-    padding-bottom: 16px;
+    align-items: center;
+    gap: 24px;
+    padding-block: 26px 36px;
   }
 
-  .footer__col-label {
-    display: none;
-  }
-
-  .footer__links {
+  .footer__links,
+  .footer__socials {
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
-    list-style: none;
+    justify-content: center;
+    gap: 14px 28px;
     padding: 0;
+    list-style: none;
   }
 
-  .footer__links--social {
-    gap: 28px;
+  .footer__socials {
+    gap: 24px;
   }
 
   .footer__link {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
-    line-height: normal;
+    font-size: 17px;
     color: var(--color-text-primary);
     transition: color var(--duration-fast) var(--ease-out);
   }
 
+  .footer__index {
+    font-family: var(--font-caption);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+
   .footer__social {
-    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    transition: color var(--duration-fast) var(--ease-out);
   }
 
   .footer__social :global(svg) {
@@ -292,18 +249,30 @@ const bio = t.footer.bio;
 
   .footer__link:hover,
   .footer__link:focus-visible,
+  .footer__social:hover,
+  .footer__social:focus-visible,
   .footer__small:hover,
   .footer__small:focus-visible {
     color: var(--color-accent);
   }
 
+  /* ---------- Legal baseline ---------- */
   .footer__legal {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 16px;
     padding-top: 24px;
     border-top: 1px solid var(--color-rule);
+  }
+
+  .footer__legal-mid,
+  .footer__legal-end {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px 28px;
   }
 
   .footer__small {
@@ -317,192 +286,94 @@ const bio = t.footer.bio;
     color: var(--color-text-primary);
   }
 
-  /* Mobile frame order: copyright, privacy, back to top, language. */
   .footer__lang {
-    order: 4;
     letter-spacing: 1.1px;
   }
 
-  /* ---------- Tablet (834 frame) ---------- */
+  /* ---------- Tablet ---------- */
   @media (min-width: 640px) {
-    .footer__inner {
-      gap: 72px;
+    .footer__invite {
       padding-block: 120px 56px;
     }
 
-    .footer__invite {
-      gap: 44px;
-    }
-
     .footer__title {
-      font-size: 56px;
-      letter-spacing: -2px;
+      font-size: 64px;
+      letter-spacing: var(--heading-tracking);
     }
 
-    .footer--split .footer__lead {
+    .footer__lead {
       font-size: 18px;
-    }
-
-    .footer__contact {
-      margin-bottom: -4px;
-    }
-
-    .footer__email {
-      font-size: 26px;
-    }
-
-    .footer__links {
-      gap: 28px;
-    }
-
-    .footer__link {
-      font-size: 15px;
-    }
-
-    .footer__legal {
-      flex-direction: row;
-      justify-content: space-between;
-    }
-
-    .footer__lang {
-      order: 0;
     }
   }
 
   /* ---------- Desktop (1440 frame) ---------- */
   @media (min-width: 1024px) {
+    .footer__invite {
+      gap: 26px;
+      padding: 120px 160px 72px;
+    }
+
+    .footer__title {
+      font-size: 80px;
+      letter-spacing: var(--heading-tracking);
+    }
+
+    .footer__contact {
+      gap: 18px;
+      padding-block: 56px 48px;
+    }
+
     .footer__email {
-      font-size: 22px;
+      letter-spacing: var(--heading-tracking);
+    }
+
+    .footer__nav {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .footer__links {
+      gap: 36px;
     }
 
     .footer__legal {
-      align-items: center;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
     }
 
-    /* Split (case study): headline + CTA on one row. */
-    .footer--split .footer__inner {
-      gap: 48px;
+    .footer__copy {
+      justify-self: start;
     }
 
-    .footer--split .footer__invite {
-      gap: 48px;
-    }
-
-    .footer--split .footer__contact {
-      margin-bottom: -8px;
-    }
-
-    .footer--split .footer__invite-main {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: 64px;
-    }
-
-    .footer--split .footer__title {
-      flex: 1;
-      font-size: 64px;
-      line-height: 65px;
-      letter-spacing: -2.8px;
-    }
-
-    .footer--split .footer__nav {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    /* Centered (homepage, Cream rhythm frame). */
-    .footer--centered .footer__inner {
-      gap: 0;
-      padding-top: 0;
-      padding-bottom: 32px;
-    }
-
-    .footer--centered .footer__invite {
-      align-items: center;
-      gap: 32px;
-      padding: 160px 160px 168px;
-      text-align: center;
-    }
-
-    .footer--centered :global(.footer__eyebrow--indexed) {
-      display: none;
-    }
-
-    .footer--centered :global(.footer__eyebrow--accent) {
-      display: flex;
-    }
-
-    .footer--centered .footer__invite-main {
-      display: contents;
-    }
-
-    /* Frame breaks the line after "something" (explicit <br> in the export). */
-    .footer--centered .footer__title {
-      align-self: center;
-      max-width: 560px;
-      font-size: 80px;
-      line-height: 80px;
-      letter-spacing: -3.5px;
-    }
-
-    .footer--centered .footer__lead {
-      display: block;
-      order: 1;
-    }
-
-    .footer--centered :global(.cta) {
-      order: 2;
-    }
-
-    .footer--centered .footer__contact {
-      align-items: center;
-      gap: 24px;
-      margin: 0;
-    }
-
-    .footer--centered .footer__bio {
-      display: block;
-      max-width: 696px;
-      font-size: 17px;
-      line-height: 26px;
-      text-align: center;
-      color: var(--color-text-secondary);
-    }
-
-    .footer--centered .footer__email {
-      font-size: 36px;
-      font-weight: var(--weight-medium);
-      letter-spacing: -1px;
-      color: var(--color-text-primary);
-    }
-
-    .footer--centered .footer__email:hover,
-    .footer--centered .footer__email:focus-visible {
-      color: var(--color-accent);
-    }
-
-    .footer--centered .footer__nav {
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-top: 112px;
-      padding-top: 56px;
-      padding-bottom: 80px;
-      border-top: 1px solid var(--color-rule);
-    }
-
-    .footer--centered .footer__col-label {
-      display: block;
-      margin-bottom: 20px;
-      font-size: 10px;
-    }
-
-    .footer--centered .footer__links {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 14px;
+    .footer__legal-end {
+      justify-self: end;
     }
   }
 </style>
+
+<script>
+  // Load the WebGL aurora only when the footer gets close to the viewport.
+  const host = document.querySelector<HTMLElement>('[data-footer-aurora]');
+  if (host) {
+    const observer = new IntersectionObserver(
+      async ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        const { mountAurora } = await import('@/scripts/aurora');
+        const mounted = mountAurora(host, {
+          colorStops: ['#c93b00', '#5e0a00', '#ff6027'],
+          amplitude: 1.5,
+          blend: 0.53,
+          height: 0.59,
+          speed: 1,
+          glow: 0.5,
+          scale: 0.8,
+          direction: 'bottom',
+        });
+        if (mounted) host.classList.add('is-ready');
+      },
+      { rootMargin: '400px 0px' },
+    );
+    observer.observe(host);
+  }
+</script>

@@ -21,13 +21,12 @@ export const menuNav = (t: Dict, locale: Locale): NavItem[] => [
   { label: t.nav.contact, href: '#contact' },
 ];
 
-/** Footer "Explore" list. */
+/** Footer sitemap bar, numbered 01–04 (Pen: "2. Big links bar footer"). */
 export const footerNav = (t: Dict, locale: Locale): NavItem[] => [
   { label: t.nav.work, href: localePath(locale, '/#work') },
   { label: t.nav.services, href: localePath(locale, '/#services') },
   { label: t.nav.about, href: localePath(locale, '/#about') },
-  { label: t.nav.process, href: localePath(locale, '/#process') },
-  { label: t.nav.faq, href: localePath(locale, '/#faq') },
+  { label: t.nav.contact, href: '#contact' },
 ];
 
 // From Jonas (2026-10-28). Instagram handle "jonasrech.design" still to be confirmed.
