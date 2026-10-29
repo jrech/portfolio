@@ -63,10 +63,7 @@ const nav = menuNav(t, getLocale(Astro));
           {
             socials.map((s) => (
               <li>
-                <a class="menu__social" href={s.href} rel="noopener">
-                  {s.label}
-                  <Icon name={s.icon} size={16} />
-                </a>
+                <a class="menu__social" href={s.href} rel="noopener">{s.label}</a>
               </li>
             ))
           }
@@ -306,15 +303,9 @@ const nav = menuNav(t, getLocale(Astro));
     transition: color var(--duration-fast) var(--ease-out);
   }
 
-  .menu__social :global(svg) {
-    width: 14px;
-    height: 14px;
-    stroke-width: 1.75;
-    color: var(--color-text-secondary);
-  }
-
-  .menu__social:hover {
-    color: var(--color-text-primary);
+  .menu__social:hover,
+  .menu__social:focus-visible {
+    color: var(--color-accent);
   }
 
   /* ---------- Tablet ---------- */
@@ -380,15 +371,6 @@ const nav = menuNav(t, getLocale(Astro));
 
     .menu__socials {
       gap: 26px;
-    }
-
-    .menu__social {
-      gap: 8px;
-    }
-
-    .menu__social :global(svg) {
-      width: 16px;
-      height: 16px;
     }
   }
 

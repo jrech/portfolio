@@ -86,7 +86,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    border-top: 1px solid var(--color-rule);
     background: var(--color-background);
   }
 
@@ -148,8 +147,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
     padding-block: 96px 56px;
   }
 
+  /* Two balanced lines at every width (Jonas, 2026-10-29). */
   .footer__title {
-    max-width: 560px;
+    max-width: 8em;
+    text-wrap: balance;
     font-family: var(--font-display);
     font-size: 44px;
     font-weight: var(--weight-medium);

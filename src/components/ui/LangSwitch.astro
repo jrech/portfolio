@@ -47,8 +47,12 @@ const order: Locale[] = ['en', 'cs'];
     transition: color var(--duration-fast) var(--ease-out);
   }
 
-  .lang-switch a:hover,
   .lang-switch a[aria-current='true'] {
     color: var(--color-text-primary);
+  }
+
+  .lang-switch a:hover,
+  .lang-switch a:focus-visible {
+    color: var(--color-accent);
   }
 </style>
