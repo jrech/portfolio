@@ -265,6 +265,23 @@ function revealSequences() {
   });
 }
 
+// Project images come into focus as they enter: blurred and a little dim, then sharp.
+// The filter only exists during the tween and is cleared after (Jonas, 2026-10-29).
+function revealWorkMedia() {
+  // The image is filtered, not its frame, so the frame edge stays crisp.
+  gsap.utils.toArray<HTMLElement>('.work .project__media').filter(el => visible(el) && !passed(el)).forEach(media => {
+    const image = media.querySelector('img');
+    if (!image) return;
+    gsap.set(image, { filter: 'blur(12px) brightness(0.8)', scale: 1.04 });
+    ScrollTrigger.create({
+      trigger: media, start: START, once: true,
+      onEnter: () => gsap.to(image, {
+        filter: 'blur(0px) brightness(1)', scale: 1, duration: 1.4, ease: EASE, clearProps: 'filter,transform',
+      }),
+    });
+  });
+}
+
 // Testimonial in reading order: quote mark, quote, the rule drawing in, then the person
 // (Jonas, 2026-10-29). The rule lives on the attribution, so its children fade instead.
 function revealTestimonial() {
@@ -630,6 +647,7 @@ function initializeMotion() {
     revealRules();
     revealServices();
     revealSequences();
+    revealWorkMedia();
     revealTestimonial();
     revealAbout();
     revealFooter();

@@ -25,6 +25,24 @@ const projects = await getProjects(getLocale(Astro));
 </section>
 
 <style>
+  /* Hovering a project dims the others (Jonas, 2026-10-29). Children fade, not the card,
+     so the card's own GSAP reveal is never fighting a CSS transition. */
+  .work__grid :global(.project > *) {
+    transition: opacity 450ms var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .work__grid:has(:global(.project:hover)) :global(.project:not(:hover) > *) {
+      opacity: 0.6;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .work__grid :global(.project > *) {
+      transition: none;
+    }
+  }
+
   /* Mobile (390) */
   .work__inner {
     display: flex;
