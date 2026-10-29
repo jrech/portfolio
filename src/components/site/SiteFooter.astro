@@ -36,9 +36,9 @@ const bio = t.footer.bio;
 ---
 
 <footer id="contact" class:list={['footer', `footer--${variant}`]}>
-  <!-- Ambient light ported from the live site: two drifting accent glows that lean
-       toward the cursor and brighten over links (pointer logic in motion.ts). -->
-  <div class="footer__ambient" aria-hidden="true"><span></span><span></span></div>
+  <!-- Fine drifting threads (WebGL2, scripts/threads.ts) that lean toward the mouse.
+       Without WebGL2 the footer stays plain. -->
+  <div class="footer__ambient" aria-hidden="true" data-footer-threads></div>
   <div class="footer__inner container">
     <section class="footer__invite" aria-labelledby="footer-title">
       <Eyebrow index={index} class="footer__eyebrow footer__eyebrow--indexed">{eyebrow}</Eyebrow>
@@ -94,11 +94,46 @@ const bio = t.footer.bio;
   </div>
 </footer>
 
+<script>
+  // Load the WebGL threads only when the footer gets close to the viewport.
+  const host = document.querySelector<HTMLElement>('[data-footer-threads]');
+  if (host) {
+    const observer = new IntersectionObserver(
+      async ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        const { mountThreads } = await import('@/scripts/threads');
+        const mounted = mountThreads(host, {
+          color: '#f2efe9',
+          accentColor: '#ff4d18',
+          lineCount: 42,
+          thickness: 0.35,
+          softness: 1.1,
+          amplitude: 1.5,
+          distance: 0.32,
+          waves: 0.9,
+          speed: 0.35,
+          split: 0.06,
+          fray: 0.55,
+          angle: 14,
+          taper: 0.8,
+          brightness: 1,
+          parting: 0.25,
+          enableMouseInteraction: true,
+          fade: 0.55,
+          opacity: 0.45,
+        });
+        if (mounted) host.classList.add('is-ready');
+      },
+      { rootMargin: '400px 0px' },
+    );
+    observer.observe(host);
+  }
+</script>
+
 <style>
   /* ---------- Mobile (390 frame) ---------- */
   .footer {
-    --follow-x: 0px;
-    --follow-y: 0px;
     position: relative;
     isolation: isolate;
     overflow: hidden;
@@ -106,108 +141,40 @@ const bio = t.footer.bio;
     background: var(--color-background);
   }
 
-  /* ---------- Ambient glow ---------- */
+  /* ---------- Ambient threads ---------- */
   .footer__ambient {
     position: absolute;
     z-index: -1;
     inset: 0;
     overflow: hidden;
     pointer-events: none;
-  }
-
-  /* Extra warmth while a link or the CTA is hovered (.is-pulse, motion.ts). */
-  .footer__ambient::before {
-    content: '';
-    position: absolute;
-    z-index: 3;
-    inset: -18%;
-    background:
-      radial-gradient(ellipse at 12% 72%, rgb(255 77 24 / 0.52), transparent 34%),
-      radial-gradient(ellipse at 88% 62%, rgb(255 77 24 / 0.42), transparent 36%);
     opacity: 0;
-    mix-blend-mode: screen;
-    transition: opacity 420ms var(--ease-out);
+    transition: opacity 1.2s var(--ease-out);
   }
 
-  .footer.is-pulse .footer__ambient::before {
-    opacity: 0.32;
+  .footer__ambient.is-ready {
+    opacity: 1;
   }
 
-  /* Vignette keeps the copy readable over the glow. */
+  .footer__ambient :global(canvas) {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Vignette keeps the copy readable over the lines. */
   .footer__ambient::after {
     content: '';
     position: absolute;
     inset: 0;
     background: radial-gradient(
-      ellipse at center,
-      rgb(16 16 15 / 0.74) 0%,
-      rgb(16 16 15 / 0.48) 38%,
-      rgb(16 16 15 / 0.12) 70%,
-      var(--color-background) 96%
+      ellipse at 30% 40%,
+      rgb(16 16 15 / 0.55) 0%,
+      rgb(16 16 15 / 0.2) 45%,
+      transparent 75%
     );
-  }
-
-  .footer__ambient span {
-    position: absolute;
-    width: 124vw;
-    height: clamp(48rem, 116vh, 120rem);
-    border-radius: 42% 58% 63% 37% / 57% 44% 56% 43%;
-    filter: blur(4rem);
-    opacity: 0.34;
-    will-change: transform, opacity;
-  }
-
-  .footer__ambient span:first-child {
-    top: 3%;
-    left: -72%;
-    background:
-      radial-gradient(ellipse at 61% 50%, rgb(255 77 24 / 0.96) 0%, rgb(205 53 13 / 0.76) 13%, rgb(120 32 8 / 0.5) 32%, rgb(49 16 6 / 0.24) 54%, transparent 75%),
-      radial-gradient(ellipse at 78% 70%, rgb(255 115 42 / 0.42), transparent 56%);
-    animation: footer-light-left 16s ease-in-out infinite alternate;
-  }
-
-  .footer__ambient span:last-child {
-    top: 18%;
-    right: -75%;
-    border-radius: 61% 39% 46% 54% / 38% 55% 45% 62%;
-    background:
-      radial-gradient(ellipse at 39% 46%, rgb(255 77 24 / 0.9) 0%, rgb(191 48 11 / 0.7) 15%, rgb(105 28 8 / 0.43) 35%, rgb(43 15 6 / 0.2) 56%, transparent 76%),
-      radial-gradient(ellipse at 30% 72%, rgb(255 131 51 / 0.34), transparent 58%);
-    animation: footer-light-right 18s ease-in-out infinite alternate;
-  }
-
-  @keyframes footer-light-left {
-    from { transform: translate3d(calc(-6% + var(--follow-x)), calc(1% + var(--follow-y)), 0) scale(0.96) rotate(-2deg); opacity: 0.4; }
-    to { transform: translate3d(calc(14% + var(--follow-x)), calc(9% + var(--follow-y)), 0) scale(1.08) rotate(2deg); opacity: 0.58; }
-  }
-
-  @keyframes footer-light-right {
-    from { transform: translate3d(calc(5% + var(--follow-x)), calc(6% + var(--follow-y)), 0) scale(1.06) rotate(1deg); opacity: 0.54; }
-    to { transform: translate3d(calc(-14% + var(--follow-x)), calc(-4% + var(--follow-y)), 0) scale(0.95) rotate(-2deg); opacity: 0.4; }
-  }
-
-  @media (min-width: 640px) {
-    .footer__ambient span {
-      width: clamp(70rem, 82vw, 220rem);
-      filter: blur(clamp(4rem, 7vw, 16rem));
-      opacity: 0.5;
-    }
-
-    .footer__ambient span:first-child {
-      top: 16%;
-      left: -46%;
-    }
-
-    .footer__ambient span:last-child {
-      top: 9%;
-      right: -46%;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .footer__ambient span {
-      animation: none;
-    }
   }
 
   .footer__inner {

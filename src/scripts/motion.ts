@@ -383,28 +383,6 @@ function cursor() {
   });
 }
 
-// Footer ambient glow leans toward the cursor and warms up over links (live-site effect).
-function footerAmbient() {
-  if (!matchMedia('(pointer: fine)').matches) return;
-  const footer = document.querySelector<HTMLElement>('.footer');
-  if (!footer?.querySelector('.footer__ambient')) return;
-  const followX = gsap.quickTo(footer, '--follow-x', { duration: 0.8, ease: EASE, unit: 'px' });
-  const followY = gsap.quickTo(footer, '--follow-y', { duration: 0.8, ease: EASE, unit: 'px' });
-  footer.addEventListener('pointermove', (e) => {
-    const r = footer.getBoundingClientRect();
-    followX(((e.clientX - (r.left + r.width / 2)) / r.width) * 54);
-    followY(((e.clientY - (r.top + r.height / 2)) / r.height) * 34);
-  });
-  footer.addEventListener('pointerleave', () => {
-    followX(0);
-    followY(0);
-  });
-  footer.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('pointerenter', () => footer.classList.add('is-pulse'));
-    link.addEventListener('pointerleave', () => footer.classList.remove('is-pulse'));
-  });
-}
-
 const MENU_HIDDEN = 'inset(0% 0% 100% 0%)';
 const MENU_SHOWN = 'inset(0% 0% 0% 0%)';
 
@@ -558,8 +536,7 @@ function initializeMotion() {
     root.classList.add('motion-ready');
     cursor();
     magnet();
-    footerAmbient();
-    faq();
+      faq();
     menu();
     ScrollTrigger.sort();
     ScrollTrigger.refresh();
