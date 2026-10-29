@@ -69,7 +69,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     <div class="footer__legal">
       <p class="caption footer__copy">© {site.year} JONAS RECH</p>
       <div class="footer__legal-mid">
-        <a class="footer__small" href={localePath(locale, '/privacy')}>{t.footer.privacy}</a>
+        {/* Privacy link returns once the /privacy page exists (it would 404 now). */}
         <p class="caption">{t.footer.location}</p>
       </div>
       <div class="footer__legal-end">

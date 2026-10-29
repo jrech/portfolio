@@ -3,6 +3,7 @@ import '@fontsource-variable/rethink-sans';
 import '@fontsource/space-mono/700.css';
 import '@/styles/global.css';
 import InquiryDialog from '@/components/site/InquiryDialog.astro';
+import { socials } from '@/data/site';
 import { getLocale, localeMeta, locales, switchLocalePath, useT } from '@/i18n';
 
 interface Props {
@@ -22,6 +23,17 @@ const alternates = locales.map((l) => ({
   href: new URL(switchLocalePath(pathname, l), Astro.site).href,
 }));
 const xDefault = new URL(switchLocalePath(pathname, 'cs'), Astro.site).href;
+const canonical = new URL(pathname, Astro.site).href;
+const ogImage = new URL('/og.jpg', Astro.site).href;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Jonas Rech',
+  url: 'https://www.jonasrech.com',
+  email: 'mailto:hello@jonasrech.com',
+  jobTitle: locale === 'cs' ? 'Webdesigner a vývojář' : 'Web designer and developer',
+  sameAs: socials.map((s) => s.href),
+};
 ---
 
 <!doctype html>
@@ -33,6 +45,17 @@ const xDefault = new URL(switchLocalePath(pathname, 'cs'), Astro.site).href;
     <meta name="theme-color" content="#10100f" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <title>{title}</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Jonas Rech" />
+    <meta property="og:locale" content={locale === 'cs' ? 'cs_CZ' : 'en_US'} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
     <script is:inline>
       // Motion start state (see src/scripts/motion.ts). Skipped for reduced motion;
       // if the script has not taken over after 4 s, the content is simply shown.
@@ -45,7 +68,7 @@ const xDefault = new URL(switchLocalePath(pathname, 'cs'), Astro.site).href;
     {
       !noindex && (
         <Fragment>
-          <link rel="canonical" href={new URL(pathname, Astro.site).href} />
+          <link rel="canonical" href={canonical} />
           {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
           <link rel="alternate" hreflang="x-default" href={xDefault} />
         </Fragment>

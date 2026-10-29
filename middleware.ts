@@ -9,8 +9,9 @@
  * English pages are never redirected back: anyone can open /en/ from anywhere.
  */
 export const config = {
-  // Pages only: skip /en, built assets, Vercel internals and files with an extension.
-  matcher: ['/((?!en(?:/|$)|_astro/|_vercel/|.*\\.[a-z0-9]+$).*)'],
+  // Pages only: skip /en, the old-site paths redirected in vercel.json (/cs, /llm-info),
+  // built assets, Vercel internals and files with an extension.
+  matcher: ['/((?!en(?:/|$)|cs(?:/|$)|llm-info|_astro/|_vercel/|.*\\.[a-z0-9]+$).*)'],
 };
 
 const CZECH_COUNTRIES = new Set(['CZ', 'SK']);
