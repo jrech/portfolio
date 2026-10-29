@@ -101,7 +101,7 @@ function revealHero() {
 function revealContent() {
   const selector = '[data-reveal="fade"], .eyebrow, .footer__lead, .footer__email, .footer__legal, .footer__invite .cta';
   const candidates = gsap.utils.toArray<HTMLElement>(selector).filter(el =>
-    !el.closest('.hero, #site-menu, .footer, .services, .about') && visible(el) &&
+    !el.closest('.hero, #site-menu, .footer, .services, .about, .testimonial') && visible(el) &&
     !(matchMedia('(min-width: 1024px)').matches && el.matches('.step, .faq__item')));
   // Animate the owning block once; never stack parent and child translations.
   const items = candidates.filter(el => !passed(el) && !candidates.some(parent => parent !== el && parent.contains(el)));
@@ -128,7 +128,7 @@ function revealRules() {
     rules.push(el);
   });
   const pending = rules.filter(el => !passed(el));
-  const generic = pending.filter(el => !el.matches('.service') &&
+  const generic = pending.filter(el => !el.matches('.service, .testimonial__attribution') &&
     !(el.matches('.faq__item') && matchMedia('(min-width: 1024px)').matches));
   gsap.set(pending, { '--rule-progress': 0 });
   if (!generic.length) return;
@@ -265,6 +265,32 @@ function revealSequences() {
   });
 }
 
+// Testimonial in reading order: quote mark, quote, the rule drawing in, then the person
+// (Jonas, 2026-10-29). The rule lives on the attribution, so its children fade instead.
+function revealTestimonial() {
+  const section = document.querySelector<HTMLElement>('.testimonial');
+  if (!section) return;
+  const mark = section.querySelector<HTMLElement>('.testimonial__mark');
+  const quote = section.querySelector<HTMLElement>('.testimonial__quote');
+  const attribution = section.querySelector<HTMLElement>('.testimonial__attribution');
+  if (!mark || !quote || !attribution || passed(attribution)) return;
+  const person = [...attribution.children].filter((el): el is HTMLElement => el instanceof HTMLElement && visible(el));
+  gsap.set(mark, { opacity: 0, scale: 0.6, transformOrigin: '50% 60%' });
+  gsap.set([quote, ...person], { opacity: 0, y: MOTION.distance });
+  ScrollTrigger.create({
+    trigger: section.querySelector('.testimonial__content') ?? section, start: START, once: true,
+    onEnter: () => {
+      const timeline = gsap.timeline({ defaults: { ease: EASE, clearProps: 'transform,opacity' } });
+      timeline.to(mark, { opacity: 1, scale: 1, duration: 0.6 });
+      timeline.to(quote, { opacity: 1, y: 0, duration: MOTION.duration }, '-=0.35');
+      if (attribution.classList.contains('motion-rule-top')) {
+        timeline.to(attribution, { '--rule-progress': 1, duration: RULE.duration, ease: RULE.ease, clearProps: '' }, '-=0.4');
+      }
+      timeline.to(person, { opacity: 1, y: 0, duration: MOTION.duration, stagger: MOTION.stagger }, '-=0.9');
+    },
+  });
+}
+
 // About plays in reading order instead of all at once: eyebrow + H2, then the
 // portrait, then the text column beside it (Jonas, 2026-10-29). Each block still
 // waits for its own entry, so on stacked layouts nothing finishes off screen.
@@ -274,8 +300,15 @@ function revealAbout() {
   if (!section || !heading || passed(heading)) return;
   const eyebrow = [...section.querySelectorAll<HTMLElement>('.about__heading .eyebrow')].filter(visible);
   const blocks = gsap.utils.toArray<HTMLElement>('.about__portrait, .about__intro').filter(visible);
+  // The text column itself stays put; its heading, paragraphs and action come in one
+  // after another (Jonas, 2026-10-29). `.about__links` is display: contents on mobile,
+  // so its children are the items there.
+  const itemsOf = (block: HTMLElement) => block.matches('.about__intro')
+    ? [...block.children].flatMap(el => (el.matches('.about__links') ? [...el.children] : [el]))
+      .filter((el): el is HTMLElement => el instanceof HTMLElement && visible(el))
+    : [block];
   gsap.set(heading, { opacity: 0 });
-  gsap.set([...eyebrow, ...blocks], { opacity: 0, y: MOTION.distance });
+  gsap.set([...eyebrow, ...blocks.flatMap(itemsOf)], { opacity: 0, y: MOTION.distance });
 
   let previous = new Promise<void>(resolve => {
     ScrollTrigger.create({
@@ -310,8 +343,8 @@ function revealAbout() {
         trigger: block, start: START, once: true,
         onEnter: async () => {
           await after;
-          gsap.to(block, {
-            opacity: 1, y: 0, duration: 0.9, ease: EASE, clearProps: 'transform,opacity',
+          gsap.to(itemsOf(block), {
+            opacity: 1, y: 0, duration: 0.9, stagger: 0.12, ease: EASE, clearProps: 'transform,opacity',
           });
           gsap.delayedCall(0.22, resolve);
         },
@@ -597,6 +630,7 @@ function initializeMotion() {
     revealRules();
     revealServices();
     revealSequences();
+    revealTestimonial();
     revealAbout();
     revealFooter();
     root.classList.add('motion-ready');
