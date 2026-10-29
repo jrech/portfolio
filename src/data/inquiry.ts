@@ -53,133 +53,64 @@ export interface InquiryStep {
   grid?: boolean;
 }
 
-const HAS_SITE = ['Web máme, ale potřebuje změnu', 'Web máme a chceme ho rozšířit'];
+const single = (name: string, options: string[], error = 'Vyberte prosím jednu možnost.'): ChoiceGroup => ({
+  kind: 'single',
+  name,
+  options,
+  required: true,
+  error,
+});
 
+// Seven short steps, one single-choice question each (Jonas's brief, 2026-10-29).
 export const inquirySteps: InquiryStep[] = [
   {
-    id: 'project',
-    title: 'Co spolu budeme tvořit?',
+    id: 'need',
+    title: 'Co potřebujete?',
     lead: 'Vyberte, co je nejblíž. Doladíme to spolu.',
-    blocks: [
-      {
-        kind: 'single',
-        name: 'project',
-        options: [
-          'Nový web',
-          'Úprava nebo redesign stávajícího webu',
-          'Vizuální identita značky',
-          'Web i vizuální identita',
-          'Ještě si nejsem jistý/á',
-        ],
-        required: true,
-        error: 'Vyberte prosím jednu možnost.',
-      },
-    ],
+    blocks: [single('need', ['Nový web', 'Vylepšit současný web', 'Vizuální identitu', 'Ještě si nejsem jistý/á'])],
   },
   {
-    id: 'situation',
-    title: 'Kde jste teď a co má projekt změnit?',
+    id: 'site',
+    title: 'Máte už web?',
     blocks: [
-      {
-        kind: 'single',
-        name: 'stage',
-        label: 'Kde jste teď?',
-        options: ['Web zatím nemáme', ...HAS_SITE],
-        required: true,
-        error: 'Vyberte prosím, kde teď jste.',
-      },
+      single('hasSite', ['Ano', 'Ne', 'Pracuji na něm']),
       {
         kind: 'field',
         field: {
           name: 'currentUrl',
-          label: 'Adresa současného webu',
+          label: 'Adresa webu',
           type: 'url',
           placeholder: 'www.vasefirma.cz',
           autocomplete: 'url',
           maxLength: 200,
-          showWhen: { name: 'stage', values: HAS_SITE },
+          showWhen: { name: 'hasSite', values: ['Ano'] },
         },
       },
-      {
-        kind: 'multi',
-        name: 'goals',
-        label: 'Co má projekt především změnit?',
-        hint: 'Nejvýš dvě věci, na kterých záleží nejvíc.',
-        max: 2,
-        options: [
-          'Přivádět více relevantních poptávek',
-          'Lépe představit firmu a její služby',
-          'Působit důvěryhodněji',
-          'Zjednodušit orientaci a kontakt',
-          'Sjednotit vzhled značky',
-          'Něco jiného',
-        ],
-        otherOption: 'Něco jiného',
-        other: { name: 'goalsOther', label: 'Co konkrétně?', type: 'text', maxLength: 200 },
-        required: true,
-        error: 'Vyberte prosím aspoň jednu věc.',
-      },
     ],
+  },
+  {
+    id: 'priority',
+    title: 'Co je pro vás teď nejdůležitější?',
+    blocks: [single('priority', ['Více poptávek', 'Lepší prezentace firmy', 'Modernější vzhled', 'Pomoci s celkovým směrem'])],
   },
   {
     id: 'help',
-    title: 'S čím budete potřebovat pomoct?',
-    lead: 'Klidně vyberte víc možností.',
+    title: 'S čím chcete pomoct?',
+    blocks: [single('help', ['Návrh a realizace webu', 'Jen návrh webu', 'Vizuální identita', 'Potřebuji poradit'])],
+  },
+  {
+    id: 'budget',
+    title: 'Jaký máte přibližně rozpočet?',
+    lead: 'Stačí orientačně. Je to jen odhad, který mi pomůže navrhnout rozsah, nic vás nezavazuje.',
     blocks: [
-      {
-        kind: 'multi',
-        name: 'help',
-        options: [
-          'Strategie a struktura webu',
-          'Design webu',
-          'Vývoj webu',
-          'Texty a obsah',
-          'Vizuální identita',
-          'Nejsem si jistý/á, rád/a si nechám poradit',
-        ],
-        required: true,
-        error: 'Vyberte prosím aspoň jednu možnost.',
-      },
+      single('budget', ['Do 50 000 Kč', '50–100 000 Kč', 'Nad 100 000 Kč', 'Zatím nevím'], 'Vyberte prosím jednu možnost, klidně „Zatím nevím“.'),
     ],
   },
   {
-    id: 'scope',
-    title: 'Jaký máte pro projekt rámec?',
-    lead: 'Stačí orientačně. Odpovědi mi jen pomůžou navrhnout rozsah, který dává smysl, nic vás nezavazují.',
+    id: 'timing',
+    title: 'Kdy byste chtěli začít?',
     blocks: [
-      {
-        kind: 'single',
-        name: 'budget',
-        label: 'Rozpočet',
-        options: ['Do 50 000 Kč', '50–100 000 Kč', '100–200 000 Kč', 'Nad 200 000 Kč', 'Zatím nevím'],
-        required: true,
-        error: 'Vyberte prosím jednu možnost, klidně „Zatím nevím“.',
-      },
-      {
-        kind: 'single',
-        name: 'timing',
-        label: 'Kdy začít',
-        options: ['Co nejdříve', 'Během 1–3 měsíců', 'Později', 'Termín zatím neřešíme'],
-        required: true,
-        error: 'Vyberte prosím jednu možnost, klidně „Termín zatím neřešíme“.',
-      },
-    ],
-  },
-  {
-    id: 'notes',
-    title: 'Co bych měl o projektu vědět?',
-    lead: 'Nepovinné. Pár vět stačí.',
-    blocks: [
-      {
-        kind: 'field',
-        field: {
-          name: 'note',
-          label: 'Poznámka k projektu',
-          type: 'textarea',
-          help: 'Například komu web slouží, co vás teď brzdí nebo co už máte připravené.',
-          maxLength: 2000,
-        },
-      },
+      single('timing', ['Co nejdříve', 'Během pár měsíců', 'Později', 'Zatím nevím'], 'Vyberte prosím jednu možnost, klidně „Zatím nevím“.'),
     ],
   },
   {
@@ -191,7 +122,16 @@ export const inquirySteps: InquiryStep[] = [
       { kind: 'field', field: { name: 'name', label: 'Jméno', type: 'text', required: true, autocomplete: 'name', maxLength: 120, error: 'Napište prosím své jméno.' } },
       { kind: 'field', field: { name: 'email', label: 'E-mail', type: 'email', required: true, autocomplete: 'email', maxLength: 200, error: 'Zkontrolujte prosím e-mail, takhle mi nedojde.' } },
       { kind: 'field', field: { name: 'company', label: 'Firma', type: 'text', autocomplete: 'organization', maxLength: 160 } },
-      { kind: 'field', field: { name: 'phone', label: 'Telefon', type: 'tel', autocomplete: 'tel', maxLength: 40 } },
+      {
+        kind: 'field',
+        field: {
+          name: 'note',
+          label: 'Zpráva',
+          type: 'textarea',
+          help: 'Cokoli, co bych měl vědět předem.',
+          maxLength: 2000,
+        },
+      },
     ],
   },
 ];

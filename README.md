@@ -50,6 +50,6 @@ Czech is the default at `/`, English lives under `/en/` (Astro i18n). Visitors o
 
 ## Project inquiry
 
-The main CTA on Czech pages opens a fullscreen questionnaire (`src/components/site/InquiryDialog.astro`, `src/scripts/inquiry.ts`; questions in `src/data/inquiry.ts`). English pages keep linking to `#contact`.
+The main CTA on Czech pages opens a fullscreen seven-step questionnaire (one single-choice question per step, contact last) (`src/components/site/InquiryDialog.astro`, `src/scripts/inquiry.ts`; questions in `src/data/inquiry.ts`). English pages keep linking to `#contact`.
 
 On the last step the answers go straight from the browser to Jonas's Formspree form (`FORMSPREE_ENDPOINT` in `src/data/inquiry.ts`, a public form ID, no keys or env vars). Each answer is sent as a field named by its Czech question, contact first, with `_subject` "Nová poptávka: <name>" and `_replyto` set to the visitor's e-mail so a reply goes straight back. Spam protection: Formspree's `_gotcha` honeypot plus its own filtering. Formspree settings (recipient, notifications, allowed domains) live in the Formspree dashboard.

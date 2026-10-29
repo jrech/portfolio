@@ -14,9 +14,9 @@ interface Draft {
   startedAt: number;
 }
 
-// v2: six steps (2026-10-29). Older seven-step drafts are ignored, not migrated.
-const STORAGE_KEY = 'jr-inquiry-draft-v2';
-const OLD_KEYS = ['jr-inquiry-draft-v1'];
+// v3: seven single-choice steps (2026-10-29). Older drafts are discarded, not migrated.
+const STORAGE_KEY = 'jr-inquiry-draft-v3';
+const OLD_KEYS = ['jr-inquiry-draft-v1', 'jr-inquiry-draft-v2'];
 const dialog = document.getElementById('inquiry') as HTMLDialogElement | null;
 
 if (dialog) {
@@ -301,7 +301,16 @@ if (dialog) {
     }
     writeDraft();
   });
-  form.addEventListener('input', () => writeDraft());
+  form.addEventListener('input', (e) => {
+    // A text field's error goes away once the visitor starts fixing it.
+    const input = e.target as HTMLInputElement;
+    if (input.getAttribute('aria-invalid') === 'true' && input.value.trim()) {
+      input.setAttribute('aria-invalid', 'false');
+      const error = form.querySelector<HTMLElement>(`#inq-${input.name}-error`);
+      if (error) error.textContent = '';
+    }
+    writeDraft();
+  });
 
   // Enter = next (submit event); Shift+Enter keeps working inside the textarea.
   form.addEventListener('submit', (e) => {

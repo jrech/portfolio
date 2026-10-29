@@ -152,7 +152,7 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
 
         <section class="inq__panel" data-inq-done hidden>
           <p class="caption caption--accent">Odesláno</p>
-          <h2 class="inq__title" tabindex="-1" id="inq-done-title">Díky, mám vše potřebné pro první představu. Ozvu se vám.</h2>
+          <h2 class="inq__title" tabindex="-1" id="inq-done-title">Díky, ozvu se vám.</h2>
           <div class="inq__actions-inline">
             <button class="inq__ghost" type="button" data-inq-close>Zpět na web</button>
           </div>
@@ -576,6 +576,10 @@ const fieldId = (f: TextField) => `inq-${f.name}`;
     display: grid;
     gap: 0 var(--space-4);
     margin-top: 8px;
+  }
+
+  .inq__fields--grid .inq__field:has(textarea) {
+    grid-column: 1 / -1;
   }
 
   .inq__fields--grid .inq__field {
