@@ -36,9 +36,10 @@ const bio = t.footer.bio;
 ---
 
 <footer id="contact" class:list={['footer', `footer--${variant}`]}>
-  <!-- Fine drifting threads (WebGL2, scripts/threads.ts) that glow up while a link is hovered.
+  <!-- Flowing orange aurora (WebGL2, scripts/aurora.ts) that leans toward the mouse
+       and brightens while a link is hovered.
        Without WebGL2 the footer stays plain. -->
-  <div class="footer__ambient" aria-hidden="true" data-footer-threads></div>
+  <div class="footer__ambient" aria-hidden="true" data-footer-aurora></div>
   <div class="footer__inner container">
     <section class="footer__invite" aria-labelledby="footer-title">
       <Eyebrow index={index} class="footer__eyebrow footer__eyebrow--indexed">{eyebrow}</Eyebrow>
@@ -95,33 +96,23 @@ const bio = t.footer.bio;
 </footer>
 
 <script>
-  // Load the WebGL threads only when the footer gets close to the viewport.
-  const host = document.querySelector<HTMLElement>('[data-footer-threads]');
+  // Load the WebGL aurora only when the footer gets close to the viewport.
+  const host = document.querySelector<HTMLElement>('[data-footer-aurora]');
   if (host) {
     const observer = new IntersectionObserver(
       async ([entry]) => {
         if (!entry.isIntersecting) return;
         observer.disconnect();
-        const { mountThreads } = await import('@/scripts/threads');
-        const mounted = mountThreads(host, {
-          color: '#f2efe9',
-          accentColor: '#ff4d18',
-          lineCount: 65,
-          thickness: 0.6,
-          softness: 3,
-          amplitude: 1.7,
-          distance: 0.95,
-          waves: 0.65,
-          speed: 0.15,
-          split: 0,
-          fray: 0,
-          angle: 25,
-          taper: 0.9,
-          brightness: 0.75,
-          parting: 0,
-          enableMouseInteraction: false,
-          fade: 0,
-          opacity: 1,
+        const { mountAurora } = await import('@/scripts/aurora');
+        const mounted = mountAurora(host, {
+          colorStops: ['#c93b00', '#5e0a00', '#ff6027'],
+          amplitude: 1.5,
+          blend: 0.53,
+          height: 0.59,
+          speed: 1,
+          glow: 0.5,
+          scale: 0.8,
+          direction: 'bottom',
         });
         if (mounted) host.classList.add('is-ready');
       },
@@ -141,7 +132,7 @@ const bio = t.footer.bio;
     background: var(--color-background);
   }
 
-  /* ---------- Ambient threads ---------- */
+  /* ---------- Ambient aurora ---------- */
   .footer__ambient {
     position: absolute;
     z-index: -1;
@@ -165,29 +156,13 @@ const bio = t.footer.bio;
     transition: filter 600ms var(--ease-out);
   }
 
-  /* Soft accent glow behind the lines, raised while a link or the CTA is hovered. */
-  .footer__ambient::before {
-    content: '';
-    position: absolute;
-    inset: -10%;
-    background:
-      radial-gradient(ellipse at 18% 70%, rgb(255 77 24 / 0.22), transparent 45%),
-      radial-gradient(ellipse at 85% 35%, rgb(255 77 24 / 0.16), transparent 45%);
-    opacity: 0;
-    transition: opacity 600ms var(--ease-out);
-  }
-
   @media (hover: hover) {
-    .footer:has(a:hover) .footer__ambient::before {
-      opacity: 1;
-    }
-
     .footer:has(a:hover) .footer__ambient :global(canvas) {
-      filter: brightness(1.6);
+      filter: brightness(1.35) saturate(1.1);
     }
   }
 
-  /* Vignette keeps the copy readable over the lines. */
+  /* Vignette keeps the copy readable over the light. */
   .footer__ambient::after {
     content: '';
     position: absolute;
