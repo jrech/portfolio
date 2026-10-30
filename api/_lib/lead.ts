@@ -5,7 +5,7 @@
  *
  * Plain fetch against the official REST APIs, no SDKs: two small calls each.
  */
-import { getInquiry, inquiryRows, type InquiryAnswers, type InquiryLocale } from '../../src/data/inquiry';
+import { getInquiry, inquiryRows, type InquiryAnswers, type InquiryLocale } from '../../src/data/inquiry.js';
 
 export const NOTION_VERSION = '2025-09-03'; // first version with data sources
 const NOTION_API = 'https://api.notion.com/v1';
