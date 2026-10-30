@@ -3,7 +3,7 @@
  * Fullscreen project inquiry, in the page's language. Opens from the main CTAs
  * (a.cta[href="#contact"]); without JS those links keep going to the contact footer.
  * Steps come from src/data/inquiry.ts; behaviour lives in src/scripts/inquiry.ts and
- * submission goes to Formspree (FORMSPREE_ENDPOINT in src/data/inquiry.ts).
+ * submission goes to api/contact.ts (Notion CRM + Resend), Formspree as fallback.
  */
 import Icon from '../ui/Icon.astro';
 import { getInquiry, type TextField } from '@/data/inquiry';

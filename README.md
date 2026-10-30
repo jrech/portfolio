@@ -52,4 +52,28 @@ Czech is the default at `/`, English lives under `/en/` (Astro i18n). Visitors o
 
 The main CTA opens a fullscreen seven-step questionnaire (one single-choice question per step, contact last), in Czech or English after the page language (`src/components/site/InquiryDialog.astro`, `src/scripts/inquiry.ts`; questions in `src/data/inquiry.ts`).
 
-On the last step the answers go straight from the browser to Jonas's Formspree form (`FORMSPREE_ENDPOINT` in `src/data/inquiry.ts`, a public form ID, no keys or env vars). Each answer is sent as a field named by its Czech question, contact first, with `_subject` "Nová poptávka: <name>" and `_replyto` set to the visitor's e-mail so a reply goes straight back. Spam protection: Formspree's `_gotcha` honeypot plus its own filtering. Formspree settings (recipient, notifications, allowed domains) live in the Formspree dashboard.
+On the last step the answers are posted to `api/contact.ts`, a Vercel Function next to the static site (no Astro adapter; like `middleware.ts` it does not run under `astro dev`, use `vercel dev` or a preview deploy). It:
+
+1. rejects cross-origin requests, oversized bodies, a filled honeypot (`website`, answered with a fake success), submissions finished in under 4 s, and more than 5 requests per IP in 10 minutes (per warm instance, best effort);
+2. validates the answers against `src/data/inquiry.ts` (known options only, required fields, lengths, control characters stripped);
+3. saves the lead to the Notion "Leads" data source (API version `2025-09-03`). The browser sends a `submissionId` kept with the draft; a retry with the same ID reuses the existing Notion page instead of creating a second one. English answers are mapped to the Czech select options;
+4. sends the client a confirmation and Jonas a notification with a link to the Notion page through Resend (with idempotency keys, so a retry does not mail twice), then ticks `Potvrzení odesláno` only after Resend accepted the confirmation. A failed confirmation is flagged in `Další krok` instead;
+5. if Notion fails, still emails Jonas every answer (subject starts with `[NEULOŽENO]`) so no lead is lost silently; only if that fails too does the visitor see the error state (their draft stays saved).
+
+Mapping: Firma ← company (or the name when empty), Kontakt ← name, Email ← email, Typ projektu ← "Co potřebujete?", Rozpočet klienta ← budget, Požadovaný termín ← "Kdy byste chtěli začít?", Web ← website address, Brief poptávky ← all project answers + message, ID webové poptávky ← submissionId, Follow-up ← +2 business days; Stav `New`, Zdroj poptávky `Webový formulář`, Další krok `Prověřit poptávku a odpovědět` (defaults in `LEAD_DEFAULTS`, `api/_lib/lead.ts`). Telefon stays empty (the form has no phone field).
+
+Set these in Vercel → Project → Settings → Environment Variables:
+
+| Variable | Required | Example |
+| --- | --- | --- |
+| `NOTION_API_KEY` | yes | internal integration secret, `ntn_…`; the integration must be connected to the Leads database |
+| `NOTION_DATA_SOURCE_ID` | yes | `2d1282f1-dc9e-8018-89f1-000b9e6603eb` |
+| `RESEND_API_KEY` | yes | `re_…` |
+| `CONTACT_FROM_EMAIL` | yes | `Jonáš Rech <poptavka@jonasrech.com>` (domain verified in Resend) |
+| `CONTACT_NOTIFICATION_EMAIL` | yes | where Jonas gets new leads |
+| `CONTACT_REPLY_TO_EMAIL` | no | reply-to on the client confirmation, defaults to `CONTACT_NOTIFICATION_EMAIL` |
+| `CONTACT_TEST_RECIPIENT` | no | **Preview only.** Every client confirmation goes here instead of the visitor |
+
+Without the Notion variables the function answers 503 and the browser sends the inquiry to the previous Formspree form instead (`FORMSPREE_ENDPOINT`; switch with `INQUIRY_BACKEND` in `src/data/inquiry.ts`). Without the Resend variables leads are saved to Notion but no emails go out.
+
+Tests (mocked Notion and Resend, nothing is sent): `npm run test:contact`.

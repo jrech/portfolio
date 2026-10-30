@@ -2,17 +2,34 @@
  * Project inquiry dialog (markup: components/site/InquiryDialog.astro).
  * Opens from every `a.cta[href="#contact"]`; keeps a draft in localStorage so an
  * unfinished questionnaire can be resumed; validates each step; sends the answers
- * to Formspree as labelled fields (straight from the browser, Formspree's AJAX mode).
+ * to /api/contact (Notion CRM + Resend, see api/contact.ts). Formspree stays as the
+ * fallback while that function is missing or not configured (INQUIRY_BACKEND).
  * Step transitions use GSAP (loaded on first open), skipped for reduced motion.
  */
-import { EMAIL_PATTERN, FORMSPREE_ENDPOINT, getInquiry, inquiryRows, validateInquiry } from '@/data/inquiry';
+import {
+  CONTACT_ENDPOINT,
+  EMAIL_PATTERN,
+  FORMSPREE_ENDPOINT,
+  INQUIRY_BACKEND,
+  getInquiry,
+  inquiryRows,
+  validateInquiry,
+  type InquiryAnswers,
+} from '@/data/inquiry';
 
 type Answers = Record<string, string | string[]>;
 interface Draft {
   step: number;
   answers: Answers;
   startedAt: number;
+  /** Idempotency key: a retried or double-sent submission is recognised server-side. */
+  id?: string;
 }
+
+const newId = () =>
+  typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
 
 const dialog = document.getElementById('inquiry') as HTMLDialogElement | null;
 
@@ -43,6 +60,7 @@ if (dialog) {
 
   let current = 0;
   let startedAt = Date.now();
+  let submissionId = newId();
   let opener: HTMLElement | null = null;
   let sending = false;
   let gsapModule: typeof import('gsap') | null = null;
@@ -59,7 +77,7 @@ if (dialog) {
   };
   const writeDraft = () => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ step: current, answers: collect(), startedAt }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ step: current, answers: collect(), startedAt, id: submissionId }));
     } catch {
       /* storage unavailable: the questionnaire still works, it just won't resume */
     }
@@ -198,6 +216,41 @@ if (dialog) {
   }
 
   /* ---------- Submit ---------- */
+  async function sendToApi(answers: InquiryAnswers, honeypot: string) {
+    const response = await fetch(CONTACT_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        ...answers,
+        website: honeypot,
+        locale,
+        submissionId,
+        elapsedMs: Date.now() - startedAt,
+      }),
+    });
+    // 404: function not deployed, 503: not configured. Nothing was stored, so the
+    // previous Formspree form takes the inquiry instead.
+    if (response.status === 404 || response.status === 503) return sendToFormspree(answers, honeypot);
+    if (!response.ok) throw new Error(String(response.status));
+  }
+
+  async function sendToFormspree(answers: InquiryAnswers, honeypot: string) {
+    const payload: Record<string, string> = {
+      _subject: `${dialog!.dataset.subject}: ${answers.name}`,
+      _replyto: String(answers.email),
+      // Formspree's honeypot: filled only by bots, then silently dropped.
+      _gotcha: honeypot,
+      email: String(answers.email),
+      ...Object.fromEntries(inquiryRows(answers, inquirySteps)),
+    };
+    const response = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) throw new Error(String(response.status));
+  }
+
   async function submit() {
     if (sending) return;
     sending = true;
@@ -207,22 +260,11 @@ if (dialog) {
       // Same check the form already enforced; it also drops fields that were hidden.
       const checked = validateInquiry(collect(), inquirySteps);
       if (!checked.ok) throw new Error('invalid');
-      const { answers } = checked;
-      const payload: Record<string, string> = {
-        _subject: `${dialog!.dataset.subject}: ${answers.name}`,
-        _replyto: String(answers.email),
-        // Formspree's honeypot: filled only by bots, then silently dropped.
-        _gotcha: (form.elements.namedItem('website') as HTMLInputElement).value,
-        email: String(answers.email),
-        ...Object.fromEntries(inquiryRows(answers, inquirySteps)),
-      };
-      const response = await fetch(FORMSPREE_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) throw new Error(String(response.status));
+      const honeypot = (form.elements.namedItem('website') as HTMLInputElement).value;
+      if (INQUIRY_BACKEND === 'formspree') await sendToFormspree(checked.answers, honeypot);
+      else await sendToApi(checked.answers, honeypot);
       clearDraft();
+      submissionId = newId();
       form.reset();
       steps.forEach(syncStepUi);
       current = 0;
@@ -256,9 +298,11 @@ if (dialog) {
     if (done.hidden === false) return showPanel(done);
     if (hasContent(draft)) {
       startedAt = draft!.startedAt || Date.now();
+      submissionId = draft!.id || submissionId;
       return showPanel(resume);
     }
     startedAt = Date.now();
+    submissionId = newId();
     return goTo(0);
   }
 
@@ -346,6 +390,7 @@ if (dialog) {
     form.reset();
     steps.forEach(syncStepUi);
     startedAt = Date.now();
+    submissionId = newId();
     goTo(0);
   });
   failed.querySelector('[data-inq-retry]')!.addEventListener('click', () => submit());
