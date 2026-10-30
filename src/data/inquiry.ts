@@ -1,7 +1,7 @@
 /**
  * Project inquiry questionnaire (Czech and English). Single source for the fullscreen form
- * (InquiryDialog.astro + scripts/inquiry.ts), the final answer check and the
- * labelled fields sent to Formspree.
+ * (InquiryDialog.astro + scripts/inquiry.ts), the final answer check (browser and
+ * api/contact.ts) and the labelled answer rows used in the CRM brief and emails.
  *
  * Each step is an ordered list of blocks: choice groups and text fields.
  */
@@ -298,6 +298,15 @@ export function getInquiry(locale: InquiryLocale) {
   return locale === 'en' ? { steps: stepsEn, ui: uiEn } : { steps: stepsCs, ui: uiCs };
 }
 
+/**
+ * Where the questionnaire goes: 'api' = our own /api/contact (Notion CRM + Resend),
+ * 'formspree' = the previous Formspree form. With 'api', the browser still falls back
+ * to Formspree while the function is missing or not configured (404/503).
+ * Remove Formspree once the new pipeline has been tested in production.
+ */
+export const INQUIRY_BACKEND: 'api' | 'formspree' = 'api';
+export const CONTACT_ENDPOINT = '/api/contact';
+
 /** Jonas's Formspree form. The ID is a public endpoint by design, not a secret. */
 export const FORMSPREE_ENDPOINT = 'https://formspree.io/f/maeebnqp';
 
@@ -313,7 +322,15 @@ export function validateInquiry(
   if (!input || typeof input !== 'object') return { ok: false };
   const data = input as Record<string, unknown>;
   const answers: InquiryAnswers = {};
-  const text = (value: unknown, max: number) => (typeof value === 'string' ? value.trim().slice(0, max) : '');
+  // Control characters out; line breaks only survive in the textarea.
+  const text = (value: unknown, max: number, multiline = false) =>
+    typeof value === 'string'
+      ? value
+          .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+          .replace(multiline ? /\r\n?/g : /[\r\n\t]+/g, multiline ? '\n' : ' ')
+          .trim()
+          .slice(0, max)
+      : '';
   const has = (name: string, values: string[]) => {
     const v = answers[name];
     return (Array.isArray(v) ? v : [v]).some((x) => typeof x === 'string' && values.includes(x));
@@ -324,7 +341,7 @@ export function validateInquiry(
       if (block.kind === 'field') {
         const f = block.field;
         const shown = !f.showWhen || has(f.showWhen.name, f.showWhen.values);
-        const value = shown ? text(data[f.name], f.maxLength) : '';
+        const value = shown ? text(data[f.name], f.maxLength, f.type === 'textarea') : '';
         if (f.required && !value) return { ok: false };
         if (f.type === 'email' && !EMAIL_PATTERN.test(value)) return { ok: false };
         answers[f.name] = value;
