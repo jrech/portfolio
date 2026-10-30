@@ -160,6 +160,13 @@ const locale = getLocale(Astro);
     transition: color var(--duration-fast) var(--ease-out);
   }
 
+  /* Phones keep just the main link (Jonas, 2026-10-30). */
+  @media (max-width: 639px) {
+    .about__link-secondary {
+      display: none;
+    }
+  }
+
   .about__link-primary:hover,
   .about__link-primary:focus-visible,
   .about__link-secondary:hover,
