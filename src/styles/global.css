@@ -288,3 +288,16 @@ body {
   .magnet { translate: none !important; }
   .cursor { display: none !important; }
 }
+
+/* Page transition cover (motion.ts): rolls down like the menu, the next page lifts it. */
+.page-cover {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--color-background);
+  clip-path: inset(0% 0% 100% 0%);
+  pointer-events: none;
+}
+.page-enter .page-cover {
+  clip-path: inset(0% 0% 0% 0%);
+}

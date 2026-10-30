@@ -676,12 +676,72 @@ function menu() {
   });
 }
 
+// Between pages: a cover rolls down from the top like the menu, the next page loads under
+// it and it rolls back up (Jonas, 2026-10-30). In-page anchors, new tabs, downloads and
+// other sites are left alone; a link inside the open menu navigates straight away,
+// since the menu already covers the page.
+function pageTransitions() {
+  const cover = document.querySelector<HTMLElement>('.page-cover');
+  if (!cover) return;
+  const menuDialog = document.getElementById('site-menu') as HTMLDialogElement | null;
+
+  if (root.classList.contains('page-enter')) {
+    gsap.set(cover, { clipPath: MENU_SHOWN });
+    root.classList.remove('page-enter');
+    heroIntro = new Promise<void>(resolve => {
+      gsap.to(cover, {
+        clipPath: MENU_HIDDEN, duration: 0.7, delay: 0.1, ease: EASE_MENU,
+        onComplete: () => gsap.set(cover, { clearProps: 'clipPath' }),
+      });
+      gsap.delayedCall(0.45, resolve);
+    });
+  }
+
+  const target = (e: MouseEvent) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return null;
+    const link = (e.target as Element | null)?.closest<HTMLAnchorElement>('a[href]');
+    if (!link || (link.target && link.target !== '_self') || link.hasAttribute('download')) return null;
+    const url = new URL(link.href, location.href);
+    if (url.origin !== location.origin || (url.pathname === location.pathname && url.search === location.search)) return null;
+    return { link, url };
+  };
+  const leave = (url: URL) => {
+    try { sessionStorage.setItem('jr-page-enter', '1'); } catch {}
+    location.assign(url.href);
+  };
+
+  document.addEventListener('click', e => {
+    const hit = target(e);
+    if (!hit || !menuDialog?.open || !menuDialog.contains(hit.link)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    leave(hit.url);
+  }, true);
+
+  document.addEventListener('click', e => {
+    const hit = target(e);
+    if (!hit || e.defaultPrevented) return;
+    e.preventDefault();
+    gsap.fromTo(cover, { clipPath: MENU_HIDDEN }, {
+      clipPath: MENU_SHOWN, duration: 0.6, ease: EASE_MENU, onComplete: () => leave(hit.url),
+    });
+  });
+
+  // Back/forward can restore this page from memory with the cover still down.
+  addEventListener('pageshow', e => {
+    if (!e.persisted) return;
+    gsap.killTweensOf(cover);
+    gsap.set(cover, { clearProps: 'clipPath' });
+    try { sessionStorage.removeItem('jr-page-enter'); } catch {}
+  });
+}
 
 function initializeMotion() {
   // The head timeout deliberately wins: never hide content again after a slow load.
   if (!root.classList.contains('js-motion')) return;
   try {
     introHero();
+    pageTransitions();
     scrubStatement();
     revealHeadings();
     revealHero();
@@ -705,6 +765,8 @@ function initializeMotion() {
     gsap.globalTimeline.getChildren().forEach(animation => animation.progress(1));
     root.classList.remove('js-motion');
     gsap.set('.hero__media', { clearProps: 'opacity' });
+    gsap.set('.page-cover', { clearProps: 'clipPath' });
+    root.classList.remove('intro', 'page-enter');
     console.warn('Motion disabled; content remains accessible.', error);
   }
 }
