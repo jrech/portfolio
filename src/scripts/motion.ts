@@ -59,6 +59,44 @@ function splitHeading(heading: HTMLElement) {
   return { targets, vars };
 }
 
+// First visit per tab: black screen, the hero photo fades and settles in, then the hero
+// content follows (Jonas, 2026-10-30). No waiting on the network beyond a short cap,
+// and any scroll, tap or key skips straight to the end.
+let heroIntro: Promise<void> = Promise.resolve();
+
+function introHero() {
+  if (!root.classList.contains('intro')) return;
+  const media = document.querySelector<HTMLElement>('.hero__media');
+  root.classList.remove('intro');
+  if (!media || passed(media)) return;
+  try { sessionStorage.setItem('jr-intro-seen', '1'); } catch {}
+  const image = media.querySelector<HTMLImageElement>('img');
+  gsap.set(media, { opacity: 0 });
+  const loaded = !image || image.complete ? Promise.resolve() : Promise.race([
+    new Promise(resolve => {
+      image.addEventListener('load', resolve, { once: true });
+      image.addEventListener('error', resolve, { once: true });
+    }),
+    new Promise(resolve => setTimeout(resolve, 1200)),
+  ]);
+  heroIntro = new Promise<void>(resolve => {
+    loaded.then(() => {
+      const events = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
+      const skip = () => timeline.progress(1);
+      const done = () => {
+        events.forEach(type => removeEventListener(type, skip));
+        resolve();
+      };
+      const timeline = gsap.timeline({ onComplete: done });
+      timeline.to(media, { opacity: 1, duration: 1.1, ease: 'power2.out', clearProps: 'opacity' });
+      if (image) timeline.fromTo(image, { scale: 1.06 }, { scale: 1, duration: 1.4, ease: EASE, clearProps: 'transform' }, 0);
+      // The rest of the hero starts while the photo is still settling.
+      timeline.call(resolve, [], 0.6);
+      events.forEach(type => addEventListener(type, skip, { once: true, passive: true }));
+    });
+  });
+}
+
 // Split only at entry: off-screen headings keep natural wrapping until needed.
 function revealHeadings() {
   document.querySelectorAll<HTMLElement>('[data-reveal="heading"]').forEach((heading) => {
@@ -73,7 +111,7 @@ function revealHeadings() {
       gsap.set(heading, { opacity: 1 });
       gsap.to(reveal.targets, reveal.vars);
     };
-    if (heading.closest('.hero')) play();
+    if (heading.closest('.hero')) heroIntro.then(play);
     else ScrollTrigger.create({ trigger: heading, start: HEADING_START, once: true, onEnter: play });
   });
 }
@@ -118,9 +156,9 @@ function revealHero() {
   // Start states first, so nothing flashes before the delayed timeline begins.
   gsap.set(content, { opacity: 0, y: MOTION.distance });
   gsap.set(nav, { opacity: 0, y: -10 });
-  gsap.timeline({ delay: 0.3, defaults: { duration: 0.8, ease: EASE, clearProps: 'transform,opacity' } })
+  heroIntro.then(() => gsap.timeline({ delay: 0.3, defaults: { duration: 0.8, ease: EASE, clearProps: 'transform,opacity' } })
     .to(content, { opacity: 1, y: 0, stagger: 0.14 })
-    .to(nav, { opacity: 1, y: 0, stagger: 0.06 }, '-=0.55');
+    .to(nav, { opacity: 1, y: 0, stagger: 0.06 }, '-=0.55'));
 }
 
 function revealContent() {
@@ -640,6 +678,7 @@ function initializeMotion() {
   // The head timeout deliberately wins: never hide content again after a slow load.
   if (!root.classList.contains('js-motion')) return;
   try {
+    introHero();
     scrubStatement();
     revealHeadings();
     revealHero();
@@ -662,6 +701,7 @@ function initializeMotion() {
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     gsap.globalTimeline.getChildren().forEach(animation => animation.progress(1));
     root.classList.remove('js-motion');
+    gsap.set('.hero__media', { clearProps: 'opacity' });
     console.warn('Motion disabled; content remains accessible.', error);
   }
 }

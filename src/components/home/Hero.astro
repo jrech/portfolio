@@ -54,6 +54,11 @@ const t = useT(Astro);
     background: var(--color-surface);
   }
 
+  /* First-visit intro start state; motion.ts takes over from here. */
+  :global(html.intro) .hero__media {
+    opacity: 0;
+  }
+
   .hero__media :global(img),
   .hero__media :global(video) {
     width: 100%;

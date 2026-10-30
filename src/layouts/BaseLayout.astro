@@ -65,7 +65,9 @@ const schema = {
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
         const html = document.documentElement;
         html.classList.add('js-motion');
-        setTimeout(() => html.classList.contains('motion-ready') || html.classList.remove('js-motion'), 4000);
+        // First visit in this tab: the hero photo rises out of black before the rest (motion.ts).
+        try { if (!sessionStorage.getItem('jr-intro-seen')) html.classList.add('intro'); } catch {}
+        setTimeout(() => html.classList.contains('motion-ready') || html.classList.remove('js-motion', 'intro'), 4000);
       }
     </script>
     {
