@@ -13,7 +13,7 @@
  * Responses: { ok, id?, duplicate?, stored?, confirmation?, notification?, error? }
  *   200 saved (or a duplicate / honeypot hit) · 400 invalid · 403 cross-origin
  *   409 same submission still in progress · 413/415 bad body · 429 rate limited
- *   502 nothing could be stored · 503 not configured (the browser falls back to Formspree)
+ *   502 nothing could be stored · 503 not configured
  */
 import { getInquiry, validateInquiry, type InquiryLocale } from '../src/data/inquiry.js';
 import {

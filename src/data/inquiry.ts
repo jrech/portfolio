@@ -298,17 +298,8 @@ export function getInquiry(locale: InquiryLocale) {
   return locale === 'en' ? { steps: stepsEn, ui: uiEn } : { steps: stepsCs, ui: uiCs };
 }
 
-/**
- * Where the questionnaire goes: 'api' = our own /api/contact (Notion CRM + Resend),
- * 'formspree' = the previous Formspree form. With 'api', the browser still falls back
- * to Formspree while the function is missing or not configured (404/503).
- * Remove Formspree once the new pipeline has been tested in production.
- */
-export const INQUIRY_BACKEND: 'api' | 'formspree' = 'api';
+/** Where the questionnaire is posted: a Vercel Function (api/contact.ts), same origin. */
 export const CONTACT_ENDPOINT = '/api/contact';
-
-/** Jonas's Formspree form. The ID is a public endpoint by design, not a secret. */
-export const FORMSPREE_ENDPOINT = 'https://formspree.io/f/maeebnqp';
 
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
