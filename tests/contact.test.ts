@@ -107,6 +107,7 @@ beforeEach(() => {
   Object.assign(process.env, ENV);
   delete process.env.CONTACT_TEST_RECIPIENT;
   delete process.env.CONTACT_REPLY_TO_EMAIL;
+  delete process.env.CONTACT_GUIDE_URL;
 });
 
 test('valid submission: Notion lead with mapped properties, both emails, confirmation ticked', async () => {
@@ -148,7 +149,18 @@ test('valid submission: Notion lead with mapped properties, both emails, confirm
   assert.deepEqual(confirmation.body.to, ['delivered@resend.dev']);
   assert.equal(confirmation.body.reply_to, 'studio@example.test');
   assert.equal(confirmation.body.from, ENV.CONTACT_FROM_EMAIL);
-  assert.match(confirmation.body.text, /^Dobrý den,\n\nděkuji za zprávu a zájem o spolupráci\.\n\nVaše poptávka dorazila v pořádku\. Ozvu se vám nejpozději do 2 pracovních dnů s návrhem dalšího postupu\.\n\nMějte se hezky,\nJonáš Rech\njonasrech\.com$/);
+  assert.equal(
+    confirmation.body.text,
+    [
+      'Dobrý den, Jana Nováková,',
+      'díky, že jste se mi ozvali a napsali mi něco o svém projektu.',
+      'Vaše zpráva dorazila v pořádku. Během 1–2 pracovních dnů si projdu zadání a ozvu se vám, abychom se domluvili, co dál.',
+      'A pokud vás mezitím napadne něco, co jste do poptávky nenapsali, klidně mi odpovězte přímo na tento e-mail.',
+      'Mějte se hezky,\nJonáš Rech\nWeb Design & Development\njonasrech.com',
+    ].join('\n\n'),
+    'no guide paragraph while CONTACT_GUIDE_URL is unset',
+  );
+  assert.match(confirmation.body.html, /Web Design &amp; Development/);
   assert.equal(confirmation.key, 'abc-12345-confirmation');
   assert.deepEqual(notification.body.to, ['studio@example.test']);
   assert.equal(notification.body.reply_to, 'delivered@resend.dev');
@@ -307,4 +319,19 @@ test('CONTACT_TEST_RECIPIENT redirects the client confirmation (preview testing)
   await post(submission({ email: 'real-client@example.com' }));
   assert.deepEqual(emails[0].body.to, ['me+test@example.test']);
   assert.equal(pages[0].properties[PROP.email].email, 'real-client@example.com');
+});
+
+test('CONTACT_GUIDE_URL adds the collaboration guide paragraph and link; non-https is ignored', async () => {
+  process.env.CONTACT_GUIDE_URL = 'https://www.jonasrech.com/guide.pdf';
+  await post(submission({ name: 'Jana <b>Nováková</b>' }));
+  const { text, html } = emails[0].body;
+  assert.match(text, /Mezitím vám posílám krátkého průvodce spoluprací\./);
+  assert.match(text, /Mrknout na průvodce spoluprací → https:\/\/www\.jonasrech\.com\/guide\.pdf/);
+  assert.match(html, /<a href="https:\/\/www\.jonasrech\.com\/guide\.pdf"[^>]*>Mrknout na průvodce spoluprací →<\/a>/);
+  assert.doesNotMatch(html, /<b>/, 'visitor name is escaped');
+
+  emails.length = 0;
+  process.env.CONTACT_GUIDE_URL = 'javascript:alert(1)';
+  await post(submission());
+  assert.doesNotMatch(emails[0].body.text, /průvodce/);
 });

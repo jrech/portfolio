@@ -47,7 +47,17 @@ export interface Config {
   replyTo?: string;
   /** Preview/testing only: every client confirmation goes here instead of the visitor. */
   testRecipient?: string;
+  /** Link to the collaboration guide (PDF). Without it the guide paragraph is left out. */
+  guideUrl?: string;
 }
+
+const httpsUrl = (value?: string) => {
+  try {
+    return value && new URL(value).protocol === 'https:' ? value : undefined;
+  } catch {
+    return undefined;
+  }
+};
 
 export function readConfig(env: Record<string, string | undefined>): Config | null {
   const notionKey = env.NOTION_API_KEY?.trim();
@@ -62,6 +72,7 @@ export function readConfig(env: Record<string, string | undefined>): Config | nu
     notifyTo,
     replyTo: env.CONTACT_REPLY_TO_EMAIL?.trim() || notifyTo,
     testRecipient: env.CONTACT_TEST_RECIPIENT?.trim() || undefined,
+    guideUrl: httpsUrl(env.CONTACT_GUIDE_URL?.trim()),
   };
 }
 
@@ -290,36 +301,63 @@ const escapeHtml = (value: string) =>
   value.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 // Visitor text ends up in subjects: no line breaks, sane length.
 const oneLine = (value: string) => value.replace(/\s+/g, ' ').trim().slice(0, 80);
-const paragraphs = (text: string) =>
-  `<div style="font:15px/1.6 system-ui,sans-serif;color:#111">${text
-    .split('\n\n')
-    .map((p) => `<p style="margin:0 0 16px">${escapeHtml(p).replace(/\n/g, '<br>')}</p>`)
+const paragraphsHtml = (blocks: Block[]) =>
+  `<div style="font:15px/1.6 system-ui,sans-serif;color:#111">${blocks
+    .map((b) =>
+      typeof b === 'string'
+        ? `<p style="margin:0 0 16px">${escapeHtml(b).replace(/\n/g, '<br>')}</p>`
+        : `<p style="margin:0 0 16px"><a href="${escapeHtml(b.url)}" style="color:#111;font-weight:600">${escapeHtml(b.label)}</a></p>`,
+    )
     .join('')}</div>`;
 
-const CONFIRMATION = {
+/** A paragraph of plain text, or a labelled link. */
+type Block = string | { label: string; url: string };
+
+const WORDS = {
   cs: {
     subject: 'Díky za zprávu — Jonáš Rech',
-    text: [
-      'Dobrý den,',
-      'děkuji za zprávu a zájem o spolupráci.',
-      'Vaše poptávka dorazila v pořádku. Ozvu se vám nejpozději do 2 pracovních dnů s návrhem dalšího postupu.',
-      'Mějte se hezky,\nJonáš Rech\njonasrech.com',
-    ].join('\n\n'),
+    greeting: (name: string) => `Dobrý den, ${name},`,
+    thanks: 'díky, že jste se mi ozvali a napsali mi něco o svém projektu.',
+    received:
+      'Vaše zpráva dorazila v pořádku. Během 1–2 pracovních dnů si projdu zadání a ozvu se vám, abychom se domluvili, co dál.',
+    guide:
+      'Mezitím vám posílám krátkého průvodce spoluprací. Najdete v něm něco málo o mně, jak pracuji a co můžete během celého projektu očekávat.',
+    guideLink: 'Mrknout na průvodce spoluprací →',
+    reply: 'A pokud vás mezitím napadne něco, co jste do poptávky nenapsali, klidně mi odpovězte přímo na tento e-mail.',
+    signoff: 'Mějte se hezky,\nJonáš Rech\nWeb Design & Development\njonasrech.com',
   },
   en: {
     subject: 'Thanks for your message — Jonáš Rech',
-    text: [
-      'Hello,',
-      'thank you for your message and your interest in working together.',
-      'Your enquiry arrived safely. I’ll get back to you within 2 business days with a proposal for the next steps.',
-      'All the best,\nJonáš Rech\njonasrech.com',
-    ].join('\n\n'),
+    greeting: (name: string) => `Hello ${name},`,
+    thanks: 'thank you for getting in touch and telling me a bit about your project.',
+    received:
+      'Your message arrived safely. Within 1–2 business days I’ll go through your brief and get back to you so we can agree on the next steps.',
+    guide:
+      'In the meantime, here is a short guide to working together. It covers a little about me, how I work and what you can expect throughout the project.',
+    guideLink: 'Have a look at the collaboration guide →',
+    reply: 'And if anything comes to mind that you didn’t put in your enquiry, just reply directly to this email.',
+    signoff: 'All the best,\nJonáš Rech\nWeb Design & Development\njonasrech.com',
   },
 };
 
 export function confirmationEmail(config: Config, lead: Lead): Email {
-  const { subject, text } = CONFIRMATION[lead.locale];
-  return { to: config.testRecipient ?? lead.email, replyTo: config.replyTo, subject, text, html: paragraphs(text) };
+  const w = WORDS[lead.locale];
+  const blocks: Block[] = [
+    w.greeting(lead.name),
+    w.thanks,
+    w.received,
+    ...(config.guideUrl ? [w.guide, { label: w.guideLink, url: config.guideUrl }] : []),
+    w.reply,
+    w.signoff,
+  ];
+  const text = blocks.map((b) => (typeof b === 'string' ? b : `${b.label} ${b.url}`)).join('\n\n');
+  return {
+    to: config.testRecipient ?? lead.email,
+    replyTo: config.replyTo,
+    subject: w.subject,
+    text,
+    html: paragraphsHtml(blocks),
+  };
 }
 
 export function notificationEmail(
