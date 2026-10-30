@@ -295,7 +295,7 @@ test('Notion and Resend both down: 502, so the visitor keeps the draft and sees 
   assert.equal(res.status, 502);
 });
 
-test('not configured: 503 (the browser falls back to Formspree)', async () => {
+test('not configured: 503', async () => {
   delete process.env.NOTION_API_KEY;
   const res = await post(submission());
   assert.equal(res.status, 503);

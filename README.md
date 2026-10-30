@@ -74,6 +74,6 @@ Set these in Vercel → Project → Settings → Environment Variables:
 | `CONTACT_REPLY_TO_EMAIL` | no | reply-to on the client confirmation, defaults to `CONTACT_NOTIFICATION_EMAIL` |
 | `CONTACT_TEST_RECIPIENT` | no | **Preview only.** Every client confirmation goes here instead of the visitor |
 
-Without the Notion variables the function answers 503 and the browser sends the inquiry to the previous Formspree form instead (`FORMSPREE_ENDPOINT`; switch with `INQUIRY_BACKEND` in `src/data/inquiry.ts`). Without the Resend variables leads are saved to Notion but no emails go out.
+Without the Notion variables the function answers 503 and the visitor sees the error state (the draft stays saved in the browser). Without the Resend variables leads are saved to Notion but no emails go out.
 
 Tests (mocked Notion and Resend, nothing is sent): `npm run test:contact`.

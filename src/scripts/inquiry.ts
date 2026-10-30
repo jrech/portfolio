@@ -2,20 +2,10 @@
  * Project inquiry dialog (markup: components/site/InquiryDialog.astro).
  * Opens from every `a.cta[href="#contact"]`; keeps a draft in localStorage so an
  * unfinished questionnaire can be resumed; validates each step; sends the answers
- * to /api/contact (Notion CRM + Resend, see api/contact.ts). Formspree stays as the
- * fallback while that function is missing or not configured (INQUIRY_BACKEND).
+ * to /api/contact (Notion CRM + Resend, see api/contact.ts).
  * Step transitions use GSAP (loaded on first open), skipped for reduced motion.
  */
-import {
-  CONTACT_ENDPOINT,
-  EMAIL_PATTERN,
-  FORMSPREE_ENDPOINT,
-  INQUIRY_BACKEND,
-  getInquiry,
-  inquiryRows,
-  validateInquiry,
-  type InquiryAnswers,
-} from '@/data/inquiry';
+import { CONTACT_ENDPOINT, EMAIL_PATTERN, getInquiry, validateInquiry, type InquiryAnswers } from '@/data/inquiry';
 
 type Answers = Record<string, string | string[]>;
 interface Draft {
@@ -228,26 +218,6 @@ if (dialog) {
         elapsedMs: Date.now() - startedAt,
       }),
     });
-    // 404: function not deployed, 503: not configured. Nothing was stored, so the
-    // previous Formspree form takes the inquiry instead.
-    if (response.status === 404 || response.status === 503) return sendToFormspree(answers, honeypot);
-    if (!response.ok) throw new Error(String(response.status));
-  }
-
-  async function sendToFormspree(answers: InquiryAnswers, honeypot: string) {
-    const payload: Record<string, string> = {
-      _subject: `${dialog!.dataset.subject}: ${answers.name}`,
-      _replyto: String(answers.email),
-      // Formspree's honeypot: filled only by bots, then silently dropped.
-      _gotcha: honeypot,
-      email: String(answers.email),
-      ...Object.fromEntries(inquiryRows(answers, inquirySteps)),
-    };
-    const response = await fetch(FORMSPREE_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(payload),
-    });
     if (!response.ok) throw new Error(String(response.status));
   }
 
@@ -261,8 +231,7 @@ if (dialog) {
       const checked = validateInquiry(collect(), inquirySteps);
       if (!checked.ok) throw new Error('invalid');
       const honeypot = (form.elements.namedItem('website') as HTMLInputElement).value;
-      if (INQUIRY_BACKEND === 'formspree') await sendToFormspree(checked.answers, honeypot);
-      else await sendToApi(checked.answers, honeypot);
+      await sendToApi(checked.answers, honeypot);
       clearDraft();
       submissionId = newId();
       form.reset();
