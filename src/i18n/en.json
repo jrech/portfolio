@@ -26,9 +26,7 @@
   },
   "menu": {
     "open": "MENU",
-    "close": "CLOSE",
-    "eyebrow": "TAKE A LOOK AROUND",
-    "emailEyebrow": "HAVE A PROJECT IN MIND?"
+    "close": "CLOSE"
   },
   "cta": {
     "startProject": "Let’s talk"

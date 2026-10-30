@@ -29,7 +29,6 @@ const nav = menuNav(t, getLocale(Astro));
   </div>
 
   <nav class="menu__body container" aria-label={t.a11y.mainNavigation}>
-    <p class="caption">{t.menu.eyebrow}</p>
     <ol class="menu__links" role="list">
       {
         nav.map((item, i) => (
@@ -55,7 +54,6 @@ const nav = menuNav(t, getLocale(Astro));
   <div class="menu__baseline">
     <div class="menu__baseline-inner container">
       <div class="menu__email">
-        <p class="caption">{t.menu.emailEyebrow}</p>
         <a class="menu__email-link" href={`mailto:${site.email}`}>{site.email}</a>
       </div>
       <div class="menu__meta">
@@ -354,7 +352,7 @@ const nav = menuNav(t, getLocale(Astro));
 
     .menu__baseline-inner {
       flex-direction: row;
-      align-items: flex-end;
+      align-items: center;
       justify-content: space-between;
       padding-top: 28px;
       padding-bottom: 32px;

@@ -26,9 +26,7 @@
   },
   "menu": {
     "open": "MENU",
-    "close": "ZAVŘÍT",
-    "eyebrow": "ROZHLÉDNĚTE SE",
-    "emailEyebrow": "MÁTE V PLÁNU PROJEKT?"
+    "close": "ZAVŘÍT"
   },
   "cta": {
     "startProject": "Pojďme to probrat"
