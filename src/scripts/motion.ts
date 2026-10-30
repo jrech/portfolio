@@ -25,6 +25,32 @@ const START = 'top 92%';
 const RULE = { duration: 1.4, ease: 'power2.inOut' };
 const visible = (el: HTMLElement) => el.getClientRects().length > 0;
 const passed = (el: HTMLElement) => el.getBoundingClientRect().bottom <= 0;
+// Blur only where a mouse is used: animated blur flickered purple on phones (Jonas, 2026-10-29).
+const BLUR = matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+// H2 reveal experiment (Jonas, 2026-10-30): 'words' slides each word up inside its
+// line mask; 'lines' is the previous line-by-line reveal. Switch back here.
+const HEADING_SPLIT: 'words' | 'lines' = 'words';
+
+function splitHeading(heading: HTMLElement) {
+  const byWord = HEADING_SPLIT === 'words';
+  const split = SplitText.create(heading, {
+    type: byWord ? 'lines,words' : 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
+  });
+  const targets = (byWord ? split.words : split.lines) as HTMLElement[];
+  gsap.set(targets, { yPercent: 104, opacity: 0, ...(BLUR && { filter: 'blur(6px)' }) });
+  const vars: gsap.TweenVars = {
+    yPercent: 0, opacity: 1, ...(BLUR && { filter: 'blur(0px)' }), ease: EASE,
+    // Words overlap tightly so even a long heading lands in under a second.
+    duration: byWord ? 0.6 : MOTION.heading,
+    stagger: byWord ? Math.min(0.05, 0.3 / Math.max(1, targets.length - 1)) : MOTION.stagger,
+    onComplete: () => {
+      split.revert();
+      gsap.set(heading, { opacity: 1 });
+    },
+  };
+  return { targets, vars };
+}
 
 // Split only at entry: off-screen headings keep natural wrapping until needed.
 function revealHeadings() {
@@ -36,19 +62,9 @@ function revealHeadings() {
       await document.fonts.ready;
       if (!root.classList.contains('js-motion')) return;
       // Hide the lines before showing their parent to avoid a one-frame flash.
-      const split = SplitText.create(heading, {
-        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
-      });
-      gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
+      const reveal = splitHeading(heading);
       gsap.set(heading, { opacity: 1 });
-      gsap.to(split.lines, {
-        yPercent: 0, opacity: 1, filter: 'blur(0px)',
-        duration: MOTION.heading, stagger: MOTION.stagger, ease: EASE,
-        onComplete: () => {
-          split.revert();
-          gsap.set(heading, { opacity: 1 });
-        },
-      });
+      gsap.to(reveal.targets, reveal.vars);
     };
     if (heading.closest('.hero')) play();
     else ScrollTrigger.create({ trigger: heading, start: START, once: true, onEnter: play });
@@ -69,12 +85,11 @@ function scrubStatement() {
     const span = STEP * (words.length - 1) + WORD;
     // Touch screens get opacity only: a per-word blur animated on every scroll frame
     // left flickering purple lines under words on phones (Jonas, 2026-10-29).
-    const blur = matchMedia('(hover: hover) and (pointer: fine)').matches;
     const paint = (progress: number) => {
       words.forEach((word, i) => {
         const p = gsap.utils.clamp(0, 1, (progress * span - i * STEP) / WORD);
         word.style.opacity = String(0.15 + 0.85 * p);
-        if (blur) word.style.filter = p >= 1 ? 'none' : `blur(${(4 * (1 - p)).toFixed(2)}px)`;
+        if (BLUR) word.style.filter = p >= 1 ? 'none' : `blur(${(4 * (1 - p)).toFixed(2)}px)`;
       });
     };
     const state = { progress: 0 };
@@ -169,24 +184,14 @@ function revealServices() {
             resolve();
             return;
           }
-          const split = SplitText.create(heading, {
-            type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
-          });
-          gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
+          const reveal = splitHeading(heading);
           const timeline = gsap.timeline();
           gsap.delayedCall(0.35, resolve);
           if (eyebrow.length) timeline.to(eyebrow, {
             opacity: 1, y: 0, duration: 0.45, ease: EASE, clearProps: 'transform,opacity',
           });
           timeline.set(heading, { opacity: 1 });
-          timeline.to(split.lines, {
-            yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading,
-            stagger: MOTION.stagger, ease: EASE,
-            onComplete: () => {
-              split.revert();
-              gsap.set(heading, { opacity: 1 });
-            },
-          }, eyebrow.length ? '-=0.3' : 0);
+          timeline.to(reveal.targets, reveal.vars, eyebrow.length ? '-=0.3' : 0);
           if (lead.length) timeline.to(lead, {
             opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
             clearProps: 'transform,opacity',
@@ -244,18 +249,10 @@ function revealSequences() {
     onEnter: async () => {
       await document.fonts.ready;
       if (!root.classList.contains('js-motion')) return;
-      const split = SplitText.create(heading, {
-        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
-      });
-      gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
+      const reveal = splitHeading(heading);
       const timeline = gsap.timeline();
       timeline.set(heading, { opacity: 1 });
-      timeline.to(split.lines,
-        { yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading,
-          stagger: MOTION.stagger, ease: EASE, onComplete: () => {
-            split.revert();
-            gsap.set(heading, { opacity: 1 });
-          } },
+      timeline.to(reveal.targets, reveal.vars,
       );
       timeline.to(questions, {
         opacity: 1, y: 0, duration: MOTION.duration, stagger: 0.07,
@@ -296,13 +293,25 @@ function revealTestimonial() {
   if (!mark || !quote || !attribution || passed(attribution)) return;
   const person = [...attribution.children].filter((el): el is HTMLElement => el instanceof HTMLElement && visible(el));
   gsap.set(mark, { opacity: 0, scale: 0.6, transformOrigin: '50% 60%' });
-  gsap.set([quote, ...person], { opacity: 0, y: MOTION.distance });
+  gsap.set(quote, { opacity: 0 });
+  gsap.set(person, { opacity: 0, y: MOTION.distance });
   ScrollTrigger.create({
     trigger: section.querySelector('.testimonial__content') ?? section, start: START, once: true,
-    onEnter: () => {
+    onEnter: async () => {
+      await document.fonts.ready;
+      if (!root.classList.contains('js-motion')) return;
+      // The quote rises line by line inside line masks (Jonas, 2026-10-30).
+      const split = SplitText.create(quote.querySelector('p') ?? quote, {
+        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
+      });
+      gsap.set(split.lines, { yPercent: 104, opacity: 0, ...(BLUR && { filter: 'blur(6px)' }) });
       const timeline = gsap.timeline({ defaults: { ease: EASE, clearProps: 'transform,opacity' } });
       timeline.to(mark, { opacity: 1, scale: 1, duration: 0.6 });
-      timeline.to(quote, { opacity: 1, y: 0, duration: MOTION.duration }, '-=0.35');
+      timeline.set(quote, { opacity: 1 }, '-=0.35');
+      timeline.to(split.lines, {
+        yPercent: 0, opacity: 1, ...(BLUR && { filter: 'blur(0px)' }), duration: MOTION.heading,
+        stagger: 0.08, clearProps: '', onComplete: () => split.revert(),
+      }, '<');
       if (attribution.classList.contains('motion-rule-top')) {
         timeline.to(attribution, { '--rule-progress': 1, duration: RULE.duration, ease: RULE.ease, clearProps: '' }, '-=0.4');
       }
@@ -336,20 +345,11 @@ function revealAbout() {
       onEnter: async () => {
         await document.fonts.ready;
         if (!root.classList.contains('js-motion')) return resolve();
-        const split = SplitText.create(heading, {
-          type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
-        });
-        gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
+        const reveal = splitHeading(heading);
         const timeline = gsap.timeline({ defaults: { ease: EASE } });
         if (eyebrow.length) timeline.to(eyebrow, { opacity: 1, y: 0, duration: 0.45, clearProps: 'transform,opacity' });
         timeline.set(heading, { opacity: 1 });
-        timeline.to(split.lines, {
-          yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading, stagger: MOTION.stagger,
-          onComplete: () => {
-            split.revert();
-            gsap.set(heading, { opacity: 1 });
-          },
-        }, eyebrow.length ? '-=0.3' : 0);
+        timeline.to(reveal.targets, reveal.vars, eyebrow.length ? '-=0.3' : 0);
         // The next block may start once the heading is well under way.
         timeline.call(resolve, [], '-=0.45');
       },
@@ -403,24 +403,14 @@ function revealFooter() {
             resolve();
             return;
           }
-          const split = SplitText.create(heading, {
-            type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
-          });
-          gsap.set(split.lines, { yPercent: 104, opacity: 0, filter: 'blur(6px)' });
+          const reveal = splitHeading(heading);
           const timeline = gsap.timeline();
           gsap.delayedCall(0.35, resolve);
           if (eyebrow.length) timeline.to(eyebrow, {
             opacity: 1, y: 0, duration: 0.45, ease: EASE, clearProps: 'transform,opacity',
           });
           timeline.set(heading, { opacity: 1 });
-          timeline.to(split.lines, {
-            yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: MOTION.heading,
-            stagger: MOTION.stagger, ease: EASE,
-            onComplete: () => {
-              split.revert();
-              gsap.set(heading, { opacity: 1 });
-            },
-          }, eyebrow.length ? '-=0.3' : 0);
+          timeline.to(reveal.targets, reveal.vars, eyebrow.length ? '-=0.3' : 0);
           support.forEach(el => timeline.to(el, {
             opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
             clearProps: 'transform,opacity',
