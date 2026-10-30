@@ -20,6 +20,8 @@ const root = document.documentElement;
 // Kept short and triggered early: content should already be moving as it enters view.
 const MOTION = { duration: 0.7, heading: 0.85, stagger: 0.06, distance: 20 };
 const START = 'top 92%';
+// Headings wait a little longer than body content, so the word reveal is seen in full (Jonas, 2026-10-30).
+const HEADING_START = 'top 82%';
 // Separator lines draw slower and on an even in-out curve, so the whole stroke is seen
 // travelling across instead of jumping to ~70% in the first frames (Jonas, 2026-10-29).
 const RULE = { duration: 1.4, ease: 'power2.inOut' };
@@ -34,16 +36,21 @@ const HEADING_SPLIT: 'words' | 'lines' = 'words';
 
 function splitHeading(heading: HTMLElement) {
   const byWord = HEADING_SPLIT === 'words';
+  // Words start fully blurred, so they float in without line masks that would clip the blur.
   const split = SplitText.create(heading, {
-    type: byWord ? 'lines,words' : 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
+    type: byWord ? 'lines,words' : 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
+    ...(!byWord && { mask: 'lines' as const }),
   });
   const targets = (byWord ? split.words : split.lines) as HTMLElement[];
-  gsap.set(targets, { yPercent: 104, opacity: 0, ...(BLUR && { filter: 'blur(6px)' }) });
+  const from = byWord ? { y: '0.35em', opacity: 0 } : { yPercent: 104, opacity: 0 };
+  gsap.set(targets, { ...from, ...(BLUR && { filter: `blur(${byWord ? 12 : 6}px)` }) });
   const vars: gsap.TweenVars = {
-    yPercent: 0, opacity: 1, ...(BLUR && { filter: 'blur(0px)' }), ease: EASE,
-    // Words overlap tightly so even a long heading lands in under a second.
-    duration: byWord ? 0.6 : MOTION.heading,
-    stagger: byWord ? Math.min(0.05, 0.3 / Math.max(1, targets.length - 1)) : MOTION.stagger,
+    ...(byWord ? { y: 0 } : { yPercent: 0 }), opacity: 1, ...(BLUR && { filter: 'blur(0px)' }),
+    // Slow, overlapping words on a softer curve: the site ease front-loads the move,
+    // so words would still read as fast. A long heading takes about 1.7 s (Jonas, 2026-10-30).
+    ease: byWord ? 'power2.out' : EASE,
+    duration: byWord ? 1.1 : MOTION.heading,
+    stagger: byWord ? Math.min(0.08, 0.6 / Math.max(1, targets.length - 1)) : MOTION.stagger,
     onComplete: () => {
       split.revert();
       gsap.set(heading, { opacity: 1 });
@@ -67,7 +74,7 @@ function revealHeadings() {
       gsap.to(reveal.targets, reveal.vars);
     };
     if (heading.closest('.hero')) play();
-    else ScrollTrigger.create({ trigger: heading, start: START, once: true, onEnter: play });
+    else ScrollTrigger.create({ trigger: heading, start: HEADING_START, once: true, onEnter: play });
   });
 }
 
@@ -176,7 +183,7 @@ function revealServices() {
     gsap.set(heading, { opacity: 0 });
     previous = new Promise<void>(resolve => {
       ScrollTrigger.create({
-        trigger: intro, start: START, once: true,
+        trigger: intro, start: HEADING_START, once: true,
         onEnter: async () => {
           await document.fonts.ready;
           if (!root.classList.contains('js-motion') || passed(intro)) {
@@ -245,7 +252,7 @@ function revealSequences() {
   gsap.set(heading, { opacity: 0 });
   gsap.set(questions, { opacity: 0, y: MOTION.distance });
   ScrollTrigger.create({
-    trigger: heading, start: START, once: true,
+    trigger: heading, start: HEADING_START, once: true,
     onEnter: async () => {
       await document.fonts.ready;
       if (!root.classList.contains('js-motion')) return;
@@ -341,7 +348,7 @@ function revealAbout() {
 
   let previous = new Promise<void>(resolve => {
     ScrollTrigger.create({
-      trigger: heading, start: START, once: true,
+      trigger: heading, start: HEADING_START, once: true,
       onEnter: async () => {
         await document.fonts.ready;
         if (!root.classList.contains('js-motion')) return resolve();
@@ -395,7 +402,7 @@ function revealFooter() {
     gsap.set(heading, { opacity: 0 });
     previous = new Promise<void>(resolve => {
       ScrollTrigger.create({
-        trigger: invite, start: START, once: true,
+        trigger: invite, start: HEADING_START, once: true,
         onEnter: async () => {
           await document.fonts.ready;
           if (!root.classList.contains('js-motion') || passed(invite)) {
