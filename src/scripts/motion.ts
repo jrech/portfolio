@@ -24,7 +24,9 @@ const START = 'top 92%';
 const HEADING_START = 'top 82%';
 // Separator lines draw slower and on an even in-out curve, so the whole stroke is seen
 // travelling across instead of jumping to ~70% in the first frames (Jonas, 2026-10-29).
-const RULE = { duration: 1.4, ease: 'power2.inOut' };
+// power1 keeps the travel visible but leaves the start less sluggish, so lines no longer
+// look like they wait for the content (Jonas, 2026-10-30).
+const RULE = { duration: 1.3, ease: 'power1.inOut' };
 const visible = (el: HTMLElement) => el.getClientRects().length > 0;
 const passed = (el: HTMLElement) => el.getBoundingClientRect().bottom <= 0;
 // Blur only where a mouse is used: animated blur flickered purple on phones (Jonas, 2026-10-29).
@@ -196,9 +198,10 @@ function revealRules() {
   gsap.set(pending, { '--rule-progress': 0 });
   if (!generic.length) return;
   ScrollTrigger.batch(generic, {
-    start: 'top 90%', once: true, batchMax: 4, interval: 0.06,
+    // Same trigger as the content, so the line draws alongside it instead of after it.
+    start: START, once: true, batchMax: 4, interval: 0.06,
     onEnter: batch => gsap.to(batch, {
-      '--rule-progress': 1, duration: RULE.duration,
+      '--rule-progress': 1, duration: RULE.duration, delay: 0.1,
       stagger: MOTION.stagger, ease: RULE.ease,
     }),
   });
@@ -358,7 +361,7 @@ function revealTestimonial() {
         stagger: 0.08, clearProps: '', onComplete: () => split.revert(),
       }, '<');
       if (attribution.classList.contains('motion-rule-top')) {
-        timeline.to(attribution, { '--rule-progress': 1, duration: RULE.duration, ease: RULE.ease, clearProps: '' }, '-=0.4');
+        timeline.to(attribution, { '--rule-progress': 1, duration: RULE.duration, ease: RULE.ease, clearProps: '' }, '<0.45');
       }
       timeline.to(person, { opacity: 1, y: 0, duration: MOTION.duration, stagger: MOTION.stagger }, '-=0.9');
     },
