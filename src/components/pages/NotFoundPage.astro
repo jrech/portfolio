@@ -1,0 +1,153 @@
+---
+/** 404 page, shared by `/404` (cs) and `/en/404` (en); copy comes from the page locale. */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SiteHeader from '@/components/site/SiteHeader.astro';
+import CtaButton from '@/components/ui/CtaButton.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import { getLocale, localePath, useT } from '@/i18n';
+
+const t = useT(Astro);
+const locale = getLocale(Astro);
+const year = new Date().getFullYear();
+---
+
+<BaseLayout title={t.notFound.metaTitle} noindex>
+  {
+    /* Vercel serves only the root (Czech) 404.html for every missing path; a miss
+       under /en/ goes on to the English 404 page. */
+    locale === 'cs' && (
+      <script is:inline>
+        if (/^\/en(\/|$)/.test(location.pathname)) location.replace('/en/404/');
+      </script>
+    )
+  }
+  <SiteHeader slot="header" />
+  <section class="not-found container" aria-labelledby="not-found-title">
+    <div class="not-found__code" data-reveal="fade">
+      <Eyebrow>{t.notFound.eyebrow}</Eyebrow>
+      <p class="not-found__number" aria-hidden="true">404</p>
+    </div>
+    <div class="not-found__message" data-reveal="fade">
+      <h1 id="not-found-title" class="not-found__title">{t.notFound.title}</h1>
+      <p class="not-found__text">{t.notFound.text}</p>
+      <CtaButton href={localePath(locale, '/')} label={t.notFound.back} class="not-found__cta" />
+    </div>
+  </section>
+  <footer slot="footer" class="not-found__footer container">
+    <p class="caption">© {year} Jonas Rech</p>
+    <a class="caption not-found__project" href={localePath(locale, '/#contact')}>{t.notFound.project}</a>
+  </footer>
+</BaseLayout>
+
+<style>
+  /* The page fills one screen: header, the message centred, the baseline at the bottom. */
+  :global(body:has(.not-found)) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+
+  :global(body:has(.not-found) main) {
+    display: flex;
+    flex: 1 0 auto;
+  }
+
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 32px;
+    width: 100%;
+    padding-block: 64px;
+  }
+
+  .not-found__number {
+    margin-top: 16px;
+    font-family: var(--font-display);
+    font-size: clamp(120px, 40vw, 200px);
+    font-weight: var(--weight-medium);
+    line-height: 0.85;
+    letter-spacing: -0.05em;
+    color: var(--color-accent);
+  }
+
+  .not-found__title {
+    font-size: 30px;
+    font-weight: var(--weight-medium);
+    line-height: 1.1;
+    letter-spacing: var(--heading-tracking);
+    color: var(--color-text-primary);
+    text-wrap: balance;
+  }
+
+  .not-found__text {
+    max-width: 30em;
+    margin-top: 16px;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text-secondary);
+    text-wrap: pretty;
+  }
+
+  .not-found__message :global(.not-found__cta) {
+    margin-top: 32px;
+  }
+
+  .not-found__footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    padding-block: 24px 32px;
+  }
+
+  /* Phones keep only the copyright (design frame). */
+  .not-found__project {
+    display: none;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .not-found__project:hover,
+  .not-found__project:focus-visible {
+    color: var(--color-accent);
+  }
+
+  /* Tablet (834) */
+  @media (min-width: 640px) {
+    .not-found__project {
+      display: inline;
+    }
+
+    .not-found__title {
+      font-size: 40px;
+    }
+
+    .not-found__text {
+      font-size: 17px;
+      line-height: 26px;
+    }
+  }
+
+  /* Desktop (1440): the number left, the message right. */
+  @media (min-width: 1024px) {
+    .not-found {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 64px;
+    }
+
+    .not-found__number {
+      margin-top: 40px;
+      font-size: clamp(220px, 21vw, 340px);
+    }
+
+    .not-found__title {
+      font-size: 48px;
+    }
+
+    .not-found__footer {
+      padding-block: 32px 40px;
+    }
+  }
+</style>

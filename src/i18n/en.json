@@ -187,5 +187,13 @@
     "back": "← Back to all projects",
     "footerHeadline": "Your project could be next.",
     "footerLead": "Have something in mind? Let’s talk."
+  },
+  "notFound": {
+    "eyebrow": "ERROR 404 / PAGE NOT FOUND",
+    "title": "A little off track.",
+    "text": "This page has moved, or never existed. Let’s get you back to something good.",
+    "back": "Back to home",
+    "project": "Have a project in mind? Let’s talk ↗",
+    "metaTitle": "Page not found — Jonas Rech"
   }
 }

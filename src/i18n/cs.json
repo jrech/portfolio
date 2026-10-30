@@ -187,5 +187,13 @@
     "back": "← Zpět na všechny projekty",
     "footerHeadline": "Váš projekt může být další.",
     "footerLead": "Máte něco v plánu? Pojďme to probrat."
+  },
+  "notFound": {
+    "eyebrow": "CHYBA 404 / STRÁNKA NENALEZENA",
+    "title": "Trochu jsme sjeli z cesty.",
+    "text": "Tahle stránka se přestěhovala, nebo nikdy neexistovala. Pojďme vás vrátit k něčemu dobrému.",
+    "back": "Zpět na úvod",
+    "project": "Máte v plánu projekt? Pojďme to probrat ↗",
+    "metaTitle": "Stránka nenalezena — Jonas Rech"
   }
 }
