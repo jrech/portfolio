@@ -15,7 +15,7 @@
  *   409 same submission still in progress · 413/415 bad body · 429 rate limited
  *   502 nothing could be stored · 503 not configured (the browser falls back to Formspree)
  */
-import { getInquiry, validateInquiry, type InquiryLocale } from '../src/data/inquiry';
+import { getInquiry, validateInquiry, type InquiryLocale } from '../src/data/inquiry.js';
 import {
   buildLead,
   confirmationEmail,
@@ -27,7 +27,7 @@ import {
   readConfig,
   sendEmail,
   type NotionPage,
-} from './_lib/lead';
+} from './_lib/lead.js';
 
 const MIN_FILL_MS = 4000; // faster than any human can finish seven steps
 const MAX_BODY = 20_000;
