@@ -6,6 +6,7 @@
 import { Image } from 'astro:assets';
 import MediaFrame from '../ui/MediaFrame.astro';
 import ArrowBadge from '../ui/ArrowBadge.astro';
+import WorksBadge from '../ui/WorksBadge.astro';
 import { formatServices, isPublished, projectUrl, type ProjectEntry } from '@/lib/projects';
 import { getLocale } from '@/i18n';
 
@@ -22,9 +23,9 @@ const disciplines = formatServices(services);
 ---
 
 <article
-  class:list={['project', { 'project--featured': featured, 'project--static': !href }, 'arrow-host']}
+  class:list={['project', { 'project--featured': featured, 'project--static': !href, 'arrow-host': href }]}
   data-reveal="fade"
-  data-cursor="project"
+  data-cursor={href ? 'project' : undefined}
 >
   <MediaFrame class="project__media">
     {
@@ -54,7 +55,7 @@ const disciplines = formatServices(services);
     </div>
     <div class="project__meta">
       <p class="project__disciplines caption">{disciplines}</p>
-      <ArrowBadge />
+      {href ? <ArrowBadge /> : <WorksBadge />}
     </div>
   </div>
 </article>
@@ -180,8 +181,8 @@ const disciplines = formatServices(services);
     transition: color 350ms var(--ease-out);
   }
 
-  .project:hover .project__name,
-  .project:focus-within .project__name {
+  .project:not(.project--static):hover .project__name,
+  .project:not(.project--static):focus-within .project__name {
     color: var(--color-accent);
   }
 </style>

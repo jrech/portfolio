@@ -1,67 +1,66 @@
 ---
-# Překlad draft copy z Pen frame "Case study / Prádelna Krkonoše" — ke kontrole Jonasem.
+# Texty + obrázky: Pen export "casestudy desktop.html" (Jonas, 2026-11-01). Český překlad ke kontrole Jonasem.
 title: Prádelna Krkonoše
 cardTitle: Prádelna
-heroTitle: "Prádelna\nKrkonoše."
+heroTitle: Prádelna Krkonoše.
 client: Prádelna Krkonoše
-industry: Prádelenské služby
-services: [Strategie, Webdesign, Copy]
-status: in-preparation
+industry: Profesionální prádelna / Ubytování
+services: [Vizuální identita, Webdesign, Vývoj]
+year: 2026
+status: published
 description: Přehlednější B2B web, ze kterého hotely a místní firmy rychle pochopí službu a ozvou se.
 descriptionWidth: 495
-positioning: Nová digitální prezentace pro firmu, která stojí na čisté práci.
-order: 2
-notice: "PROJEKT SE PŘIPRAVUJE · Text níže je pracovní verze ke schválení klientem. Fotografie v této pracovní studii jsou ilustrační vizualizace, ne snímky klientova provozu."
+positioning: Nová vizuální identita a web pro profesionální prádelnu, která slouží hotelům a penzionům v Krkonoších.
+order: 1
+# Finální texty: bez upozornění „připravuje se“ pod hero.
+notice: ""
 
 challenge:
+  heading: "Nová firma,\nprázdný list."
   paragraphs:
-    - "Praní prádla je praktická služba. Web by měl být stejně praktický: vysvětlit, co firma nabízí, pro koho to je a jak se ozvat, aniž by s tím návštěvník musel zápasit."
-    - "Navržené zadání pro Prádelnu Krkonoše je srozumitelnější digitální představení. Současnou cestu zákazníka a její konkrétní slabá místa je ještě potřeba ověřit, než tahle případová studie vyjde."
+    - "Prádelna Krkonoše byla nová firma, která ještě neměla web ani vizuální identitu."
+    - "Potřebovala způsob, jak představit své služby hotelům a penzionům v regionu. Mým úkolem bylo dát jí rozpoznatelnou tvář a zařídit, aby potenciální zákazníci snadno pochopili nabídku a ozvali se."
 
 approach:
+  heading: Začít od základů.
   paragraphs:
-    - "Začít otázkami návštěvníka: je to pro mě ta správná služba, co všechno za mě vyřeší a jak si ji domluvím? Ověření zákaznických skupin a oblasti, kterou firma obsluhuje, přichází dřív než rozhodnutí o struktuře stránky."
-    - "Navržená hierarchie dává nabídku na první místo, praktické informace na druhé a kontakt na dosah. Vysvětlovat má jasný jazyk a skutečné fotografie; rozvržení jim jen dává prostor."
-    - "Na menších obrazovkách mají stejné informace zůstat snadno čitelné, s dobře čitelným písmem a jasným dalším krokem."
+    - "Než jsem cokoli navrhl, přemýšlel jsem, co bude chtít vědět hotel nebo penzion: o co se prádelna postará, jak to celé funguje a kam jezdí pro prádlo? Z těchhle otázek vznikla struktura webu."
+    - "Vizuální styl jsem držel čistý a přívětivý. Cílem bylo dát nové firmě vlastní tvář, která ale nepřekáží informacím."
 
 solution:
   paragraphs:
-    - "Rozsah projektu, jak je teď uvedený v tomto portfoliu, zahrnuje strategii, webdesign a copy. Tato tři navržená rozhodnutí propojují tento rozsah s potřebami návštěvníků."
+    - "Vytvořil jsem identitu a postavil web, který službu vysvětlí a návštěvníkům usnadní se ozvat."
   decisions:
-    - title: Nabídka na první pohled.
-      copy: Začít službou a tím, komu pomáhá, aby návštěvník rychle poznal, že je na správném místě.
-    - title: Detaily pohromadě.
-      copy: Seskupit praktické informace kolem otázek zákazníků, aby je lidé nemuseli hledat po celé stránce.
-    - title: Kontakt s jasnou rolí.
-      copy: Používat jednu konzistentní cestu k poptávce, aby zájem měl kam jít na počítači i v mobilu.
+    - title: Vlastní tvář
+      copy: Písmo, barvy a grafické prvky jsem spojil do jednoduché identity, kterou firma používá napříč celým webem.
+    - title: Informace, které lidé hledají
+      copy: Web vysvětluje, jaké služby prádelna nabízí, pro koho jsou, jak praní probíhá a kam jezdí svoz.
+    - title: Snadná cesta ke kontaktu
+      copy: Web funguje na počítači i v mobilu, s jasnými tlačítky a poptávkovým formulářem pro každého, kdo se chce na službu zeptat.
 
 outcome:
+  heading: Připraveno na zákazníky.
   paragraphs:
-    - "Nová digitální prezentace se připravuje. Současný rozsah spojuje strategii, webdesign a copy do jednoho směru; tahle stránka zdokumentuje finální výstupy, jakmile budou schválené."
-    - "Čísla ze spuštění ani výsledky klienta zatím nejsou k dispozici. Sem patří další aktualizace: co se spustilo, co se změnilo a co na to říká klient."
+    - "Prádelna Krkonoše má teď vizuální identitu a web, který firmu představí potenciálním zákazníkům."
+    - "Návštěvníci uvidí, co prádelna nabízí, zjistí, jak to funguje, a pošlou poptávku. Web jsem navrhl a postavil od nuly, s rozvržením pro počítač i mobil."
 
 visuals:
-  - variant: full
-    title: Celkový obraz.
-    brief: Ilustrační pohled do profesionální prádelny při skládání hotelového prádla.
+  - variant: screens
+    after: challenge
+    number: 1
+    title: Jasný první dojem
+    brief: Celá homepage Prádelny Krkonoše ve třech sloupcích odshora dolů.
     image:
-      src: ../../../assets/images/pradelna-laundry.png
-      alt: Ilustrační fotografie pracovnic skládajících čisté hotelové prádlo v prádelně.
-  - variant: responsive
-    title: "Jeden zážitek.\nKaždá obrazovka."
-    brief: Ilustrační fotografie hotelového pokoje s čerstvě připraveným ložním prádlem.
-    mobileLabel: "Mobil\nKontaktní flow"
+      src: ../../../assets/images/pradelna-case-website.webp
+      alt: Homepage Prádelny Krkonoše odshora dolů, od úvodu s dodávkou přes služby a typy zákazníků až po patičku
+  - variant: mockup
+    after: solution
+    number: 3
+    title: Na detailech záleží
+    brief: Mobilní verze webu v mockupu telefonu.
     image:
-      src: ../../../assets/images/pradelna-hotel-room.png
-      alt: Ilustrační fotografie hotelového pokoje s čistě povlečenou postelí.
-      mobileSrc: ../../../assets/images/pradelna-hotel-room-mobile.png
-      mobileAlt: Vertikální ilustrační fotografie čistě povlečené hotelové postele.
-  - variant: detail
-    title: Detaily dělají práci.
-    brief: Ilustrační detail čistých složených ručníků a ložního prádla.
-    image:
-      src: ../../../assets/images/pradelna-folded-linens.png
-      alt: Ilustrační fotografie složených bílých hotelových ručníků a prádla.
+      src: ../../../assets/images/pradelna-case-mobile.webp
+      alt: Web Prádelny Krkonoše v mobilu s nadpisem „Čisté prádlo včas. I v plné sezóně.“ a tlačítkem pro kontakt
 
 # Schváleno klientem ke zveřejnění (Jonas, 2026-10-28).
 testimonial:
@@ -71,7 +70,8 @@ testimonial:
   lang: cs
 
 related: [starobrnensky-senk, grind]
+# Homepage card, related cards and case-study hero (new mockup, 2026-11-01).
 cover:
-  src: ../../../assets/images/project-pradelna.webp
-  alt: "Web Prádelny Krkonoše na notebooku v horské krajině při východu slunce"
+  src: ../../../assets/images/pradelna-case-hero.webp
+  alt: Web Prádelny Krkonoše na notebooku položeném na skále nad Krkonošemi při západu slunce
 ---

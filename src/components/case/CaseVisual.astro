@@ -4,6 +4,9 @@
  *   full       — full-width capture: surface + rule outline
  *   responsive — desktop/mobile comparison: deep background with a mobile slot
  *   detail     — detail crop on paper
+ *   screens    — one long full-page capture as three staggered columns (top, middle, end)
+ *                on white (Pen 2026-11-01: "Actual website — homepage capture")
+ *   mockup     — finished device mockup, plain image without a frame (Pen: "Phone mockup")
  * Until `image` is supplied the frame shows the capture brief at the approved size.
  */
 import { Image } from 'astro:assets';
@@ -14,8 +17,10 @@ import { useT } from '@/i18n';
 
 interface Props {
   index: number;
-  variant: 'full' | 'responsive' | 'detail';
+  variant: 'full' | 'responsive' | 'detail' | 'screens' | 'mockup';
   title: string;
+  /** Caption text without the number; defaults to the upper-cased title. */
+  caption?: string;
   brief: string;
   mobileLabel?: string;
   image?: { src: ImageMetadata; alt: string; mobileSrc?: ImageMetadata; mobileAlt?: string };
@@ -24,8 +29,9 @@ interface Props {
 const t = useT(Astro).case;
 const { index, variant, title, brief, mobileLabel = t.mobileView, image } = Astro.props;
 const number = String(index).padStart(2, '0');
-const flatTitle = title.replace(/\n/g, ' ').toUpperCase();
+const flatTitle = (Astro.props.caption ?? title.replace(/\n/g, ' ')).toUpperCase();
 const caption = image ? `/ ${flatTitle}` : `/ ${flatTitle} — ${t.captionToFollow}`;
+const screenPositions = ['top', 'middle', 'end'] as const;
 const isResponsive = variant === 'responsive';
 ---
 
@@ -34,7 +40,23 @@ const isResponsive = variant === 'responsive';
   data-reveal="fade"
 >
   {
-    image ? (
+    image && variant === 'screens' ? (
+      <div class="visual__frame">
+        {screenPositions.map((position, i) => (
+          <Image
+            class={`visual__screen visual__screen--${position}`}
+            src={image.src}
+            alt={i === 0 ? image.alt : ''}
+            widths={[400, 800]}
+            sizes="(min-width: 1024px) 394px, 31vw"
+          />
+        ))}
+      </div>
+    ) : image && variant === 'mockup' ? (
+      <div class="visual__frame">
+        <Image class="visual__image" src={image.src} alt={image.alt} widths={[800, 1440, 2640].filter((w) => w <= image.src.width)} sizes="100vw" />
+      </div>
+    ) : image ? (
       <div class="visual__frame">
         <Image class:list={['visual__image', { 'visual__image--paired': image.mobileSrc }]} src={image.src} alt={image.alt} widths={[800, 1440, 2640]} sizes="100vw" />
         {image.mobileSrc && <Image class="visual__image visual__image--mobile" src={image.mobileSrc} alt={image.mobileAlt ?? image.alt} widths={[390, 780]} sizes="100vw" />}
@@ -136,6 +158,51 @@ const isResponsive = variant === 'responsive';
     }
   }
 
+  /* screens: three columns of one long page capture on white, scaled from the 1312 × 738 frame. */
+  .visual--screens .visual__frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 1312 / 738;
+    background: #fff; /* the client site's own white, not a portfolio token */
+    outline: 1px solid var(--color-rule);
+    outline-offset: -0.5px;
+  }
+
+  .visual--screens .visual__frame :global(.visual__screen) {
+    position: absolute;
+    width: 30.03%;
+    height: auto;
+    aspect-ratio: 394 / 876;
+    object-fit: cover;
+    box-shadow: 2px 8px 22px rgb(0 0 0 / 0.15);
+  }
+
+  .visual--screens .visual__frame :global(.visual__screen--top) {
+    top: 7.05%;
+    left: 2.59%;
+    object-position: top;
+  }
+
+  .visual--screens .visual__frame :global(.visual__screen--middle) {
+    top: -10.98%;
+    left: 34.98%;
+    object-position: center;
+  }
+
+  .visual--screens .visual__frame :global(.visual__screen--end) {
+    top: -26.69%;
+    left: 67.53%;
+    object-position: bottom;
+  }
+
+  .visual--mockup .visual__frame {
+    aspect-ratio: 4 / 3;
+  }
+
+  .visual--mockup .visual__frame :global(.visual__image) {
+    object-position: center 42%;
+  }
+
   .visual__marker {
     display: flex;
     gap: 6px;
@@ -212,6 +279,10 @@ const isResponsive = variant === 'responsive';
       height: 440px;
     }
 
+    .visual--mockup .visual__frame {
+      aspect-ratio: 16 / 9;
+    }
+
     .visual--responsive .visual__frame {
       flex-direction: row;
       align-items: flex-end;
@@ -249,6 +320,11 @@ const isResponsive = variant === 'responsive';
 
     .visual--detail .visual__frame {
       height: 520px;
+    }
+
+    .visual--mockup .visual__frame {
+      aspect-ratio: auto;
+      height: 635px;
     }
 
     .visual--responsive .visual__frame {

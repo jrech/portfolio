@@ -24,9 +24,21 @@ const { title, description, challenge, approach, solution, outcome, visuals, tes
 const t = useT(Astro).case;
 const related = await getRelatedProjects(project, getLocale(Astro));
 
-/** Neutral slots for projects whose visuals are not briefed yet. */
+/**
+ * Placed visuals (any `after` set): only those, where they say, numbered by `number`.
+ * Otherwise the three fixed slots, with neutral placeholders for visuals not briefed yet.
+ */
+const placements = ['challenge', 'approach', 'solution'] as const;
+type Placement = (typeof placements)[number];
+const placed = visuals.some((v) => v.after);
 const variants = ['full', 'responsive', 'detail'] as const;
-const slots = variants.map((variant, i) => visuals[i] ?? { variant, ...t.fallbackVisuals[i]! });
+const slots = placed
+  ? []
+  : variants.map((variant, i) => ({ index: i + 1, ...(visuals[i] ?? { variant, ...t.fallbackVisuals[i]! }) }));
+const visualsAfter = (section: Placement) =>
+  placed
+    ? visuals.flatMap((v, i) => (v.after === section ? [{ ...v, index: v.number ?? i + 1 }] : []))
+    : [slots[placements.indexOf(section)]!];
 ---
 
 <BaseLayout title={`${title}${t.metaTitleSuffix}`} description={description} noindex={!isPublished(project)}>
@@ -35,15 +47,15 @@ const slots = variants.map((variant, i) => visuals[i] ?? { variant, ...t.fallbac
   <CaseHero project={project} />
 
   <CaseSection id="challenge" index="[01]" label={t.challenge} content={challenge} />
-  <CaseVisual index={1} {...slots[0]} />
+  {visualsAfter('challenge').map((visual) => <CaseVisual {...visual} />)}
 
   <CaseSection id="approach" index="[02]" label={t.approach} content={approach} />
-  <CaseVisual index={2} {...slots[1]} />
+  {visualsAfter('approach').map((visual) => <CaseVisual {...visual} />)}
 
   <CaseSection id="solution" index="[03]" label={t.solution} content={solution}>
     {solution && solution.decisions.length > 0 && <CaseDecisions decisions={solution.decisions} />}
   </CaseSection>
-  <CaseVisual index={3} {...slots[2]} />
+  {visualsAfter('solution').map((visual) => <CaseVisual {...visual} />)}
 
   <CaseSection id="outcome" index="[04]" label={t.outcome} content={outcome} last />
 

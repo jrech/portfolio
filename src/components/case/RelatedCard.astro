@@ -3,7 +3,8 @@
 import { Image } from 'astro:assets';
 import MediaFrame from '../ui/MediaFrame.astro';
 import ArrowBadge from '../ui/ArrowBadge.astro';
-import { formatServices, projectUrl, type ProjectEntry } from '@/lib/projects';
+import WorksBadge from '../ui/WorksBadge.astro';
+import { formatServices, isPublished, projectUrl, type ProjectEntry } from '@/lib/projects';
 import { getLocale, useT } from '@/i18n';
 
 interface Props {
@@ -12,20 +13,22 @@ interface Props {
 
 const { project } = Astro.props;
 const { title, cardTitle, services, cover } = project.data;
+/** Unpublished case studies: no link, "In the works" instead of the arrow. */
+const href = isPublished(project) ? projectUrl(project, getLocale(Astro)) : undefined;
 ---
 
-<article class="related arrow-host" data-reveal="fade" data-cursor="project">
+<article class:list={['related', { 'arrow-host': href, 'related--static': !href }]} data-reveal="fade" data-cursor={href ? 'project' : undefined}>
   <MediaFrame class="related__media" label={`${title} — ${useT(Astro).case.projectImageLabel}`}>
     {cover && <Image src={cover.src} alt={cover.alt} widths={[640, 1320]} sizes="(min-width: 1024px) 50vw, 100vw" />}
   </MediaFrame>
   <div class="related__details">
     <div class="related__text">
       <h3 class="related__title">
-        <a class="related__link related__name" href={projectUrl(project, getLocale(Astro))}>{cardTitle ?? title}</a>
+        {href ? <a class="related__link related__name" href={href}>{cardTitle ?? title}</a> : <span class="related__name">{cardTitle ?? title}</span>}
       </h3>
       <p class="related__disciplines">{formatServices(services)}</p>
     </div>
-    <ArrowBadge />
+    {href ? <ArrowBadge /> : <WorksBadge />}
   </div>
 </article>
 
@@ -112,8 +115,8 @@ const { title, cardTitle, services, cover } = project.data;
     transition: color 350ms var(--ease-out);
   }
 
-  .related:hover .related__name,
-  .related:focus-within .related__name {
+  .related:not(.related--static):hover .related__name,
+  .related:not(.related--static):focus-within .related__name {
     color: var(--color-accent);
   }
 </style>

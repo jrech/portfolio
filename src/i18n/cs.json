@@ -156,6 +156,7 @@
     "industry": "OBOR",
     "services": "SLUŽBY",
     "statusYear": "STAV / ROK",
+    "year": "ROK",
     "statusInPreparation": "V přípravě",
     "statusPublished": "Publikováno",
     "toConfirm": "Upřesníme",
@@ -182,6 +183,7 @@
         "brief": "Zástupný obrázek, finální ukázka projektu brzy."
       }
     ],
+    "inTheWorks": "PŘIPRAVUJEME",
     "moreTitle": "Další vybraná práce.",
     "moreLabel": "Další práce",
     "back": "← Zpět na všechny projekty",

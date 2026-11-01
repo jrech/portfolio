@@ -1,0 +1,23 @@
+---
+/**
+ * Stands in for the arrow on project cards whose case study is not published yet
+ * ("In the works", Jonas 2026-11-01). The card is then not a link.
+ */
+import { useT } from '@/i18n';
+---
+
+<span class="works-badge caption">{useT(Astro).case.inTheWorks}</span>
+
+<style>
+  .works-badge {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    height: 42px;
+    padding-inline: 16px;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-round);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+</style>
