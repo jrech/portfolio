@@ -7,7 +7,7 @@ client: Prádelna Krkonoše
 industry: Commercial laundry / Hospitality
 services: [Brand identity, Web design, Development]
 year: 2026
-status: in-preparation
+status: published
 description: A clearer B2B website helping hotels and local businesses understand the service and get in touch.
 descriptionWidth: 495
 positioning: A new identity and website for a commercial laundry serving hospitality businesses in the Krkonoše mountains.

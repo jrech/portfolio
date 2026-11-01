@@ -7,7 +7,7 @@ client: Prádelna Krkonoše
 industry: Profesionální prádelna / Ubytování
 services: [Vizuální identita, Webdesign, Vývoj]
 year: 2026
-status: in-preparation
+status: published
 description: Přehlednější B2B web, ze kterého hotely a místní firmy rychle pochopí službu a ozvou se.
 descriptionWidth: 495
 positioning: Nová vizuální identita a web pro profesionální prádelnu, která slouží hotelům a penzionům v Krkonoších.
