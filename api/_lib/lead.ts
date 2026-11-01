@@ -308,9 +308,9 @@ export function firstName(name: string): string {
 }
 
 /**
- * Email copy. Czech greets without the name on purpose: a name in the nominative
- * ("Dobrý den, Jana,") reads like a mail merge and the vocative can't be generated
- * reliably. English uses the first name and falls back to a plain "Hello,".
+ * Email copy. Czech greets with a casual "Zdravíčko!" and no name (Jonas, 2026-11-01):
+ * the vocative can't be generated reliably. English uses the first name and falls back
+ * to a plain "Hello,".
  */
 const WORDS = {
   cs: {
@@ -319,8 +319,8 @@ const WORDS = {
     label: 'Potvrzení poptávky',
     eyebrow: '01 / Poptávka dorazila',
     title: 'Díky za zprávu.',
-    greeting: (_first: string) => 'Dobrý den,',
-    thanks: 'díky, že jste se mi ozvali a napsali mi něco o svém projektu.',
+    greeting: (_first: string) => 'Zdravíčko!',
+    thanks: 'Díky, že jste se mi ozvali a napsali mi něco o svém projektu.',
     received:
       'Vaše zpráva dorazila v pořádku. Během 1–2 pracovních dnů si projdu zadání a ozvu se vám, abychom se domluvili, co dál.',
     guideEyebrow: 'Průvodce spoluprací · PDF',
@@ -406,7 +406,7 @@ function confirmationHtml(w: (typeof WORDS)['cs'], locale: InquiryLocale, greeti
   <tr><td class="px" style="padding:36px 48px 8px;">
     <p style="margin:0 0 14px;">${mono(w.eyebrow, C.accent)}</p>
     <h1 class="title" style="margin:0 0 28px;font:400 38px/1.12 ${SANS};letter-spacing:-0.02em;color:${C.ink};">${e(w.title)}</h1>
-    ${p(greeting, 'margin-bottom:6px;')}
+    ${p(greeting)}
     ${p(w.thanks)}
     ${p(w.received)}
   </td></tr>

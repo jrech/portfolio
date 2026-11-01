@@ -151,8 +151,8 @@ test('valid submission: Notion lead with mapped properties, both emails, confirm
   assert.equal(
     confirmation.body.text,
     [
-      'Dobrý den,',
-      'díky, že jste se mi ozvali a napsali mi něco o svém projektu.',
+      'Zdravíčko!',
+      'Díky, že jste se mi ozvali a napsali mi něco o svém projektu.',
       'Vaše zpráva dorazila v pořádku. Během 1–2 pracovních dnů si projdu zadání a ozvu se vám, abychom se domluvili, co dál.',
       'Mezitím vám posílám krátkého průvodce spoluprací. Najdete v něm něco málo o mně, jak pracuji a co můžete během celého projektu očekávat.\nPrůvodce spoluprací (PDF): https://www.jonasrech.com/welcome.pdf',
       'A pokud vás mezitím napadne něco, co jste do poptávky nenapsali, klidně mi odpovězte přímo na tento e-mail.',
@@ -352,5 +352,5 @@ test('greeting: first name only, plain fallback when the name is unusable; visit
   const xss = await greet('<b>Jana</b> Nováková');
   assert.match(xss.text, /^Hello,\n/);
   assert.doesNotMatch(xss.html, /<b>/);
-  assert.match((await greet('Jana Nováková', 'cs')).text, /^Dobrý den,\n/);
+  assert.match((await greet('Jana Nováková', 'cs')).text, /^Zdravíčko!\n\nDíky, že/);
 });
