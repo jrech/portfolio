@@ -7,7 +7,7 @@ import { Image } from 'astro:assets';
 import MediaFrame from '../ui/MediaFrame.astro';
 import ArrowBadge from '../ui/ArrowBadge.astro';
 import WorksBadge from '../ui/WorksBadge.astro';
-import { formatServices, isPublished, projectUrl, type ProjectEntry } from '@/lib/projects';
+import { fitWidths, formatServices, isPublished, projectUrl, type ProjectEntry } from '@/lib/projects';
 import { getLocale } from '@/i18n';
 
 interface Props {
@@ -33,8 +33,9 @@ const disciplines = formatServices(services);
         <Image
           src={cover.src}
           alt={cover.alt}
-          widths={[640, 960, 1320, 1774].filter((w) => w <= cover.src.width)}
+          widths={fitWidths([640, 960, 1320, 2640], cover.src.width)}
           sizes={featured ? '(min-width: 1440px) 1320px, 100vw' : '(min-width: 1024px) 50vw, 100vw'}
+          quality={100}
         />
       ) : (
         <slot name="media" />

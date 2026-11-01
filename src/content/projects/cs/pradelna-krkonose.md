@@ -70,8 +70,8 @@ testimonial:
   lang: cs
 
 related: [starobrnensky-senk, grind]
-# Homepage card, related cards and case-study hero (new mockup, 2026-11-01).
+# Homepage card, related cards and case-study hero (terrace mockup, Jonas 2026-11-01).
 cover:
-  src: ../../../assets/images/pradelna-case-hero.webp
-  alt: Web Prádelny Krkonoše na notebooku položeném na skále nad Krkonošemi při západu slunce
+  src: ../../../assets/images/pradelna-cover.webp
+  alt: Web Prádelny Krkonoše na notebooku na dřevěném stole na terase, v pozadí hory Krkonoš
 ---
