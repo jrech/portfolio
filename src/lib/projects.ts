@@ -30,6 +30,14 @@ export async function getProjects(locale: Locale = defaultLocale): Promise<Proje
 export const projectUrl = (project: ProjectEntry, locale: Locale) =>
   localePath(locale, `/work/${project.slug}`);
 
+/**
+ * Responsive widths capped at the source width, with the source width itself as the
+ * largest candidate, so a 1672 px image still gets a full-size file for retina.
+ */
+export const fitWidths = (widths: number[], sourceWidth: number) => [
+  ...new Set([...widths.filter((w) => w < sourceWidth), Math.min(sourceWidth, Math.max(...widths))]),
+];
+
 export const formatServices = (services: string[]) => services.join(' · ');
 
 /**

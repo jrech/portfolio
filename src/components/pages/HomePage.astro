@@ -29,7 +29,7 @@ const quote = (await getProjects(getLocale(Astro))).find((p) => p.slug === 'prad
   <SiteHeader slot="header" overlay />
   <Hero>
     {/* Cover crop is wider than the viewport on mobile/tablet (the media keeps the photo's height).
-        Quality 90: at the default, the dark gradients broke into visible bands (Jonas, 2026-10-29). */}
+        Quality 100: no skimping on photos (Jonas, 2026-11-01; at the default the dark gradients banded). */}
     <Image
       slot="media"
       src={portrait}
@@ -38,7 +38,7 @@ const quote = (await getProjects(getLocale(Astro))).find((p) => p.slug === 'prad
       fetchpriority="high"
       widths={[1080, 1440, 1920, 2400, 2880]}
       sizes="(max-width: 1023px) 1080px, 70vw"
-      quality={90}
+      quality={100}
     />
   </Hero>
   <SelectedWork />
@@ -48,7 +48,7 @@ const quote = (await getProjects(getLocale(Astro))).find((p) => p.slug === 'prad
     quote && (
       <Testimonial testimonial={quote}>
         {/* Decorative: her name is printed right beside it. */}
-        <Image slot="avatar" src={marketa} alt="" widths={[48, 96, 144]} sizes="48px" />
+        <Image slot="avatar" src={marketa} alt="" widths={[48, 96, 144]} sizes="48px" quality={100} />
       </Testimonial>
     )
   }
@@ -59,6 +59,7 @@ const quote = (await getProjects(getLocale(Astro))).find((p) => p.slug === 'prad
       alt={t.about.photoLabel}
       widths={[480, 760, 1016]}
       sizes="(min-width: 1024px) 640px, 100vw"
+      quality={100}
     />
   </About>
   <Process />

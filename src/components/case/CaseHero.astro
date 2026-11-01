@@ -6,7 +6,7 @@
 import { Image } from 'astro:assets';
 import MediaFrame from '../ui/MediaFrame.astro';
 import Lines from '../ui/Lines.astro';
-import { formatServices, type ProjectEntry } from '@/lib/projects';
+import { fitWidths, formatServices, type ProjectEntry } from '@/lib/projects';
 import { getLocale, localePath, useT } from '@/i18n';
 
 interface Props {
@@ -58,7 +58,7 @@ const noticeText = status === 'in-preparation' ? (notice ?? t.defaultNotice) : n
   </dl>
 
   <MediaFrame class="case-hero__visual" label={`${title} — ${t.heroVisualLabel}`}>
-    {hero && <Image src={hero.src} alt={hero.alt} widths={[800, 1440, 2640].filter((w) => w <= hero.src.width)} sizes="100vw" />}
+    {hero && <Image src={hero.src} alt={hero.alt} widths={fitWidths([800, 1440, 2640], hero.src.width)} sizes="100vw" quality={100} loading="eager" fetchpriority="high" />}
   </MediaFrame>
 
   {noticeText && <p class="case-hero__notice caption">{noticeText}</p>}
