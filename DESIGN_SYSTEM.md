@@ -213,6 +213,8 @@ Pen frames "Case study / Prádelna Krkonoše — Desktop / Mobile" (exports `cas
 | Visual 01 `full` | `case/CaseVisual` | 656, surface + 1px rule outline, padding 48 | 520, padding 40 | 360, padding 24 |
 | Visual 02 `responsive` | `case/CaseVisual` | 720, `#171817`, row, mobile slot 256×544 | row, slot 192×328 | column, slot 192×328 |
 | Visual 03 `detail` | `case/CaseVisual` | 520, paper `#D5D3CA`, ink text | 440 | 360 |
+| Visual `screens` (2026-11-01) | `case/CaseVisual` | 1312 × 738 white frame, rule outline; one full-page capture as 3 columns (394 wide, top / middle / end) staggered at top 52 / −81 / −197 | scales proportionally | scales proportionally |
+| Visual `mockup` (2026-11-01) | `case/CaseVisual` | plain image, 635 high, no frame | 16 : 9 | 4 : 3 |
 | Visual caption | — | mono caption under the frame, gap 16 | gap 24 | gap 32 |
 | More selected work | `case/RelatedWork`, `case/RelatedCard` | rule on top, padding 160, gap 48; heading 64 −2.5; 2 cards (gap 32), media 480, title 28 −0.8 + services 14, 42px arrow; "← Back to all projects" | padding 120; 2 columns, media 320 | padding 96, gap 36; heading 40; cards stacked (gap 40), media 256, title 24 |
 | Footer | `SiteFooter variant="split"` | "Your project could be next." + CTA right; "Have something in mind? Let’s talk." | — | — |
@@ -220,6 +222,8 @@ Pen frames "Case study / Prádelna Krkonoše — Desktop / Mobile" (exports `cas
 Content: `src/content/projects/<slug>.md` (schema in `src/content.config.ts`, helpers in `src/lib/projects.ts`). Missing sections render a marked "CONTENT TO FOLLOW" placeholder, missing visuals render neutral slots; nothing is invented. Related projects: the entry's `related` list, then the next projects by order, never the current one, max 2; with none left only the back link renders. Unpublished case studies are built (for review) with `noindex, nofollow` and are not linked from anywhere visitors can reach.
 
 Case-study decisions and deviations:
+
+- **Prádelna Krkonoše (2026-11-01)**: built from Jonas's export `casestudy desktop.html`. Visuals are placed per project (`after` + `number` in the content file): screens after the challenge (01), phone mockup after the solution (03), no visual 02. In the export the 03 caption sat alone above the outcome and the mockup inside it; here the mockup carries its caption, like visual 01. Metadata shows `YEAR` when a year is set, otherwise `STATUS / YEAR`.
 
 - **Gutter**: 60 px like the rest of the site, not the 64 px of the case frames (see discrepancy 8).
 - **Eyebrow labels**: Pen has "The challenge" without a period and the other three with one; all four use the period.

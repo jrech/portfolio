@@ -19,7 +19,13 @@ const editorialSection = z.object({
   paragraphs,
 });
 
-export const visualVariants = ['full', 'responsive', 'detail'] as const;
+/**
+ * full / responsive / detail — the original three placeholder-ready slots.
+ * screens — a long full-page website capture shown as three staggered columns (top, middle, end) on white.
+ * mockup  — a finished device mockup shown as a plain image, no frame.
+ */
+export const visualVariants = ['full', 'responsive', 'detail', 'screens', 'mockup'] as const;
+export const visualPlacements = ['challenge', 'approach', 'solution'] as const;
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/projects' }),
@@ -52,6 +58,8 @@ const projects = defineCollection({
       notice: z.string().optional(),
 
       cover: z.object({ src: image(), alt: z.string() }).optional(),
+      /** Case-study hero image when it differs from the homepage card `cover`. */
+      heroImage: z.object({ src: image(), alt: z.string() }).optional(),
 
       /** Missing sections render a clearly marked "content to follow" placeholder. */
       challenge: editorialSection.optional(),
@@ -63,11 +71,21 @@ const projects = defineCollection({
         .optional(),
       outcome: editorialSection.optional(),
 
-      /** Up to three large visuals, placed after the challenge, approach and solution. */
+      /**
+       * Up to three large visuals. Without `after` they fill the three slots after the
+       * challenge, approach and solution (missing slots get neutral placeholders).
+       * As soon as one visual sets `after`, only the listed visuals render, where they say.
+       */
       visuals: z
         .array(
           z.object({
             variant: z.enum(visualVariants),
+            /** Section the visual follows. */
+            after: z.enum(visualPlacements).optional(),
+            /** Caption number; defaults to the visual's position. */
+            number: z.number().optional(),
+            /** Caption text without the number; defaults to the upper-cased title. */
+            caption: z.string().optional(),
             /** `\n` forces a line break. */
             title: z.string(),
             /** Brief for the final capture, shown while there is no image. */

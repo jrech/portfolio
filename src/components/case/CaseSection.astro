@@ -6,6 +6,7 @@
  * Without `content` it renders a clearly marked "content to follow" placeholder.
  */
 import Eyebrow from '../ui/Eyebrow.astro';
+import Lines from '../ui/Lines.astro';
 import { useT } from '@/i18n';
 
 interface Props {
@@ -26,7 +27,7 @@ const t = useT(Astro).case;
 <section class:list={['case-section container', { 'case-section--last': last }]} aria-labelledby={id}>
   <Eyebrow index={index}>{label}</Eyebrow>
   <div class="case-section__columns">
-    <h2 id={id} class="case-section__heading" data-reveal="heading">{content?.heading ?? label}</h2>
+    <h2 id={id} class="case-section__heading" data-reveal="heading"><Lines text={content?.heading ?? label} /></h2>
     <div class="case-section__reading" data-reveal="fade">
       {
         content ? (

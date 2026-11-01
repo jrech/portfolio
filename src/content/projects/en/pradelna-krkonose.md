@@ -1,56 +1,69 @@
 ---
-# Copy: Pen frame "Case study / Prádelna Krkonoše" (draft copy for client review).
+# Copy + images: Pen export "casestudy desktop.html" (Jonas, 2026-11-01) — source of truth.
 title: Prádelna Krkonoše
 cardTitle: Prádelna
-heroTitle: "Prádelna\nKrkonoše."
+heroTitle: Prádelna Krkonoše.
 client: Prádelna Krkonoše
-industry: Laundry services
-services: [Strategy, Web design, Copy]
+industry: Commercial laundry / Hospitality
+services: [Brand identity, Web design, Development]
+year: 2026
 status: in-preparation
 description: A clearer B2B website helping hotels and local businesses understand the service and get in touch.
 descriptionWidth: 495
-positioning: A fresh digital presence for a business built on clean work.
+positioning: A new identity and website for a commercial laundry serving hospitality businesses in the Krkonoše mountains.
 order: 2
-notice: "PROJECT IN PREPARATION · Narrative below is draft copy for client review. Image slots are ready for final captures."
+# Final copy: no "in preparation" notice under the hero.
+notice: ""
+heroImage:
+  src: ../../../assets/images/pradelna-case-hero.webp
+  alt: The Prádelna Krkonoše website on a laptop, set on a rock above the Krkonoše mountains at sunset
 
 challenge:
+  heading: "A new business,\na blank page."
   paragraphs:
-    - "Laundry is a practical service. Its website should be just as practical: explain what is offered, who it is for and how to get in touch without making visitors work for it."
-    - "The proposed brief for Prádelna Krkonoše is a clearer digital introduction. The existing customer journey and its specific pain points still need to be confirmed before this case study is published."
+    - "Prádelna Krkonoše was a new laundry business with no website or visual identity yet."
+    - "They needed a way to introduce their services to hotels and guesthouses in the region. My job was to give the business a recognizable look and make it easy for potential customers to understand the offer and get in touch."
 
 approach:
+  heading: Start with the basics.
   paragraphs:
-    - "Start with the visitor’s questions: is this the right service, what can it take care of and how do I arrange it? Confirming the customer groups and service area comes before deciding the page structure."
-    - "The proposed hierarchy puts the offer first, practical details second and contact within easy reach. Clear language and real photography should do the explaining; the layout simply gives them room."
-    - "On smaller screens, the same information should stay easy to scan, with readable type and a direct next step."
+    - "Before designing anything, I thought about what a hotel or guesthouse would want to know: what can the laundry take care of, how does it work, and where can they collect? Those questions shaped the structure of the site."
+    - "I kept the visual style clean and approachable. The aim was to give the new business its own look without getting in the way of the information."
 
 solution:
   paragraphs:
-    - "The project scope currently shown in this portfolio covers strategy, web design and copy. These three proposed decisions connect that scope to the visitor’s needs."
+    - "I created the identity and built a website that explains the service and helps visitors get in touch."
   decisions:
-    - title: Make the offer obvious.
-      copy: Lead with the service and who it helps, so visitors can quickly decide whether they are in the right place.
-    - title: Keep the details together.
-      copy: Group practical information around customer questions instead of making people hunt across the page.
-    - title: Give contact a clear role.
-      copy: Use a consistent enquiry route, so interest has somewhere to go on both desktop and mobile.
+    - title: A look of their own
+      copy: I brought the type, colors and graphic elements together into a simple identity the business can use across its website.
+    - title: The details people need
+      copy: The site explains the services, who they are for, how the laundry process works and where collection is available.
+    - title: An easy way to get in touch
+      copy: The site works on desktop and mobile, with clear buttons and an enquiry form for anyone who wants to ask about the service.
 
 outcome:
+  heading: Ready for business.
   paragraphs:
-    - "A new digital presentation is in preparation. The current scope brings strategy, web design and copy into one direction; this page will document the final deliverables once they are approved."
-    - "No launch metrics or client results are available yet. The next update belongs here: what shipped, what changed and what the client has to say."
+    - "Prádelna Krkonoše now has a visual identity and a website to introduce the business to potential customers."
+    - "Visitors can see what the laundry offers, find out how it works and send an enquiry. I designed and built the site from scratch, with layouts for both desktop and mobile."
 
 visuals:
-  - variant: full
-    title: The full picture.
-    brief: Full-width desktop homepage capture. Show the service proposition, page hierarchy and route to contact — without a device frame.
-  - variant: responsive
-    title: "One experience.\nEvery screen."
-    brief: Desktop and mobile comparison slot. Pair the service overview with the mobile contact flow to show how the hierarchy adapts.
-    mobileLabel: "Mobile\nContact flow"
-  - variant: detail
-    title: The details do the work.
-    brief: Detail crop slot. Show the final type hierarchy, a service block and the enquiry action at readable scale.
+  - variant: screens
+    after: challenge
+    number: 1
+    title: A clear first impression
+    brief: The full Prádelna Krkonoše homepage, shown as three columns from top to bottom.
+    image:
+      src: ../../../assets/images/pradelna-case-website.webp
+      alt: The Prádelna Krkonoše homepage from top to bottom, from the hero with the delivery van to the services, customer types and footer
+  - variant: mockup
+    after: solution
+    number: 3
+    title: The details make it work
+    brief: The mobile website in a phone mockup.
+    image:
+      src: ../../../assets/images/pradelna-case-mobile.webp
+      alt: The Prádelna Krkonoše website on a phone, showing the headline “Čisté prádlo včas. I v plné sezóně.” and a contact button
 
 # Approved for publication by the client (Jonas, 2026-10-28). Also shown on the homepage.
 testimonial:

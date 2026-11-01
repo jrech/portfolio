@@ -13,7 +13,7 @@ interface Props {
   project: ProjectEntry;
 }
 
-const { title, heroTitle, positioning, client, industry, services, year, status, notice, cover } =
+const { title, heroTitle, positioning, client, industry, services, year, status, notice, cover, heroImage } =
   Astro.props.project.data;
 
 const t = useT(Astro).case;
@@ -23,9 +23,14 @@ const metadata = [
   { key: t.client, value: client },
   { key: t.industry, value: industry ?? t.toConfirm },
   { key: t.services, value: formatServices(services) },
-  { key: t.statusYear, value: `${statusLabel} / ${year ?? t.toConfirm}` },
+  // A confirmed year stands alone (Pen 2026-11-01: "YEAR"); without one the status carries the row.
+  year !== undefined
+    ? { key: t.year, value: String(year) }
+    : { key: t.statusYear, value: `${statusLabel} / ${t.toConfirm}` },
 ];
+const hero = heroImage ?? cover;
 
+/** `notice: ""` switches the in-preparation notice off once the copy is final. */
 const noticeText = status === 'in-preparation' ? (notice ?? t.defaultNotice) : notice;
 ---
 
@@ -53,7 +58,7 @@ const noticeText = status === 'in-preparation' ? (notice ?? t.defaultNotice) : n
   </dl>
 
   <MediaFrame class="case-hero__visual" label={`${title} — ${t.heroVisualLabel}`}>
-    {cover && <Image src={cover.src} alt={cover.alt} widths={[800, 1440, 2640].filter((w) => w <= cover.src.width)} sizes="100vw" />}
+    {hero && <Image src={hero.src} alt={hero.alt} widths={[800, 1440, 2640].filter((w) => w <= hero.src.width)} sizes="100vw" />}
   </MediaFrame>
 
   {noticeText && <p class="case-hero__notice caption">{noticeText}</p>}
