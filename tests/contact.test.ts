@@ -107,7 +107,6 @@ beforeEach(() => {
   Object.assign(process.env, ENV);
   delete process.env.CONTACT_TEST_RECIPIENT;
   delete process.env.CONTACT_REPLY_TO_EMAIL;
-  delete process.env.CONTACT_GUIDE_URL;
 });
 
 test('valid submission: Notion lead with mapped properties, both emails, confirmation ticked', async () => {
@@ -152,15 +151,21 @@ test('valid submission: Notion lead with mapped properties, both emails, confirm
   assert.equal(
     confirmation.body.text,
     [
-      'Dobrý den, Jana Nováková,',
-      'díky, že jste se mi ozvali a napsali mi něco o svém projektu.',
+      'Zdravíčko!',
+      'Díky, že jste se mi ozvali a napsali mi něco o svém projektu.',
       'Vaše zpráva dorazila v pořádku. Během 1–2 pracovních dnů si projdu zadání a ozvu se vám, abychom se domluvili, co dál.',
+      'Mezitím vám posílám krátkého průvodce spoluprací. Najdete v něm něco málo o mně, jak pracuji a co můžete během celého projektu očekávat.\nPrůvodce spoluprací (PDF): https://www.jonasrech.com/welcome.pdf',
       'A pokud vás mezitím napadne něco, co jste do poptávky nenapsali, klidně mi odpovězte přímo na tento e-mail.',
       'Mějte se hezky,\nJonáš Rech\nWeb Design & Development\njonasrech.com',
     ].join('\n\n'),
-    'no guide paragraph while CONTACT_GUIDE_URL is unset',
   );
-  assert.match(confirmation.body.html, /Web Design &amp; Development/);
+  const html = confirmation.body.html;
+  assert.match(html, /^<!DOCTYPE html>/);
+  assert.match(html, /<html lang="cs"/);
+  assert.match(html, /Web Design &amp; Development/);
+  assert.match(html, /<a href="https:\/\/www\.jonasrech\.com\/welcome\.pdf"[^>]*>Stáhnout průvodce \(PDF\)&nbsp;&rarr;<\/a>/);
+  assert.match(html, />www\.jonasrech\.com\/welcome\.pdf<\/a>/, 'plain URL under the button');
+  assert.doesNotMatch(html, /Nováková/, 'Czech greeting leaves the name out (no vocative)');
   assert.equal(confirmation.key, 'abc-12345-confirmation');
   assert.deepEqual(notification.body.to, ['studio@example.test']);
   assert.equal(notification.body.reply_to, 'delivered@resend.dev');
@@ -195,7 +200,13 @@ test('English submission: selects mapped to the Czech options, English confirmat
   assert.equal(p[PROP.budget].select.name, 'Nad 100 000 Kč');
   assert.equal(text(p[PROP.timing]), 'Zatím nevím');
   assert.match(text(p[PROP.brief]), /Jazyk formuláře: EN/);
-  assert.equal(emails[0].body.subject, 'Thanks for your message — Jonáš Rech');
+  const { subject, text: body, html } = emails[0].body;
+  assert.equal(subject, 'Thanks for your message — Jonáš Rech');
+  assert.match(body, /^Hello Jana,\n\n/);
+  assert.match(body, /Working together guide \(PDF\): https:\/\/www\.jonasrech\.com\/welcome-en\.pdf/);
+  assert.match(html, /<html lang="en"/);
+  assert.match(html, /href="https:\/\/www\.jonasrech\.com\/welcome-en\.pdf"/);
+  assert.doesNotMatch(html, /welcome\.pdf/);
 });
 
 test('required and invalid fields are rejected before anything is stored', async () => {
@@ -321,17 +332,25 @@ test('CONTACT_TEST_RECIPIENT redirects the client confirmation (preview testing)
   assert.equal(pages[0].properties[PROP.email].email, 'real-client@example.com');
 });
 
-test('CONTACT_GUIDE_URL adds the collaboration guide paragraph and link; non-https is ignored', async () => {
-  process.env.CONTACT_GUIDE_URL = 'https://www.jonasrech.com/guide.pdf';
-  await post(submission({ name: 'Jana <b>Nováková</b>' }));
-  const { text, html } = emails[0].body;
-  assert.match(text, /Mezitím vám posílám krátkého průvodce spoluprací\./);
-  assert.match(text, /Mrknout na průvodce spoluprací → https:\/\/www\.jonasrech\.com\/guide\.pdf/);
-  assert.match(html, /<a href="https:\/\/www\.jonasrech\.com\/guide\.pdf"[^>]*>Mrknout na průvodce spoluprací →<\/a>/);
-  assert.doesNotMatch(html, /<b>/, 'visitor name is escaped');
-
-  emails.length = 0;
-  process.env.CONTACT_GUIDE_URL = 'javascript:alert(1)';
+test('Reply-To on the client confirmation: CONTACT_REPLY_TO_EMAIL, else the notification address', async () => {
+  process.env.CONTACT_REPLY_TO_EMAIL = 'hello@example.test';
   await post(submission());
-  assert.doesNotMatch(emails[0].body.text, /průvodce/);
+  assert.equal(emails[0].body.reply_to, 'hello@example.test');
+  assert.equal(emails[1].body.reply_to, 'delivered@resend.dev', 'Jonas replies straight to the client');
+});
+
+test('greeting: first name only, plain fallback when the name is unusable; visitor text is escaped', async () => {
+  const greet = async (name: string, locale = 'en') => {
+    emails.length = 0;
+    await post(submission({ name, locale, ...(locale === 'en' ? { need: 'A new website', hasSite: 'No', currentUrl: '', priority: 'More enquiries', help: 'Website design only', budget: 'Not sure yet', timing: 'Not sure yet' } : {}) }));
+    assert.ok(emails[0], `confirmation sent for ${JSON.stringify(name)}`);
+    return emails[0].body;
+  };
+  assert.match((await greet('  Jana   Nováková ')).text, /^Hello Jana,/);
+  assert.match((await greet("O'Neil")).text, /^Hello O'Neil,/);
+  assert.match((await greet('123 !!!')).text, /^Hello,\n/);
+  const xss = await greet('<b>Jana</b> Nováková');
+  assert.match(xss.text, /^Hello,\n/);
+  assert.doesNotMatch(xss.html, /<b>/);
+  assert.match((await greet('Jana Nováková', 'cs')).text, /^Zdravíčko!\n\nDíky, že/);
 });

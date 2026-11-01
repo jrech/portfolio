@@ -47,17 +47,7 @@ export interface Config {
   replyTo?: string;
   /** Preview/testing only: every client confirmation goes here instead of the visitor. */
   testRecipient?: string;
-  /** Link to the collaboration guide (PDF). Without it the guide paragraph is left out. */
-  guideUrl?: string;
 }
-
-const httpsUrl = (value?: string) => {
-  try {
-    return value && new URL(value).protocol === 'https:' ? value : undefined;
-  } catch {
-    return undefined;
-  }
-};
 
 export function readConfig(env: Record<string, string | undefined>): Config | null {
   const notionKey = env.NOTION_API_KEY?.trim();
@@ -72,7 +62,6 @@ export function readConfig(env: Record<string, string | undefined>): Config | nu
     notifyTo,
     replyTo: env.CONTACT_REPLY_TO_EMAIL?.trim() || notifyTo,
     testRecipient: env.CONTACT_TEST_RECIPIENT?.trim() || undefined,
-    guideUrl: httpsUrl(env.CONTACT_GUIDE_URL?.trim()),
   };
 }
 
@@ -301,62 +290,177 @@ const escapeHtml = (value: string) =>
   value.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 // Visitor text ends up in subjects: no line breaks, sane length.
 const oneLine = (value: string) => value.replace(/\s+/g, ' ').trim().slice(0, 80);
-const paragraphsHtml = (blocks: Block[]) =>
-  `<div style="font:15px/1.6 system-ui,sans-serif;color:#111">${blocks
-    .map((b) =>
-      typeof b === 'string'
-        ? `<p style="margin:0 0 16px">${escapeHtml(b).replace(/\n/g, '<br>')}</p>`
-        : `<p style="margin:0 0 16px"><a href="${escapeHtml(b.url)}" style="color:#111;font-weight:600">${escapeHtml(b.label)}</a></p>`,
-    )
-    .join('')}</div>`;
+/* ---------- Client confirmation ---------- */
 
-/** A paragraph of plain text, or a labelled link. */
-type Block = string | { label: string; url: string };
+/** Public site; the guide links always point at production, also from Preview. */
+export const SITE_URL = 'https://www.jonasrech.com';
+/** Welcome package PDFs in /public (5 pages each). */
+export const GUIDE_PATH = { cs: '/welcome.pdf', en: '/welcome-en.pdf' } as const;
+export const guideUrl = (locale: InquiryLocale) => `${SITE_URL}${GUIDE_PATH[locale]}`;
 
+/**
+ * Only the first word of the name, cleaned up. Empty when there's nothing usable
+ * (no name, digits or symbols only), so the greeting can drop it.
+ */
+export function firstName(name: string): string {
+  const first = name.trim().split(/\s+/)[0] ?? '';
+  return /^\p{L}[\p{L}\p{M}'’.-]*$/u.test(first) ? first.slice(0, 40) : '';
+}
+
+/**
+ * Email copy. Czech greets with a casual "Zdravíčko!" and no name (Jonas, 2026-11-01):
+ * the vocative can't be generated reliably. English uses the first name and falls back
+ * to a plain "Hello,".
+ */
 const WORDS = {
   cs: {
     subject: 'Díky za zprávu — Jonáš Rech',
-    greeting: (name: string) => `Dobrý den, ${name},`,
-    thanks: 'díky, že jste se mi ozvali a napsali mi něco o svém projektu.',
+    preheader: 'Poptávka dorazila. Do 1–2 pracovních dnů se vám ozvu. Mezitím průvodce spoluprací v PDF.',
+    label: 'Potvrzení poptávky',
+    eyebrow: '01 / Poptávka dorazila',
+    title: 'Díky za zprávu.',
+    greeting: (_first: string) => 'Zdravíčko!',
+    thanks: 'Díky, že jste se mi ozvali a napsali mi něco o svém projektu.',
     received:
       'Vaše zpráva dorazila v pořádku. Během 1–2 pracovních dnů si projdu zadání a ozvu se vám, abychom se domluvili, co dál.',
+    guideEyebrow: 'Průvodce spoluprací · PDF',
     guide:
       'Mezitím vám posílám krátkého průvodce spoluprací. Najdete v něm něco málo o mně, jak pracuji a co můžete během celého projektu očekávat.',
-    guideLink: 'Mrknout na průvodce spoluprací →',
+    guideButton: 'Stáhnout průvodce (PDF)',
+    guideText: 'Průvodce spoluprací (PDF):',
     reply: 'A pokud vás mezitím napadne něco, co jste do poptávky nenapsali, klidně mi odpovězte přímo na tento e-mail.',
-    signoff: 'Mějte se hezky,\nJonáš Rech\nWeb Design & Development\njonasrech.com',
+    signoff: 'Mějte se hezky,',
+    signature: ['Jonáš Rech', 'Web Design & Development'],
   },
   en: {
     subject: 'Thanks for your message — Jonáš Rech',
-    greeting: (name: string) => `Hello ${name},`,
+    preheader: 'Your enquiry arrived. I’ll get back to you within 1–2 business days. Meanwhile, here’s my guide to working together.',
+    label: 'Enquiry received',
+    eyebrow: '01 / Enquiry received',
+    title: 'Thanks for your message.',
+    greeting: (first: string) => (first ? `Hello ${first},` : 'Hello,'),
     thanks: 'thank you for getting in touch and telling me a bit about your project.',
     received:
       'Your message arrived safely. Within 1–2 business days I’ll go through your brief and get back to you so we can agree on the next steps.',
+    guideEyebrow: 'Working together · PDF',
     guide:
       'In the meantime, here is a short guide to working together. It covers a little about me, how I work and what you can expect throughout the project.',
-    guideLink: 'Have a look at the collaboration guide →',
+    guideButton: 'Download the guide (PDF)',
+    guideText: 'Working together guide (PDF):',
     reply: 'And if anything comes to mind that you didn’t put in your enquiry, just reply directly to this email.',
-    signoff: 'All the best,\nJonáš Rech\nWeb Design & Development\njonasrech.com',
+    signoff: 'All the best,',
+    signature: ['Jonáš Rech', 'Web Design & Development'],
   },
 };
 
+/** Colours from the site tokens / welcome PDF (cream paper, ink, orange accent). */
+const C = { paper: '#f4f1ea', page: '#e9e5dc', ink: '#171817', muted: '#595a53', rule: '#c9c5ba', accent: '#ff4d18', dark: '#10100f', cream: '#eee9df' };
+const SANS = `'Rethink Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif`;
+const MONO = `'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,'Courier New',monospace`;
+
+/**
+ * Editorial, table-based HTML that survives Gmail, Outlook and Apple Mail: inline
+ * styles, one 600px column, a bulletproof button, and a plain URL under it so the
+ * guide stays reachable even where buttons don't render.
+ */
+function confirmationHtml(w: (typeof WORDS)['cs'], locale: InquiryLocale, greeting: string, pdf: string) {
+  const e = escapeHtml;
+  const p = (text: string, extra = '') =>
+    `<p style="margin:0 0 18px;font:400 16px/1.65 ${SANS};color:${C.ink};${extra}">${e(text)}</p>`;
+  const mono = (text: string, color: string, extra = '') =>
+    `<span style="font:400 11px/1.4 ${MONO};letter-spacing:0.08em;text-transform:uppercase;color:${color};${extra}">${e(text)}</span>`;
+  const host = pdf.replace(/^https:\/\//, '');
+  return `<!DOCTYPE html>
+<html lang="${locale}" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>${e(w.subject)}</title>
+<style>
+  :root { color-scheme: light; supported-color-schemes: light; }
+  body { margin:0; padding:0; -webkit-text-size-adjust:100%; }
+  a { color:${C.ink}; }
+  @media (max-width:620px) {
+    .px { padding-left:24px !important; padding-right:24px !important; }
+    .title { font-size:30px !important; }
+    .card { padding:24px !important; }
+    .btn a { display:block !important; text-align:center !important; }
+    .hide-sm { display:none !important; }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:${C.page};">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${e(w.preheader)}&#8199;&#847;&#8199;&#847;&#8199;&#847;&#8199;&#847;&#8199;&#847;&#8199;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${C.page};">
+<tr><td align="center" style="padding:32px 12px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:${C.paper};border:1px solid ${C.rule};">
+  <tr><td class="px" style="padding:28px 48px 0;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td style="padding-bottom:16px;border-bottom:1px solid ${C.rule};font:600 15px/1.2 ${SANS};letter-spacing:0.02em;color:${C.ink};">JONÁŠ RECH</td>
+      <td class="hide-sm" align="right" style="padding-bottom:16px;border-bottom:1px solid ${C.rule};">${mono(w.label, C.muted)}</td>
+    </tr></table>
+  </td></tr>
+  <tr><td class="px" style="padding:36px 48px 8px;">
+    <p style="margin:0 0 14px;">${mono(w.eyebrow, C.accent)}</p>
+    <h1 class="title" style="margin:0 0 28px;font:400 38px/1.12 ${SANS};letter-spacing:-0.02em;color:${C.ink};">${e(w.title)}</h1>
+    ${p(greeting)}
+    ${p(w.thanks)}
+    ${p(w.received)}
+  </td></tr>
+  <tr><td class="px" style="padding:8px 48px 8px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${C.dark};">
+      <tr><td class="card" style="padding:32px;">
+        <p style="margin:0 0 14px;">${mono(w.guideEyebrow, C.accent)}</p>
+        <p style="margin:0 0 24px;font:400 16px/1.6 ${SANS};color:${C.cream};">${e(w.guide)}</p>
+        <table role="presentation" class="btn" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td style="background:${C.accent};border-radius:999px;">
+            <a href="${e(pdf)}" target="_blank" style="display:inline-block;padding:14px 26px;font:600 15px/1.2 ${SANS};color:${C.dark};text-decoration:none;border-radius:999px;">${e(w.guideButton)}&nbsp;&rarr;</a>
+          </td>
+        </tr></table>
+        <p style="margin:18px 0 0;font:400 12px/1.5 ${MONO};color:#a4a29c;word-break:break-all;"><a href="${e(pdf)}" target="_blank" style="color:#a4a29c;text-decoration:underline;">${e(host)}</a></p>
+      </td></tr>
+    </table>
+  </td></tr>
+  <tr><td class="px" style="padding:28px 48px 8px;">
+    ${p(w.reply)}
+    <p style="margin:0 0 4px;font:400 16px/1.65 ${SANS};color:${C.ink};">${e(w.signoff)}</p>
+    <p style="margin:0 0 32px;font:400 16px/1.5 ${SANS};color:${C.ink};"><strong style="font-weight:600;">${e(w.signature[0])}</strong><br><span style="color:${C.muted};">${e(w.signature[1])}</span></p>
+  </td></tr>
+  <tr><td class="px" style="padding:0 48px 28px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td style="padding-top:16px;border-top:1px solid ${C.rule};">
+        <a href="${SITE_URL}" style="text-decoration:none;">${mono('jonasrech.com', C.muted)}</a>${mono(' / ', C.muted)}<a href="mailto:hello@jonasrech.com" style="text-decoration:none;">${mono('hello@jonasrech.com', C.muted)}</a>
+      </td>
+    </tr></table>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+}
+
 export function confirmationEmail(config: Config, lead: Lead): Email {
   const w = WORDS[lead.locale];
-  const blocks: Block[] = [
-    w.greeting(lead.name),
+  const greeting = w.greeting(firstName(lead.name));
+  const pdf = guideUrl(lead.locale);
+  const text = [
+    greeting,
     w.thanks,
     w.received,
-    ...(config.guideUrl ? [w.guide, { label: w.guideLink, url: config.guideUrl }] : []),
+    `${w.guide}\n${w.guideText} ${pdf}`,
     w.reply,
-    w.signoff,
-  ];
-  const text = blocks.map((b) => (typeof b === 'string' ? b : `${b.label} ${b.url}`)).join('\n\n');
+    [w.signoff, ...w.signature, 'jonasrech.com'].join('\n'),
+  ].join('\n\n');
   return {
     to: config.testRecipient ?? lead.email,
     replyTo: config.replyTo,
     subject: w.subject,
     text,
-    html: paragraphsHtml(blocks),
+    html: confirmationHtml(w, lead.locale, greeting, pdf),
   };
 }
 
