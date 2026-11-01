@@ -72,9 +72,10 @@ Set these in Vercel → Project → Settings → Environment Variables:
 | `CONTACT_FROM_EMAIL` | yes | `Jonáš Rech <poptavka@jonasrech.com>` (domain verified in Resend) |
 | `CONTACT_NOTIFICATION_EMAIL` | yes | where Jonas gets new leads |
 | `CONTACT_REPLY_TO_EMAIL` | no | reply-to on the client confirmation, defaults to `CONTACT_NOTIFICATION_EMAIL` |
-| `CONTACT_GUIDE_URL` | no | https link to the collaboration guide PDF. Without it the confirmation email leaves out the guide paragraph and link |
 | `CONTACT_TEST_RECIPIENT` | no | **Preview only.** Every client confirmation goes here instead of the visitor |
 
 Without the Notion variables the function answers 503 and the visitor sees the error state (the draft stays saved in the browser). Without the Resend variables leads are saved to Notion but no emails go out.
+
+The client confirmation always links the welcome package PDF on production: `https://www.jonasrech.com/welcome.pdf` (CZ) or `/welcome-en.pdf` (EN), served from `public/`. The email copy and HTML layout live in `api/_lib/lead.ts` (`WORDS`, `confirmationHtml`).
 
 Tests (mocked Notion and Resend, nothing is sent): `npm run test:contact`.
