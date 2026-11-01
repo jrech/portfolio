@@ -8,7 +8,7 @@ status: in-preparation
 description: A fresh online presence that makes the menu, atmosphere and reservations easier to explore.
 descriptionWidth: 501
 positioning: A fresh online presence that makes the menu, atmosphere and reservations easier to explore.
-order: 1
+order: 2
 cover:
   src: ../../../assets/images/project-starobrnensky-senk.webp
   alt: "Starobrněnský šenk website on a laptop on a garden table"

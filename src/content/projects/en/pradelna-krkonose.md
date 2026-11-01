@@ -11,12 +11,9 @@ status: published
 description: A clearer B2B website helping hotels and local businesses understand the service and get in touch.
 descriptionWidth: 495
 positioning: A new identity and website for a commercial laundry serving hospitality businesses in the Krkonoše mountains.
-order: 2
+order: 1
 # Final copy: no "in preparation" notice under the hero.
 notice: ""
-heroImage:
-  src: ../../../assets/images/pradelna-case-hero.webp
-  alt: The Prádelna Krkonoše website on a laptop, set on a rock above the Krkonoše mountains at sunset
 
 challenge:
   heading: "A new business,\na blank page."
@@ -74,7 +71,8 @@ testimonial:
 
 # Order from the Pen frame "More selected work".
 related: [starobrnensky-senk, grind]
+# Homepage card, related cards and case-study hero (new mockup, 2026-11-01).
 cover:
-  src: ../../../assets/images/project-pradelna.webp
-  alt: "Prádelna Krkonoše website on a laptop in a mountain landscape at sunrise"
+  src: ../../../assets/images/pradelna-case-hero.webp
+  alt: The Prádelna Krkonoše website on a laptop, set on a rock above the Krkonoše mountains at sunset
 ---

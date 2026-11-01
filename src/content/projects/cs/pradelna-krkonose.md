@@ -11,12 +11,9 @@ status: published
 description: Přehlednější B2B web, ze kterého hotely a místní firmy rychle pochopí službu a ozvou se.
 descriptionWidth: 495
 positioning: Nová vizuální identita a web pro profesionální prádelnu, která slouží hotelům a penzionům v Krkonoších.
-order: 2
+order: 1
 # Finální texty: bez upozornění „připravuje se“ pod hero.
 notice: ""
-heroImage:
-  src: ../../../assets/images/pradelna-case-hero.webp
-  alt: Web Prádelny Krkonoše na notebooku položeném na skále nad Krkonošemi při západu slunce
 
 challenge:
   heading: "Nová firma,\nprázdný list."
@@ -73,7 +70,8 @@ testimonial:
   lang: cs
 
 related: [starobrnensky-senk, grind]
+# Homepage card, related cards and case-study hero (new mockup, 2026-11-01).
 cover:
-  src: ../../../assets/images/project-pradelna.webp
-  alt: "Web Prádelny Krkonoše na notebooku v horské krajině při východu slunce"
+  src: ../../../assets/images/pradelna-case-hero.webp
+  alt: Web Prádelny Krkonoše na notebooku položeném na skále nad Krkonošemi při západu slunce
 ---
