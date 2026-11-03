@@ -32,8 +32,6 @@
     "startProject": "Let’s talk"
   },
   "hero": {
-    "kicker": "Jonas Rech — Independent designer & developer",
-    "location": "Based in CZ / Working everywhere",
     "title": "Good websites\nmean",
     "titleAccent": "business",
     "intro": "I’m Jonas. I design and build websites that turn visitors into paying customers. With character, and purpose.",
@@ -82,8 +80,8 @@
     "title": "Not an agency.\nA person in your corner.",
     "photoLabel": "Jonas in Wanaka, New Zealand",
     "hello": "Hi, I’m Jonas.",
-    "description": "The person you talk to is the person doing the work. From the first idea to the final detail, I connect strategy, design and development without the handoffs.",
-    "detail": "And when your story needs original photography, I bring my camera along.",
+    "description": "From first idea to final detail, you work directly with me.",
+    "detail": "I bring strategy, design and development together without the handoffs. And when your story calls for original photography, my camera comes along.",
     "linkPrimary": "Let’s work together ↗",
     "linkSecondary": "More about me",
     "photoCaption": "Wānaka, New Zealand."

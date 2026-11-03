@@ -15,11 +15,6 @@ const t = useT(Astro);
 
 <section class="hero" aria-labelledby="hero-title">
   <div class="hero__inner container">
-    <div class="hero__meta" data-reveal="fade">
-      <p class="hero__kicker">{t.hero.kicker}</p>
-      <p class="hero__location">{t.hero.location}</p>
-    </div>
-
     <div class="hero__body">
       <div class="hero__message">
         <h1 id="hero-title" class="hero__title" data-reveal="heading">
@@ -56,7 +51,7 @@ const t = useT(Astro);
 
 <style>
   /* Mobile (390) — the export is desktop-only; small screens stack the same parts:
-     meta, headline, intro, CTA, the print, then the disciplines bar. */
+     headline, intro, CTA, the print, then the disciplines bar. */
   .hero {
     position: relative;
     background: var(--color-background);
@@ -67,23 +62,6 @@ const t = useT(Astro);
     flex-direction: column;
     padding-top: calc(var(--header-height) + 24px);
     padding-bottom: 32px;
-  }
-
-  .hero__meta {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .hero__kicker,
-  .hero__location {
-    font-family: var(--font-caption);
-    font-size: var(--caption-size);
-    font-weight: var(--weight-regular);
-    letter-spacing: 0.8px;
-    line-height: normal;
-    text-transform: uppercase;
-    color: var(--color-text-secondary);
   }
 
   .hero__body {
@@ -235,13 +213,7 @@ const t = useT(Astro);
       padding-bottom: 40px;
     }
 
-    .hero__meta {
-      flex-direction: row;
-      justify-content: space-between;
-      gap: 24px;
-    }
-
-    .hero__body {
+      .hero__body {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
       grid-template-rows: auto auto;
@@ -299,13 +271,12 @@ const t = useT(Astro);
   }
 
   /* Desktop (1440 frame, 980 tall): fills the viewport; message left, print right,
-     both centred between the meta line and the bar. */
+     both centred between the header and the bar. */
   @media (min-width: 1024px) {
     .hero__inner {
       min-height: 100vh;
       min-height: 100svh;
-      /* Header 96 + 59 = the export's meta line at 155. */
-      padding-top: calc(var(--header-height) + 59px);
+      padding-top: var(--header-height);
       padding-bottom: 60px;
     }
 

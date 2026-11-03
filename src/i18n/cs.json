@@ -32,8 +32,6 @@
     "startProject": "Pojďme to probrat"
   },
   "hero": {
-    "kicker": "Jonas Rech — nezávislý designér a vývojář",
-    "location": "Sídlím v ČR / Pracuji odkudkoli",
     "title": "Dobrý web\ndělá",
     "titleAccent": "byznys",
     "intro": "Jsem Jonas. Navrhuji a stavím weby, které z návštěvníků dělají platící zákazníky. S charakterem a smyslem.",
@@ -82,8 +80,8 @@
     "title": "Žádná agentura.\nČlověk na vaší straně.",
     "photoLabel": "Jonas ve Wanace na Novém Zélandu",
     "hello": "Ahoj, jsem Jonas.",
-    "description": "Ten, s kým mluvíte, je ten, kdo na webu opravdu pracuje. Od prvního nápadu po poslední detail propojuji strategii, design a vývoj, bez předávání práce dál.",
-    "detail": "A když váš příběh potřebuje vlastní fotky, vezmu s sebou foťák.",
+    "description": "Od prvního nápadu po poslední detail pracujete přímo se mnou.",
+    "detail": "Propojuji strategii, design a vývoj bez předávání práce dál. A když váš příběh potřebuje vlastní fotky, vezmu s sebou foťák.",
     "linkPrimary": "Pojďme spolupracovat ↗",
     "linkSecondary": "Víc o mně",
     "photoCaption": "Wānaka, Nový Zéland."
