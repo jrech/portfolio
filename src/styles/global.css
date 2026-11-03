@@ -237,6 +237,17 @@ body {
   mix-blend-mode: difference;
 }
 
+/* Hero headline: 3× the dot, a difference "lens" that flips the letters' colours
+   (cream → near-black, orange → cyan) as it passes over them. */
+.cursor.is-headline {
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  background: #fff;
+  box-shadow: none;
+  mix-blend-mode: difference;
+}
+
 .cursor.is-project {
   width: 88px;
   height: 88px;

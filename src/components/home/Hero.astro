@@ -278,8 +278,18 @@ const lines = t.hero.title.split('\n');
       pointer-events: none;
     }
 
+    /* The headline still takes the pointer (cursor lens over it). */
+    .hero__center > * {
+      pointer-events: auto;
+    }
+
     .hero__base {
       margin-top: auto;
+    }
+
+    /* Two lines on desktop (Jonas, 2026-11-03). */
+    .hero__intro {
+      max-width: 620px;
     }
 
     .hero__base {

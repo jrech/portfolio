@@ -13,7 +13,7 @@ import About from '@/components/home/About.astro';
 import Process from '@/components/home/Process.astro';
 import Faq from '@/components/home/Faq.astro';
 import portrait from '@/assets/images/jonas-portrait.webp';
-import wanaka from '@/assets/images/about-wanaka.webp';
+import aboutPrint from '@/assets/images/about-print.webp';
 import marketa from '@/assets/images/marketa-blahova.webp';
 import { getProjects } from '@/lib/projects';
 import { getLocale, useT } from '@/i18n';
@@ -55,10 +55,10 @@ const quote = (await getProjects(getLocale(Astro))).find((p) => p.slug === 'prad
   <About>
     <Image
       slot="media"
-      src={wanaka}
+      src={aboutPrint}
       alt={t.about.photoLabel}
-      widths={[480, 760, 1016]}
-      sizes="(min-width: 1024px) 620px, (min-width: 640px) 46vw, 100vw"
+      widths={[330, 551]}
+      sizes="(min-width: 1024px) 440px, (min-width: 640px) 46vw, 320px"
       quality={100}
     />
   </About>
