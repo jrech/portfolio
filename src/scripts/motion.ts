@@ -1,6 +1,6 @@
 /**
- * Shared editorial motion: 900 ms content/rules, 1050 ms masked headings,
- * 85 ms stagger, one soft easing curve. Scroll-scrubbed statement with word-by-word focus.
+ * Shared editorial motion: 700 ms content, 1.3 s rules, word-by-word headings (1.1 s per word),
+ * 60 ms stagger, one soft easing curve. Scroll-scrubbed statement with word-by-word focus.
  * Content remains available without JS and with reduced motion.
  */
 import { gsap } from 'gsap';
@@ -320,11 +320,12 @@ function revealWorkMedia() {
   gsap.utils.toArray<HTMLElement>('.work .project__media').filter(el => visible(el) && !passed(el)).forEach(media => {
     const image = media.querySelector('img');
     if (!image) return;
-    gsap.set(image, { filter: 'blur(12px) brightness(0.8)', scale: 1.04 });
+    // Same rule as headings and the statement: no animated blur on touch screens.
+    gsap.set(image, { filter: BLUR ? 'blur(12px) brightness(0.8)' : 'brightness(0.8)', scale: 1.04 });
     ScrollTrigger.create({
       trigger: media, start: START, once: true,
       onEnter: () => gsap.to(image, {
-        filter: 'blur(0px) brightness(1)', scale: 1, duration: 1.4, ease: EASE, clearProps: 'filter,transform',
+        filter: BLUR ? 'blur(0px) brightness(1)' : 'brightness(1)', scale: 1, duration: 1.4, ease: EASE, clearProps: 'filter,transform',
       }),
     });
   });
@@ -736,6 +737,16 @@ function pageTransitions() {
   });
 }
 
+// Stop every reveal and show the page as it is. Elements that were still waiting for
+// their scroll trigger carry an inline hidden state (opacity 0, offset, blur, clip),
+// which removing `js-motion` alone does not undo, so it is cleared here as well.
+function stopMotion() {
+  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  gsap.globalTimeline.getChildren().forEach(animation => animation.totalProgress(1));
+  gsap.set(document.querySelectorAll('body [style]'), { clearProps: 'opacity,transform,filter,clipPath' });
+  root.classList.remove('js-motion', 'intro', 'page-enter');
+}
+
 function initializeMotion() {
   // The head timeout deliberately wins: never hide content again after a slow load.
   if (!root.classList.contains('js-motion')) return;
@@ -756,17 +767,12 @@ function initializeMotion() {
     root.classList.add('motion-ready');
     cursor();
     magnet();
-      faq();
+    faq();
     menu();
     ScrollTrigger.sort();
     ScrollTrigger.refresh();
   } catch (error) {
-    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    gsap.globalTimeline.getChildren().forEach(animation => animation.progress(1));
-    root.classList.remove('js-motion');
-    gsap.set('.hero__media', { clearProps: 'opacity' });
-    gsap.set('.page-cover', { clearProps: 'clipPath' });
-    root.classList.remove('intro', 'page-enter');
+    stopMotion();
     console.warn('Motion disabled; content remains accessible.', error);
   }
 }
@@ -774,8 +780,5 @@ function initializeMotion() {
 initializeMotion();
 
 matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', event => {
-  if (!event.matches) return;
-  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-  gsap.globalTimeline.getChildren().forEach(animation => animation.totalProgress(1));
-  root.classList.remove('js-motion');
+  if (event.matches) stopMotion();
 });
