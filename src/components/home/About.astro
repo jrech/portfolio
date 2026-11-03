@@ -1,7 +1,6 @@
 ---
 import Eyebrow from '../ui/Eyebrow.astro';
 import CtaButton from '../ui/CtaButton.astro';
-import MediaFrame from '../ui/MediaFrame.astro';
 import Lines from '../ui/Lines.astro';
 import { getLocale, localePath, useT } from '@/i18n';
 
@@ -17,11 +16,14 @@ const locale = getLocale(Astro);
     </header>
 
     <div class="about__story">
+      <!-- Tilted photo print (export about_new.html: 640 wide, -2.651°). -->
       <div class="about__portrait" data-reveal="fade">
-        <MediaFrame class="about__media" label={t.about.photoLabel}>
-          <slot name="media" />
-        </MediaFrame>
-        <p class="about__location caption">{t.about.location}</p>
+        <figure class="about__print">
+          <div class="about__media">
+            <slot name="media" />
+          </div>
+          <figcaption class="about__caption">{t.about.photoCaption}</figcaption>
+        </figure>
       </div>
 
       <div class="about__intro" data-reveal="fade">
@@ -78,17 +80,37 @@ const locale = getLocale(Astro);
     flex-shrink: 0;
   }
 
-  .about__portrait :global(.about__media) {
-    height: 390px;
+  /* Room for the tilt, so the corners never touch the gutter. */
+  .about__portrait {
+    padding: 12px 6px;
   }
 
-  .about__location {
-    position: absolute;
-    left: 16px;
-    bottom: 15px;
-    padding: 10px 12px;
-    background: var(--color-background);
-    color: var(--color-paper);
+  .about__print {
+    padding: 8px;
+    background: var(--color-paper);
+    transform: rotate(-2.651deg);
+  }
+
+  .about__media {
+    aspect-ratio: 620 / 500;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  /* Export crop: the photo covers the frame, shifted slightly below centre. */
+  .about__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 56%;
+  }
+
+  .about__caption {
+    padding: 12px 4px 6px;
+    font-size: 14px;
+    font-style: italic;
+    line-height: normal;
+    color: var(--color-cream-ink);
   }
 
   .about__intro {
@@ -104,7 +126,7 @@ const locale = getLocale(Astro);
   }
 
   .about__detail {
-    margin-top: 12px;
+    margin-top: 20px;
   }
 
   .about__intro :global(.about__cta),
@@ -125,10 +147,13 @@ const locale = getLocale(Astro);
     text-wrap: pretty;
   }
 
+  /* Lead line (Jonas, 2026-11-03): the promise in primary white, the how in grey below. */
   .about__description {
-    font-size: 17px;
-    line-height: 26px;
-    color: var(--color-text-lead);
+    font-size: 20px;
+    font-weight: var(--weight-medium);
+    line-height: 1.4;
+    letter-spacing: -0.3px;
+    color: var(--color-text-primary);
   }
 
   .about__detail {
@@ -195,15 +220,17 @@ const locale = getLocale(Astro);
     }
 
     .about__portrait {
-      width: 330px;
+      width: 46%;
+      padding: 16px 8px;
     }
 
-    .about__portrait :global(.about__media) {
-      height: 440px;
+    .about__print {
+      padding: 10px;
     }
 
-    .about__location {
-      bottom: 14px;
+    .about__caption {
+      padding: 14px 4px 8px;
+      font-size: 15px;
     }
 
     .about__intro {
@@ -211,7 +238,11 @@ const locale = getLocale(Astro);
     }
 
     .about__hello {
-      font-size: 28px;
+      font-size: 32px;
+    }
+
+    .about__description {
+      font-size: 21px;
     }
 
     .about__link-primary {
@@ -233,53 +264,47 @@ const locale = getLocale(Astro);
     }
 
     .about__story {
-      gap: 120px;
+      gap: 100px;
     }
 
-    /* 640px at 1440; shrinks first on narrower desktops so the copy keeps ≥ 360px. */
+    /* 640px print at 1440 (665 with the tilt); shrinks first on narrower desktops
+       so the copy keeps ≥ 360px. */
     .about__portrait {
-      flex: 0 1 640px;
+      flex: 0 1 665px;
       width: auto;
       min-width: 0;
+      padding: 16px 12px;
     }
 
     .about__intro {
-      flex: 1 0 360px;
-    }
-
-    .about__portrait :global(.about__media) {
-      height: 520px;
-    }
-
-    .about__location {
-      left: 24px;
-      bottom: 18px;
+      flex: 0 1 530px;
+      min-width: 360px;
     }
 
     .about__hello {
-      font-size: 36px;
-      letter-spacing: -1.1px;
+      font-size: 46px;
+      letter-spacing: -1.4px;
     }
 
+    /* Export: one even 26px gap down the column. */
+    /* Even 24px rhythm down the column (Jonas's screenshot, 2026-11-03). */
     .about__description {
-      font-size: 19px;
-      line-height: 29px;
-    }
-
-    .about__description {
-      margin-top: 32px;
+      margin-top: 24px;
+      font-size: 24px;
+      line-height: 34px;
+      letter-spacing: -0.4px;
     }
 
     .about__detail {
-      margin-top: 16px;
-      max-width: 454px;
+      margin-top: 24px;
+      max-width: 520px;
       font-size: 17px;
       line-height: 26px;
     }
 
     .about__intro :global(.about__cta) {
       display: inline-flex;
-      margin-top: 48px;
+      margin-top: 24px;
     }
 
     .about__links {

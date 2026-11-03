@@ -1,123 +1,121 @@
 ---
 /**
- * Homepage hero (Pen: "Portrait-led hero").
- * Portrait goes into the `media` slot (Pen fill: images/jonasrech.com/fecb2159341c8134.webp, cover).
- * Without it the frame stays a neutral surface.
+ * Homepage hero (Pen: "2C. Editorial Field Notes — Expressive type", export hero_new.html).
+ * Expressive two-line headline with an accent italic word, a tilted photo print on the
+ * right, and a ruled bar with the disciplines at the bottom.
+ * The photo goes into the `media` slot; without it the print keeps a neutral surface.
  */
 import CtaButton from '../ui/CtaButton.astro';
+import Icon from '../ui/Icon.astro';
+import Lines from '../ui/Lines.astro';
 import { useT } from '@/i18n';
 
 const t = useT(Astro);
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <div class="hero__media" aria-hidden="true">
-    <slot name="media" />
-  </div>
-  <div class="hero__shade" aria-hidden="true"></div>
-
   <div class="hero__inner container">
-    <div class="hero__message">
-      <h1 id="hero-title" class="hero__title" data-reveal="heading">
-        {t.hero.title}
-      </h1>
-      <p class="hero__intro" data-reveal="fade">
-        {t.hero.intro}
-      </p>
-      <div class="hero__actions" data-reveal="fade">
-        <CtaButton href="#contact" label={t.cta.startProject} class="hero__cta" />
-        <a class="hero__explore" href="#work">{t.hero.explore}</a>
+    <div class="hero__body">
+      <div class="hero__message">
+        <h1 id="hero-title" class="hero__title" data-reveal="heading">
+          <Lines text={t.hero.title} /> <em class="hero__accent">{t.hero.titleAccent}</em>
+        </h1>
+        <div class="hero__lead">
+          <p class="hero__intro" data-reveal="fade">
+            {t.hero.intro}
+          </p>
+          <div class="hero__actions" data-reveal="fade">
+            <CtaButton href="#contact" label={t.cta.startProject} class="hero__cta" />
+          </div>
+        </div>
       </div>
+
+      <!-- `.hero__media` is the first-visit intro target in motion.ts. -->
+      <figure class="hero__media hero__print">
+        <div class="hero__photo">
+          <slot name="media" />
+        </div>
+        <figcaption class="hero__caption">{t.hero.photoCaption}</figcaption>
+      </figure>
+    </div>
+
+    <div class="hero__bar" data-reveal="fade">
+      <p class="hero__disciplines">{t.hero.disciplines}</p>
+      <a class="hero__explore" href="#work">
+        <span>{t.hero.explore}</span>
+        <Icon name="arrow-down" size={20} />
+      </a>
     </div>
   </div>
 </section>
 
 <style>
-  /* Mobile (390 frame) */
-  /* Full viewport (Jonas, 2026-10-28). svh keeps mobile browser bars from cropping it;
-     the message is placed relative to the edges so the Pen positions hold at frame height. */
+  /* Mobile (390) — the export is desktop-only; small screens stack the same parts:
+     headline, intro, CTA, the print, then the disciplines bar. */
   .hero {
     position: relative;
-    isolation: isolate;
-    height: 100vh;
-    height: 100svh;
-    min-height: 620px;
-    overflow: hidden;
     background: var(--color-background);
   }
 
-  .hero__media {
-    position: absolute;
-    inset: 0 0 auto;
-    z-index: -2;
-    height: 62.65%; /* 520 / 830 */
-    background: var(--color-surface);
-  }
-
-  /* First-visit intro start state; motion.ts takes over from here. */
-  :global(html.intro) .hero__media {
-    opacity: 0;
-  }
-
-  .hero__media :global(img),
-  .hero__media :global(video) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* Mobile frame: cover crop shifted right (export: translateX -824.55 of 969.5 → 85%). */
-    object-position: 85% center;
-  }
-
-  .hero__shade {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: linear-gradient(
-      0deg,
-      var(--color-background) 0%,
-      #10100fee 42%,
-      #10100f00 85%
-    );
-  }
-
-  /* Mobile: message sits low so the face above stays clear (Jonas, 2026-10-29). */
   .hero__inner {
-    position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    height: 100%;
-    padding-bottom: clamp(40px, 12vh, 112px);
+    padding-top: calc(var(--header-height) + 24px);
+    padding-bottom: 32px;
+  }
+
+  .hero__body {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+    padding-block: 48px 64px;
   }
 
   .hero__message {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 24px;
+    gap: 28px;
   }
 
+  /* Export: 132/135, tracking -6.2px at 1440 (≈ -0.047em), scaled with the viewport. */
   .hero__title {
     font-family: var(--font-display);
-    font-size: 36px;
+    font-size: clamp(44px, 13.2vw, 132px);
     font-weight: var(--weight-medium);
-    line-height: 1.08;
-    letter-spacing: var(--heading-tracking);
-    color: var(--color-text-display);
+    line-height: 1.02;
+    letter-spacing: -0.047em;
+    color: var(--color-text-primary);
+  }
+
+  .hero__accent {
+    font-style: italic;
+    color: var(--color-accent);
+    /* Italic overhang would touch the edge of the line box. */
+    padding-right: 0.04em;
+  }
+
+  .hero__lead {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 28px;
+    width: 100%;
   }
 
   .hero__intro {
-    font-size: 16px;
+    max-width: 570px;
+    font-size: 17px;
     line-height: 1.5;
-    color: var(--color-text-intro);
+    letter-spacing: -0.15px;
+    color: var(--color-text-secondary);
+    text-wrap: pretty;
   }
 
   .hero__actions {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
     width: 100%;
+    padding-top: 4px;
   }
 
   .hero__actions :global(.hero__cta) {
@@ -125,151 +123,196 @@ const t = useT(Astro);
     justify-content: space-between;
   }
 
-  .hero__explore {
-    font-family: var(--font-caption);
-    text-transform: uppercase;
-    font-size: var(--caption-size);
-    font-weight: var(--weight-bold);
-    letter-spacing: var(--caption-tracking);
+  /* The print: paper border, photo, handwritten-style italic caption. */
+  .hero__print {
+    align-self: center;
+    width: min(76%, 300px);
+    padding: 10px;
+    background: var(--color-paper);
+    transform: rotate(4deg);
+  }
+
+  /* First-visit intro start state; motion.ts takes over from here. */
+  :global(html.intro) .hero__media {
+    opacity: 0;
+  }
+
+  .hero__photo {
+    aspect-ratio: 330 / 408;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .hero__photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero__caption {
+    padding: 14px 4px 8px;
+    font-size: 15px;
+    font-style: italic;
     line-height: normal;
-    color: var(--color-paper);
-    position: relative;
-    white-space: nowrap;
+    color: var(--color-cream-ink);
+  }
+
+  .hero__bar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding-top: 22px;
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .hero__disciplines {
+    font-size: 15px;
+    line-height: normal;
+    color: var(--color-text-primary);
+  }
+
+  .hero__explore {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--font-caption);
+    font-size: var(--caption-size);
+    font-weight: var(--weight-regular);
+    letter-spacing: 1px;
+    line-height: normal;
+    text-transform: uppercase;
+    color: var(--color-text-primary);
     transition: color var(--duration-fast) var(--ease-out);
   }
 
-  /* Underline draws in from the left on hover and leaves to the right. */
-  .hero__explore::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -5px;
-    height: 1px;
-    background: currentColor;
-    transform: scaleX(0);
-    transform-origin: right center;
-    transition: transform 500ms cubic-bezier(0.45, 0, 0.55, 1);
+  .hero__explore :global(svg) {
+    transition: transform var(--duration-base) var(--ease-out);
   }
 
   .hero__explore:hover,
   .hero__explore:focus-visible {
-    color: var(--color-text-display);
+    color: var(--color-accent);
   }
 
-  .hero__explore:hover::after,
-  .hero__explore:focus-visible::after {
-    transform: scaleX(1);
-    transform-origin: left center;
+  .hero__explore:hover :global(svg),
+  .hero__explore:focus-visible :global(svg) {
+    transform: translateY(3px);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hero__explore::after {
+    .hero__explore :global(svg) {
       transition: none;
     }
   }
 
-  /* Tablet (834 frame) */
+  /* Tablet (768–1023): headline across the full width, intro + CTA beside the print. */
   @media (min-width: 640px) {
-    .hero {
-      min-height: 560px;
-    }
-
-    /* Centred between header and baseline; paddings reproduce the frame's 270px top at 800. */
     .hero__inner {
-      justify-content: center;
-      padding-top: var(--header-height);
-      padding-bottom: 35px;
+      padding-top: calc(var(--header-height) + 40px);
+      padding-bottom: 40px;
     }
 
-    .hero__media {
-      height: 100%;
-    }
-
-    /* Tablet and desktop frames use a plain centred cover. */
-    .hero__media :global(img) {
-      object-position: center;
-    }
-
-    .hero__shade {
-      background: linear-gradient(
-        -90deg,
-        #10100f00 0%,
-        #10100fcc 70%,
-        var(--color-background) 100%
-      );
+      .hero__body {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: auto auto;
+      column-gap: 40px;
+      padding-block: 64px 72px;
     }
 
     .hero__message {
-      max-width: 640px;
+      display: contents;
     }
 
     .hero__title {
-      max-width: 538px;
-      font-size: 52px;
-      letter-spacing: var(--heading-tracking);
+      grid-column: 1 / -1;
+      grid-row: 1;
+      font-size: min(12.4vw, 132px);
+      margin-bottom: 48px;
+    }
+
+    .hero__lead {
+      grid-column: 1;
+      grid-row: 2;
+      align-self: start;
+      gap: 36px;
+    }
+
+    .hero__intro {
+      font-size: 18px;
+      line-height: 27px;
     }
 
     .hero__actions {
-      flex-direction: row;
       width: auto;
+      padding: 0;
     }
 
     .hero__actions :global(.hero__cta) {
       width: auto;
     }
-  }
 
-  /* Desktop (1440 frame) */
-  /* Desktop: the photo is framed centrally, so it sits in the right part of the
-     frame and fades in from the left, keeping the headline off the face. */
-  @media (min-width: 1024px) {
-    .hero__media :global(img) {
-      position: absolute;
-      inset: 0 0 0 auto;
-      width: 70%;
-      object-position: 35% center;
-      mask-image: linear-gradient(90deg, transparent 0%, #000 40%);
+    .hero__print {
+      grid-column: 2;
+      grid-row: 2;
+      align-self: start;
+      width: 250px;
+      /* Tucks up under the headline so the lead and the print read as one row. */
+      margin-top: -16px;
+      margin-right: 8px;
+    }
+
+    .hero__bar {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
     }
   }
 
+  /* Desktop (1440 frame, 980 tall): fills the viewport; message left, print right,
+     both centred between the header and the bar. */
   @media (min-width: 1024px) {
-    .hero {
-      min-height: 600px;
-    }
-
-    /* Reproduces the frame's 229px top at 816. */
     .hero__inner {
-      padding-bottom: 141px;
+      min-height: 100vh;
+      min-height: 100svh;
+      padding-top: var(--header-height);
+      padding-bottom: 60px;
+    }
+
+    .hero__body {
+      flex: 1;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: auto;
+      align-items: center;
+      column-gap: 48px;
+      padding-block: 56px 88px;
     }
 
     .hero__message {
-      max-width: 860px;
-      gap: 30px;
+      grid-column: 1;
+      grid-row: 1;
+      display: flex;
+      gap: 40px;
     }
 
     .hero__title {
-      max-width: 843px;
-      font-size: 66px;
-      letter-spacing: var(--heading-tracking);
+      font-size: min(9.17vw, 132px);
+      line-height: 1.023; /* 135 / 132 */
+      margin-bottom: 0;
     }
 
-    .hero__intro {
-      max-width: 446px;
-      font-size: 17px;
-      line-height: 26px;
+    .hero__lead {
+      gap: 40px;
     }
 
-    .hero__actions {
-      gap: 30px;
-      padding-top: 16px;
-    }
-
-    /* Desktop frame sets the anchor in Rethink Sans, not Space Mono. */
-    .hero__explore {
-      font-family: var(--font-display);
-      font-size: 11px;
-      letter-spacing: normal;
+    /* 350 at 1440, scales down with the headline on narrower desktops. */
+    .hero__print {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: center;
+      width: min(24.3vw, 350px);
+      margin-right: 32px;
     }
   }
 </style>

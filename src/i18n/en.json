@@ -32,9 +32,13 @@
     "startProject": "Let’s talk"
   },
   "hero": {
-    "title": "Distinctive websites that help businesses win more enquiries.",
-    "intro": "I design and build strategic websites that make your business stand out and earn trust.",
-    "explore": "My projects ↓"
+    "title": "Looking good\n",
+    "titleAccent": "isn’t enough.",
+    "intro": "I’m Jonas. I design and build distinctive websites for small and mid-sized businesses. Websites that don’t just look good, but help bring in new enquiries.",
+    "photoLabel": "Jonas on a mountain trail",
+    "photoCaption": "Yep, that’s me.",
+    "disciplines": "Web design / Development / Art direction",
+    "explore": "Good work below"
   },
   "work": {
     "eyebrow": "A few things I’ve made",
@@ -72,15 +76,15 @@
     ]
   },
   "about": {
-    "eyebrow": "The person behind the pixels",
+    "eyebrow": "About me",
     "title": "Not an agency.\nA person in your corner.",
     "photoLabel": "Jonas in Wanaka, New Zealand",
-    "location": "WANAKA, NEW ZEALAND",
-    "hello": "Hi, Jonas here.",
-    "description": "From our first conversation to launch day, you’ll only ever deal with me. Together we’ll figure out the direction, then I’ll design your website and build it too. No handing the work off to someone else along the way. It’s one shared journey, from start to finish.",
-    "detail": "And if you need original photos, I’ll bring my camera along.",
+    "hello": "Hi, I’m Jonas.",
+    "description": "I work on your project personally. From the first sketch all the way to launch.",
+    "detail": "I take care of strategy, design and development, so you always know who you’re dealing with. And when your project needs original photos, I’m happy to pick up the camera too.",
     "linkPrimary": "Let’s work together ↗",
-    "linkSecondary": "More about me"
+    "linkSecondary": "More about me",
+    "photoCaption": "Wānaka, New Zealand."
   },
   "process": {
     "eyebrow": "From hello to launch",

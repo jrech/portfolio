@@ -12,7 +12,7 @@ import Testimonial from '@/components/home/Testimonial.astro';
 import About from '@/components/home/About.astro';
 import Process from '@/components/home/Process.astro';
 import Faq from '@/components/home/Faq.astro';
-import portrait from '@/assets/images/jonas-portrait.webp';
+import heroPrint from '@/assets/images/hero-print.webp';
 import wanaka from '@/assets/images/about-wanaka.webp';
 import marketa from '@/assets/images/marketa-blahova.webp';
 import { getProjects } from '@/lib/projects';
@@ -28,16 +28,16 @@ const quote = (await getProjects(getLocale(Astro))).find((p) => p.slug === 'prad
 <BaseLayout>
   <SiteHeader slot="header" overlay />
   <Hero>
-    {/* Cover crop is wider than the viewport on mobile/tablet (the media keeps the photo's height).
-        Quality 100: no skimping on photos (Jonas, 2026-11-01; at the default the dark gradients banded). */}
+    {/* The print photo; the export carries it at 551 px, so that is the largest width available.
+        Quality 100: no skimping on photos (Jonas, 2026-11-01). */}
     <Image
       slot="media"
-      src={portrait}
-      alt=""
+      src={heroPrint}
+      alt={t.hero.photoLabel}
       loading="eager"
       fetchpriority="high"
-      widths={[1080, 1440, 1920, 2400, 2880]}
-      sizes="(max-width: 1023px) 1080px, 70vw"
+      widths={[330, 551]}
+      sizes="(min-width: 1024px) min(24.3vw, 350px), (min-width: 640px) 250px, 300px"
       quality={100}
     />
   </Hero>
@@ -58,7 +58,7 @@ const quote = (await getProjects(getLocale(Astro))).find((p) => p.slug === 'prad
       src={wanaka}
       alt={t.about.photoLabel}
       widths={[480, 760, 1016]}
-      sizes="(min-width: 1024px) 640px, 100vw"
+      sizes="(min-width: 1024px) 620px, (min-width: 640px) 46vw, 100vw"
       quality={100}
     />
   </About>

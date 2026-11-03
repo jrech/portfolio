@@ -32,9 +32,13 @@
     "startProject": "Pojďme to probrat"
   },
   "hero": {
-    "title": "Výrazné weby, které firmám přivádějí víc poptávek.",
-    "intro": "Navrhuji a stavím promyšlené weby, díky kterým vaše firma vynikne a získá důvěru zákazníků.",
-    "explore": "Moje projekty ↓"
+    "title": "Hezký web\n",
+    "titleAccent": "nestačí.",
+    "intro": "Jsem Jonas. Navrhuju a stavím osobité weby pro malé a střední firmy. Weby, které nejen dobře vypadají, ale pomáhají získávat nové poptávky.",
+    "photoLabel": "Jonas na horské stezce",
+    "photoCaption": "Jo, to jsem já.",
+    "disciplines": "Webdesign / Vývoj / Art direction",
+    "explore": "Ukázky práce níže"
   },
   "work": {
     "eyebrow": "Pár věcí, které jsem vytvořil",
@@ -72,15 +76,15 @@
     ]
   },
   "about": {
-    "eyebrow": "Člověk za pixely",
+    "eyebrow": "O mně",
     "title": "Žádná agentura.\nČlověk na vaší straně.",
     "photoLabel": "Jonas ve Wanace na Novém Zélandu",
-    "location": "WANAKA, NOVÝ ZÉLAND",
-    "hello": "Ahoj, tady Jonas.",
-    "description": "Od první konverzace až po spuštění budete komunikovat jen se mnou. Společně vymyslíme směr, navrhnu web a postarám se i o jeho realizaci. Bez zbytečného přehazování práce někomu jinému. Je to společná cesta od začátku do konce.",
-    "detail": "A když budete potřebovat vlastní fotky, vezmu s sebou foťák.",
+    "hello": "Ahoj, jsem Jonas.",
+    "description": "Na vašem projektu pracuju osobně. Od prvního návrhu až po spuštění.",
+    "detail": "Starám se o strategii, design i vývoj, takže vždycky víte, s kým jednáte. A když váš projekt potřebuje vlastní fotky, rád vezmu do ruky i foťák.",
     "linkPrimary": "Pojďme spolupracovat ↗",
-    "linkSecondary": "Víc o mně"
+    "linkSecondary": "Víc o mně",
+    "photoCaption": "Wānaka, Nový Zéland."
   },
   "process": {
     "eyebrow": "Od prvního hovoru po spuštění",
