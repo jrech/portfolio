@@ -749,6 +749,24 @@ function pageTransitions() {
   });
 }
 
+// Scrolling out of the hero (Jonas, 2026-11-03): the portrait drifts down slower than
+// the page while the headline lifts away faster and fades, the intro follows a little.
+// Wrappers only, so it never fights the reveal tweens on the elements inside.
+function heroParallax() {
+  const hero = document.querySelector<HTMLElement>('.hero');
+  if (!hero) return;
+  const media = hero.querySelector('.hero__media');
+  const center = hero.querySelector('.hero__center');
+  const base = hero.querySelector('.hero__base');
+  const timeline = gsap.timeline({
+    defaults: { ease: 'none' },
+    scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
+  });
+  if (media) timeline.to(media, { yPercent: 30 }, 0);
+  if (center) timeline.to(center, { y: () => -hero.offsetHeight * 0.22, opacity: 0, ease: 'power1.in' }, 0);
+  if (base) timeline.to(base, { y: () => -hero.offsetHeight * 0.08 }, 0);
+}
+
 // Stop every reveal and show the page as it is. Elements that were still waiting for
 // their scroll trigger carry an inline hidden state (opacity 0, offset, blur, clip),
 // which removing `js-motion` alone does not undo, so it is cleared here as well.
@@ -768,6 +786,7 @@ function initializeMotion() {
     scrubStatement();
     revealHeadings();
     revealHero();
+    heroParallax();
     revealContent();
     revealRules();
     revealServices();
