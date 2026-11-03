@@ -1,0 +1,14 @@
+---
+/**
+ * Roll-up hover label (Jonas, 2026-11-03): on hover of the parent link the text slides
+ * up and out while a copy rises from below; it rolls back down on leave.
+ * The copy takes `--roll-hover` (defaults to the link colour). Styles in global.css.
+ */
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+---
+
+<span class="roll" aria-hidden="true"><span class="roll__track"><span>{text}</span><span>{text}</span></span></span><span class="visually-hidden">{text}</span>
