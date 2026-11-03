@@ -1,6 +1,6 @@
 /**
- * Shared editorial motion: 900 ms content/rules, 1050 ms masked headings,
- * 85 ms stagger, one soft easing curve. Scroll-scrubbed statement with word-by-word focus.
+ * Shared editorial motion: 700 ms content, 1.3 s rules, word-by-word headings (1.1 s per word),
+ * 60 ms stagger, one soft easing curve. Scroll-scrubbed statement with word-by-word focus.
  * Content remains available without JS and with reduced motion.
  */
 import { gsap } from 'gsap';
@@ -63,7 +63,8 @@ function splitHeading(heading: HTMLElement) {
 
 // First visit per tab: black screen, the hero photo fades and settles in, then the hero
 // content follows (Jonas, 2026-10-30). No waiting on the network beyond a short cap,
-// and any scroll, tap or key skips straight to the end.
+// and any scroll, tap or key skips straight to the end, also while the photo loads.
+// Tightened 2026-11-03: the CTA used to land after ~1.9 s, the menu after ~2.3 s.
 let heroIntro: Promise<void> = Promise.resolve();
 
 function introHero() {
@@ -74,27 +75,33 @@ function introHero() {
   try { sessionStorage.setItem('jr-intro-seen', '1'); } catch {}
   const image = media.querySelector<HTMLImageElement>('img');
   gsap.set(media, { opacity: 0 });
+  const events = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
+  let timeline: gsap.core.Timeline | null = null;
+  let skipped = false;
+  const skip = () => {
+    skipped = true;
+    timeline?.progress(1);
+  };
+  events.forEach(type => addEventListener(type, skip, { once: true, passive: true }));
   const loaded = !image || image.complete ? Promise.resolve() : Promise.race([
     new Promise(resolve => {
       image.addEventListener('load', resolve, { once: true });
       image.addEventListener('error', resolve, { once: true });
     }),
-    new Promise(resolve => setTimeout(resolve, 1200)),
+    new Promise(resolve => setTimeout(resolve, 800)),
   ]);
   heroIntro = new Promise<void>(resolve => {
     loaded.then(() => {
-      const events = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
-      const skip = () => timeline.progress(1);
       const done = () => {
         events.forEach(type => removeEventListener(type, skip));
         resolve();
       };
-      const timeline = gsap.timeline({ onComplete: done });
+      timeline = gsap.timeline({ onComplete: done });
       timeline.to(media, { opacity: 1, duration: 1.1, ease: 'power2.out', clearProps: 'opacity' });
       if (image) timeline.fromTo(image, { scale: 1.06 }, { scale: 1, duration: 1.4, ease: EASE, clearProps: 'transform' }, 0);
-      // The rest of the hero starts while the photo is still settling.
-      timeline.call(resolve, [], 0.6);
-      events.forEach(type => addEventListener(type, skip, { once: true, passive: true }));
+      // The rest of the hero starts while the photo is still fading in.
+      timeline.call(resolve, [], 0.35);
+      if (skipped) timeline.progress(1);
     });
   });
 }
@@ -158,9 +165,10 @@ function revealHero() {
   // Start states first, so nothing flashes before the delayed timeline begins.
   gsap.set(content, { opacity: 0, y: MOTION.distance });
   gsap.set(nav, { opacity: 0, y: -10 });
-  heroIntro.then(() => gsap.timeline({ delay: 0.3, defaults: { duration: 0.8, ease: EASE, clearProps: 'transform,opacity' } })
-    .to(content, { opacity: 1, y: 0, stagger: 0.14 })
-    .to(nav, { opacity: 1, y: 0, stagger: 0.06 }, '-=0.55'));
+  // The navigation comes in alongside the content, not after it: the menu is a way out.
+  heroIntro.then(() => gsap.timeline({ delay: 0.05, defaults: { duration: 0.8, ease: EASE, clearProps: 'transform,opacity' } })
+    .to(content, { opacity: 1, y: 0, stagger: 0.1 })
+    .to(nav, { opacity: 1, y: 0, stagger: 0.05 }, 0.1));
 }
 
 function revealContent() {
@@ -320,11 +328,12 @@ function revealWorkMedia() {
   gsap.utils.toArray<HTMLElement>('.work .project__media').filter(el => visible(el) && !passed(el)).forEach(media => {
     const image = media.querySelector('img');
     if (!image) return;
-    gsap.set(image, { filter: 'blur(12px) brightness(0.8)', scale: 1.04 });
+    // Same rule as headings and the statement: no animated blur on touch screens.
+    gsap.set(image, { filter: BLUR ? 'blur(12px) brightness(0.8)' : 'brightness(0.8)', scale: 1.04 });
     ScrollTrigger.create({
       trigger: media, start: START, once: true,
       onEnter: () => gsap.to(image, {
-        filter: 'blur(0px) brightness(1)', scale: 1, duration: 1.4, ease: EASE, clearProps: 'filter,transform',
+        filter: BLUR ? 'blur(0px) brightness(1)' : 'brightness(1)', scale: 1, duration: 1.4, ease: EASE, clearProps: 'filter,transform',
       }),
     });
   });
@@ -736,6 +745,16 @@ function pageTransitions() {
   });
 }
 
+// Stop every reveal and show the page as it is. Elements that were still waiting for
+// their scroll trigger carry an inline hidden state (opacity 0, offset, blur, clip),
+// which removing `js-motion` alone does not undo, so it is cleared here as well.
+function stopMotion() {
+  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  gsap.globalTimeline.getChildren().forEach(animation => animation.totalProgress(1));
+  gsap.set(document.querySelectorAll('body [style]'), { clearProps: 'opacity,transform,filter,clipPath' });
+  root.classList.remove('js-motion', 'intro', 'page-enter');
+}
+
 function initializeMotion() {
   // The head timeout deliberately wins: never hide content again after a slow load.
   if (!root.classList.contains('js-motion')) return;
@@ -756,17 +775,12 @@ function initializeMotion() {
     root.classList.add('motion-ready');
     cursor();
     magnet();
-      faq();
+    faq();
     menu();
     ScrollTrigger.sort();
     ScrollTrigger.refresh();
   } catch (error) {
-    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    gsap.globalTimeline.getChildren().forEach(animation => animation.progress(1));
-    root.classList.remove('js-motion');
-    gsap.set('.hero__media', { clearProps: 'opacity' });
-    gsap.set('.page-cover', { clearProps: 'clipPath' });
-    root.classList.remove('intro', 'page-enter');
+    stopMotion();
     console.warn('Motion disabled; content remains accessible.', error);
   }
 }
@@ -774,8 +788,5 @@ function initializeMotion() {
 initializeMotion();
 
 matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', event => {
-  if (!event.matches) return;
-  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-  gsap.globalTimeline.getChildren().forEach(animation => animation.totalProgress(1));
-  root.classList.remove('js-motion');
+  if (event.matches) stopMotion();
 });
