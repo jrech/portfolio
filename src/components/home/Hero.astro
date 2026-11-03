@@ -3,7 +3,7 @@
  * Homepage hero (Pen: "Portrait-led hero — Minimal navigation", export "HERO HERO.html").
  * Full-bleed portrait with blended edges, a fine animated film grain (hero only),
  * a centred stacked headline with the last line in accent, and a baseline with the
- * short intro, location and a link down to the work.
+ * short intro and a link down to the work.
  * The portrait goes into the `media` slot.
  */
 import Icon from '../ui/Icon.astro';
@@ -33,7 +33,6 @@ const lines = t.hero.title.split('\n');
     <div class="hero__base">
       <p class="hero__intro" data-reveal="fade">{t.hero.intro}</p>
       <div class="hero__baseline" data-reveal="fade">
-        <p class="hero__location">{t.hero.location}</p>
         <a class="hero__explore" href="#work">
           <span>{t.hero.explore}</span>
           <Icon name="arrow-down" size={16} />
@@ -194,19 +193,12 @@ const lines = t.hero.title.split('\n');
     text-wrap: pretty;
   }
 
+  /* Only the link down to the work, on the right (Jonas, 2026-11-03). */
   .hero__baseline {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     gap: 16px;
-  }
-
-  .hero__location {
-    font-size: 9px;
-    letter-spacing: 0.6px;
-    line-height: normal;
-    text-transform: uppercase;
-    color: var(--color-text-secondary);
   }
 
   .hero__explore {
