@@ -543,7 +543,8 @@ function cursor() {
     const target = e.target as Element;
     // Big arrow circle only over the project image, so it never covers the title or copy.
     const project = target.closest('[data-cursor="project"] .media');
-    const link = !project && !!target.closest('a, button, summary, [role="button"]');
+    // The logo keeps only its magnetic pull, no cursor disc (Jonas, 2026-11-03).
+    const link = !project && !target.closest('.wordmark') && !!target.closest('a, button, summary, [role="button"]');
     dot.classList.toggle('is-project', !!project);
     dot.classList.toggle('is-link', link);
     // Over the hero headline the dot grows 3× and inverts what's under it (Jonas, 2026-11-03).
