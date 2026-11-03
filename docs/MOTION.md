@@ -16,7 +16,9 @@
 - Headings: word by word (`HEADING_SPLIT = 'words'`), 1.1 s per word on power2.out, stagger capped
   so a long heading takes about 1.7 s, triggered at 82%. Blur (12 px to zero) only with a fine pointer.
 - Project images: 1.4 s focus-in (scale 1.04 to 1, brightness 0.8 to 1); blur only with a fine pointer.
-- First visit per tab: hero photo fades in (1.1 s), then H1, intro, CTA, bar and navigation.
+- First visit per tab: hero photo fades in (1.1 s, image wait capped at 0.8 s); H1, intro, CTA, bar and
+  navigation start 0.35 s in, navigation alongside the content. CTA and menu are in place after ~1.2 s.
+  Scroll, tap or key skips the intro, also while the photo is still loading.
   Page-to-page navigation uses a cover that rolls down and lifts on the next page.
 - Heading splitting happens on entry and adapts to width changes until completion.
 - Statement keeps its sticky, scroll-scrubbed word reveal over one viewport. Each word resolves from 15% opacity / 4 px blur to full opacity / sharp focus; reversing scroll reverses the effect.

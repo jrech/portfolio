@@ -63,7 +63,8 @@ function splitHeading(heading: HTMLElement) {
 
 // First visit per tab: black screen, the hero photo fades and settles in, then the hero
 // content follows (Jonas, 2026-10-30). No waiting on the network beyond a short cap,
-// and any scroll, tap or key skips straight to the end.
+// and any scroll, tap or key skips straight to the end, also while the photo loads.
+// Tightened 2026-11-03: the CTA used to land after ~1.9 s, the menu after ~2.3 s.
 let heroIntro: Promise<void> = Promise.resolve();
 
 function introHero() {
@@ -74,27 +75,33 @@ function introHero() {
   try { sessionStorage.setItem('jr-intro-seen', '1'); } catch {}
   const image = media.querySelector<HTMLImageElement>('img');
   gsap.set(media, { opacity: 0 });
+  const events = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
+  let timeline: gsap.core.Timeline | null = null;
+  let skipped = false;
+  const skip = () => {
+    skipped = true;
+    timeline?.progress(1);
+  };
+  events.forEach(type => addEventListener(type, skip, { once: true, passive: true }));
   const loaded = !image || image.complete ? Promise.resolve() : Promise.race([
     new Promise(resolve => {
       image.addEventListener('load', resolve, { once: true });
       image.addEventListener('error', resolve, { once: true });
     }),
-    new Promise(resolve => setTimeout(resolve, 1200)),
+    new Promise(resolve => setTimeout(resolve, 800)),
   ]);
   heroIntro = new Promise<void>(resolve => {
     loaded.then(() => {
-      const events = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
-      const skip = () => timeline.progress(1);
       const done = () => {
         events.forEach(type => removeEventListener(type, skip));
         resolve();
       };
-      const timeline = gsap.timeline({ onComplete: done });
+      timeline = gsap.timeline({ onComplete: done });
       timeline.to(media, { opacity: 1, duration: 1.1, ease: 'power2.out', clearProps: 'opacity' });
       if (image) timeline.fromTo(image, { scale: 1.06 }, { scale: 1, duration: 1.4, ease: EASE, clearProps: 'transform' }, 0);
-      // The rest of the hero starts while the photo is still settling.
-      timeline.call(resolve, [], 0.6);
-      events.forEach(type => addEventListener(type, skip, { once: true, passive: true }));
+      // The rest of the hero starts while the photo is still fading in.
+      timeline.call(resolve, [], 0.35);
+      if (skipped) timeline.progress(1);
     });
   });
 }
@@ -158,9 +165,10 @@ function revealHero() {
   // Start states first, so nothing flashes before the delayed timeline begins.
   gsap.set(content, { opacity: 0, y: MOTION.distance });
   gsap.set(nav, { opacity: 0, y: -10 });
-  heroIntro.then(() => gsap.timeline({ delay: 0.3, defaults: { duration: 0.8, ease: EASE, clearProps: 'transform,opacity' } })
-    .to(content, { opacity: 1, y: 0, stagger: 0.14 })
-    .to(nav, { opacity: 1, y: 0, stagger: 0.06 }, '-=0.55'));
+  // The navigation comes in alongside the content, not after it: the menu is a way out.
+  heroIntro.then(() => gsap.timeline({ delay: 0.05, defaults: { duration: 0.8, ease: EASE, clearProps: 'transform,opacity' } })
+    .to(content, { opacity: 1, y: 0, stagger: 0.1 })
+    .to(nav, { opacity: 1, y: 0, stagger: 0.05 }, 0.1));
 }
 
 function revealContent() {
