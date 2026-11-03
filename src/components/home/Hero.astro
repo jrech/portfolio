@@ -286,17 +286,18 @@ const lines = t.hero.title.split('\n');
       pointer-events: auto;
     }
 
+    /* Intro left, "Koukněte dál" right, on one bottom line (Jonas, 2026-11-03). */
     .hero__base {
       margin-top: auto;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 46px;
     }
 
     /* Two lines on desktop (Jonas, 2026-11-03). */
     .hero__intro {
       max-width: 620px;
-    }
-
-    .hero__base {
-      gap: 46px;
     }
   }
 
