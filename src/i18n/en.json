@@ -32,13 +32,12 @@
     "startProject": "Let’s talk"
   },
   "hero": {
-    "title": "Looking good\n",
-    "titleAccent": "isn’t enough.",
-    "intro": "I’m Jonas. I design and build distinctive websites for small and mid-sized businesses. Websites that don’t just look good, but help bring in new enquiries.",
-    "photoLabel": "Jonas on a mountain trail",
-    "photoCaption": "Yep, that’s me.",
-    "disciplines": "Web design / Development / Art direction",
-    "explore": "Good work below"
+    "label": "Independent designer & developer",
+    "title": "Good\nwebsites\nmean",
+    "titleAccent": "business.",
+    "intro": "I design and build distinctive websites for small and mid-sized businesses. Websites that don’t just look good, but help bring in new enquiries.",
+    "location": "Czech Republic · Working everywhere",
+    "explore": "See what I mean"
   },
   "work": {
     "eyebrow": "A few things I’ve made",
@@ -78,13 +77,13 @@
   "about": {
     "eyebrow": "About me",
     "title": "Not an agency.\nA person in your corner.",
-    "photoLabel": "Jonas in Wanaka, New Zealand",
+    "photoLabel": "Jonas on a mountain trail",
     "hello": "Hi, I’m Jonas.",
     "description": "I work on your project personally. From the first sketch all the way to launch.",
     "detail": "I take care of strategy, design and development, so you always know who you’re dealing with. And when your project needs original photos, I’m happy to pick up the camera too.",
     "linkPrimary": "Let’s work together ↗",
     "linkSecondary": "More about me",
-    "photoCaption": "Wānaka, New Zealand."
+    "photoCaption": "Yep, that’s me."
   },
   "process": {
     "eyebrow": "From hello to launch",
