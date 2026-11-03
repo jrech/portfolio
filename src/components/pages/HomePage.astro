@@ -12,7 +12,7 @@ import Testimonial from '@/components/home/Testimonial.astro';
 import About from '@/components/home/About.astro';
 import Process from '@/components/home/Process.astro';
 import Faq from '@/components/home/Faq.astro';
-import heroPrint from '@/assets/images/hero-print.webp';
+import portrait from '@/assets/images/jonas-portrait.webp';
 import wanaka from '@/assets/images/about-wanaka.webp';
 import marketa from '@/assets/images/marketa-blahova.webp';
 import { getProjects } from '@/lib/projects';
@@ -28,16 +28,16 @@ const quote = (await getProjects(getLocale(Astro))).find((p) => p.slug === 'prad
 <BaseLayout>
   <SiteHeader slot="header" overlay />
   <Hero>
-    {/* The print photo; the export carries it at 551 px, so that is the largest width available.
+    {/* Full-bleed portrait (same photo as the export, from the 2880 px original).
         Quality 100: no skimping on photos (Jonas, 2026-11-01). */}
     <Image
       slot="media"
-      src={heroPrint}
-      alt={t.hero.photoLabel}
+      src={portrait}
+      alt=""
       loading="eager"
       fetchpriority="high"
-      widths={[330, 551]}
-      sizes="(min-width: 1024px) min(24.3vw, 350px), (min-width: 640px) 250px, 300px"
+      widths={[1080, 1440, 1920, 2400, 2880]}
+      sizes="(max-width: 1023px) 1600px, 100vw"
       quality={100}
     />
   </Hero>

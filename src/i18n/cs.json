@@ -32,13 +32,12 @@
     "startProject": "Pojďme to probrat"
   },
   "hero": {
-    "title": "Hezký web\n",
+    "label": "Nezávislý designér a vývojář",
+    "title": "Hezký\nweb",
     "titleAccent": "nestačí.",
     "intro": "Jsem Jonas. Navrhuju a stavím osobité weby pro malé a střední firmy. Weby, které nejen dobře vypadají, ale pomáhají získávat nové poptávky.",
-    "photoLabel": "Jonas na horské stezce",
-    "photoCaption": "Jo, to jsem já.",
-    "disciplines": "Webdesign / Vývoj / Art direction",
-    "explore": "Ukázky práce níže"
+    "location": "Česká republika · Pracuji odkudkoli",
+    "explore": "Přesvědčte se sami"
   },
   "work": {
     "eyebrow": "Pár věcí, které jsem vytvořil",

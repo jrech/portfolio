@@ -32,13 +32,12 @@
     "startProject": "Let’s talk"
   },
   "hero": {
-    "title": "Looking good\n",
-    "titleAccent": "isn’t enough.",
+    "label": "Independent designer & developer",
+    "title": "Good\nwebsites\nmean",
+    "titleAccent": "business.",
     "intro": "I’m Jonas. I design and build distinctive websites for small and mid-sized businesses. Websites that don’t just look good, but help bring in new enquiries.",
-    "photoLabel": "Jonas on a mountain trail",
-    "photoCaption": "Yep, that’s me.",
-    "disciplines": "Web design / Development / Art direction",
-    "explore": "Good work below"
+    "location": "Czech Republic · Working everywhere",
+    "explore": "See what I mean"
   },
   "work": {
     "eyebrow": "A few things I’ve made",

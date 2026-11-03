@@ -1,7 +1,8 @@
 ---
 import Wordmark from '../ui/Wordmark.astro';
 import MenuOverlay from './MenuOverlay.astro';
-import { useT } from '@/i18n';
+import LangSwitch from '../ui/LangSwitch.astro';
+import { getLocale, localePath, useT } from '@/i18n';
 
 interface Props {
   /** Sit on top of the hero (homepage) instead of taking space in the flow (case studies). */
@@ -12,11 +13,20 @@ interface Props {
 
 const { overlay = false, current } = Astro.props;
 const t = useT(Astro);
+const locale = getLocale(Astro);
 ---
 
 <header class:list={['site-header', { 'site-header--overlay': overlay }]}>
   <div class="site-header__inner container">
     <Wordmark />
+    <!-- Desktop: minimal navigation (Pen "Portrait-led hero — Minimal navigation";
+         Jonas, 2026-11-03). Tablet and mobile keep the MENU button. -->
+    <nav class="site-nav" aria-label={t.a11y.mainNavigation}>
+      <a class="site-nav__link" href={localePath(locale, '/#work')}>{t.nav.work}</a>
+      <a class="site-nav__link" href={localePath(locale, '/#about')}>{t.nav.about}</a>
+      <a class="site-nav__link site-nav__cta" href="#contact" data-inquiry-open>{t.cta.startProject}</a>
+      <LangSwitch class="site-nav__lang" />
+    </nav>
     <button
       class="menu-toggle"
       type="button"
@@ -149,9 +159,49 @@ const t = useT(Astro);
     transform: translateX(-4px);
   }
 
+  .site-nav {
+    display: none;
+  }
+
   @media (min-width: 1024px) {
-    .menu-toggle__label {
-      display: block;
+    .menu-toggle {
+      display: none;
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      height: 44px;
+    }
+
+    .site-nav__link {
+      position: relative;
+      font-size: 15px;
+      font-weight: var(--weight-bold);
+      line-height: normal;
+      text-transform: uppercase;
+      color: var(--color-text-secondary);
+      transition: color var(--duration-fast) var(--ease-out);
+    }
+
+    .site-nav__link:hover,
+    .site-nav__link:focus-visible {
+      color: var(--color-text-display);
+    }
+
+    .site-nav__cta {
+      color: var(--color-accent);
+    }
+
+    .site-nav__cta:hover,
+    .site-nav__cta:focus-visible {
+      color: var(--color-text-display);
+    }
+
+    .site-nav :global(.site-nav__lang) {
+      padding-left: 32px;
+      border-left: 1px solid var(--color-rule);
     }
   }
 </style>
