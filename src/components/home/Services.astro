@@ -149,13 +149,19 @@ const services = t.services.items;
     }
 
     .service {
-      justify-content: space-between;
       gap: 30px;
       padding-block: 40px;
     }
 
+    /* Index sits ~half as far from the title as the old space-between layout
+       left it (Jonas, 2026-11-04); the description is pushed right instead. */
     .service__index {
-      flex-basis: 40px;
+      flex-basis: 90px;
+      line-height: 1;
+    }
+
+    .service__description {
+      margin-left: auto;
     }
 
     .service__name {
