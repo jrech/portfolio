@@ -62,7 +62,7 @@ const visualsAfter = (section: Placement) =>
   <CaseSection id="outcome" index="[04]" label={t.outcome} content={outcome} last />
 
   {testimonial && <Testimonial testimonial={testimonial} />}
-  {visualsAfter('testimonial').map((visual) => <CaseVisual {...visual} />)}
+  {visualsAfter('testimonial').map((visual, i, all) => <CaseVisual {...visual} spaced={i === all.length - 1} />)}
 
   <RelatedWork projects={related} />
 

@@ -24,13 +24,15 @@ interface Props {
   caption?: string;
   /** Mockup only: CSS object-position of the cropped image, e.g. "center 65%". */
   position?: string;
+  /** Extra space below (the last visual on the page, right before Related work). */
+  spaced?: boolean;
   brief: string;
   mobileLabel?: string;
   image?: { src: ImageMetadata; alt: string; mobileSrc?: ImageMetadata; mobileAlt?: string };
 }
 
 const t = useT(Astro).case;
-const { index, variant, title, brief, mobileLabel = t.mobileView, image, position } = Astro.props;
+const { index, variant, title, brief, mobileLabel = t.mobileView, image, position, spaced } = Astro.props;
 const number = String(index).padStart(2, '0');
 const flatTitle = (Astro.props.caption ?? title.replace(/\n/g, ' ')).toUpperCase();
 const caption = image ? `/ ${flatTitle}` : `/ ${flatTitle} — ${t.captionToFollow}`;
@@ -39,7 +41,7 @@ const isResponsive = variant === 'responsive';
 ---
 
 <figure
-  class:list={['visual container', `visual--${variant}`, { 'visual--filled': image }]}
+  class:list={['visual container', `visual--${variant}`, { 'visual--filled': image, 'visual--spaced': spaced }]}
   data-reveal="fade"
 >
   {
@@ -94,10 +96,13 @@ const isResponsive = variant === 'responsive';
       </div>
     )
   }
-  <figcaption class="visual__caption caption">
-    <span class="caption--accent">{number}</span>
-    <span>{caption}</span>
-  </figcaption>
+  {/* Finished images speak for themselves (Jonas 2026-11-04); the caption stays on placeholders. */}
+  {!image && (
+    <figcaption class="visual__caption caption">
+      <span class="caption--accent">{number}</span>
+      <span>{caption}</span>
+    </figcaption>
+  )}
 </figure>
 
 <style>
@@ -106,6 +111,10 @@ const isResponsive = variant === 'responsive';
     display: flex;
     flex-direction: column;
     gap: 32px;
+  }
+
+  .visual--spaced {
+    padding-bottom: 96px;
   }
 
   .visual__frame {
@@ -271,6 +280,10 @@ const isResponsive = variant === 'responsive';
       gap: 24px;
     }
 
+    .visual--spaced {
+      padding-bottom: 120px;
+    }
+
     .visual__frame {
       padding: 40px;
     }
@@ -311,6 +324,10 @@ const isResponsive = variant === 'responsive';
   @media (min-width: 1024px) {
     .visual {
       gap: 16px;
+    }
+
+    .visual--spaced {
+      padding-bottom: 160px;
     }
 
     .visual__frame {
