@@ -82,12 +82,10 @@ testimonial:
   lang: cs
 
 related: [starobrnensky-senk, grind]
-# Homepage card, related cards and case-study hero (terrace mockup, Jonas 2026-11-01).
+# Homepage card, related cards and case-study hero (dark laptop mockup, Jonas 2026-11-04).
 cover:
-  src: ../../../assets/images/pradelna-cover.webp
-  alt: Web Prádelny Krkonoše na notebooku na dřevěném stole na terase, v pozadí hory Krkonoš
-# Case-study hero only (dark laptop mockup, Jonas 2026-11-04); the card keeps the terrace cover.
-heroImage:
   src: ../../../assets/images/pradelna-case-hero-laptop.webp
+  # Wide card crops: keep the laptop screen's top edge in frame.
+  position: center 35%
   alt: Web Prádelny Krkonoše na notebooku na tmavém stolku
 ---

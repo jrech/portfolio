@@ -84,12 +84,10 @@ testimonial:
 
 # Order from the Pen frame "More selected work".
 related: [starobrnensky-senk, grind]
-# Homepage card, related cards and case-study hero (terrace mockup, Jonas 2026-11-01).
+# Homepage card, related cards and case-study hero (dark laptop mockup, Jonas 2026-11-04).
 cover:
-  src: ../../../assets/images/pradelna-cover.webp
-  alt: The Prádelna Krkonoše website on a laptop on a wooden terrace table, with the Krkonoše mountains behind it
-# Case-study hero only (dark laptop mockup, Jonas 2026-11-04); the card keeps the terrace cover.
-heroImage:
   src: ../../../assets/images/pradelna-case-hero-laptop.webp
+  # Wide card crops: keep the laptop screen's top edge in frame.
+  position: center 35%
   alt: The Prádelna Krkonoše website on a laptop on a dark side table
 ---

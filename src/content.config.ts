@@ -57,7 +57,8 @@ const projects = defineCollection({
       /** Shown under the hero visual while the case study is not final. */
       notice: z.string().optional(),
 
-      cover: z.object({ src: image(), alt: z.string() }).optional(),
+      /** `position`: CSS object-position for the cropped card/hero (default centre). */
+      cover: z.object({ src: image(), alt: z.string(), position: z.string().optional() }).optional(),
       /** Case-study hero image when it differs from the homepage card `cover`. */
       heroImage: z.object({ src: image(), alt: z.string() }).optional(),
 
