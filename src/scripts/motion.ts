@@ -61,55 +61,118 @@ function splitHeading(heading: HTMLElement) {
   return { targets, vars };
 }
 
-// First visit per tab: black screen, the hero photo fades and settles in, then the hero
-// content follows (Jonas, 2026-10-30). No waiting on the network beyond a short cap,
-// and any scroll, tap or key skips straight to the end, also while the photo loads.
-// Tightened 2026-11-03: the CTA used to land after ~1.9 s, the menu after ~2.3 s.
-let heroIntro: Promise<void> = Promise.resolve();
+// First visit per tab, "From the dark" (Jonas, 2026-11-04): the hero stays black, the
+// portrait itself (the real DOM image, no loader screen) is lit up out of the dark with a
+// soft light passing over it, then the headline rises line by line and the label, intro,
+// scroll cue and navigation fade in. Every other load shows the finished hero at once.
+// Waits for the photo to decode (capped), and any scroll, tap or key skips to the end.
+const INTRO = {
+  wait: 1000, // longest wait for the photo before starting anyway
+  dark: 0.2, // black before the light comes up
+  photo: 1.1, // portrait opacity 0 → 1
+  settle: 1.7, // portrait scale 1.06 → 1
+  light: 1.0, // light sweep across the portrait
+  content: 1.15, // headline starts, photo mostly visible
+  line: 0.8, // each headline line
+  stagger: 0.11,
+};
 
 function introHero() {
   if (!root.classList.contains('intro')) return;
-  const media = document.querySelector<HTMLElement>('.hero__media');
-  root.classList.remove('intro');
-  if (!media || passed(media)) return;
+  const hero = document.querySelector<HTMLElement>('.hero');
+  const media = hero?.querySelector<HTMLElement>('.hero__media');
+  if (!hero || !media || passed(media)) {
+    root.classList.remove('intro');
+    return;
+  }
   try { sessionStorage.setItem('jr-intro-seen', '1'); } catch {}
   const image = media.querySelector<HTMLImageElement>('img');
+  const lines = [...hero.querySelectorAll<HTMLElement>('.hero__line')];
+  const fades = [...hero.querySelectorAll<HTMLElement>('[data-reveal="fade"]')];
+  const nav = gsap.utils.toArray<HTMLElement>('.site-header--overlay .site-header__inner > *');
+
+  // Each headline line slides up inside its own box. The clip reaches above the box,
+  // so accents (HEZKÝ) are never cut, and closes at its bottom edge.
+  const inners = lines.map(line => {
+    const inner = document.createElement('span');
+    inner.className = 'hero__line-inner';
+    inner.append(...line.childNodes);
+    line.append(inner);
+    line.style.clipPath = 'inset(-0.5em -0.3em 0 -0.3em)';
+    return inner;
+  });
+  const unwrap = () => lines.forEach((line, i) => {
+    const inner = inners[i];
+    if (inner.parentNode !== line) return;
+    line.append(...inner.childNodes);
+    inner.remove();
+    line.style.removeProperty('clip-path');
+  });
+
+  // A soft light that passes over the portrait while it comes up. It blends with the
+  // photo only, so the black around it stays black.
+  const light = document.createElement('div');
+  light.className = 'hero__light';
+  media.append(light);
+
+  // Start states before the class that hid them goes, so nothing flashes.
   gsap.set(media, { opacity: 0 });
+  gsap.set(inners, { yPercent: 120 });
+  gsap.set(fades, { opacity: 0, y: MOTION.distance });
+  gsap.set(nav, { opacity: 0, y: -10 });
+  root.classList.remove('intro');
+
   const events = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
   let timeline: gsap.core.Timeline | null = null;
   let skipped = false;
   const skip = () => {
     skipped = true;
-    timeline?.progress(1);
+    timeline?.progress(1, false);
   };
   events.forEach(type => addEventListener(type, skip, { once: true, passive: true }));
-  const loaded = !image || image.complete ? Promise.resolve() : Promise.race([
-    new Promise(resolve => {
+  const removeListeners = () => events.forEach(type => removeEventListener(type, skip));
+
+  // Start once the photo can paint in one go: decoded, failed, or the wait ran out.
+  const ready = !image ? Promise.resolve() : Promise.race([
+    (image.complete ? Promise.resolve() : new Promise(resolve => {
       image.addEventListener('load', resolve, { once: true });
       image.addEventListener('error', resolve, { once: true });
-    }),
-    new Promise(resolve => setTimeout(resolve, 800)),
+    })).then(() => image.decode?.()).catch(() => {}),
+    new Promise(resolve => setTimeout(resolve, INTRO.wait)),
   ]);
-  heroIntro = new Promise<void>(resolve => {
-    loaded.then(() => {
-      const done = () => {
-        events.forEach(type => removeEventListener(type, skip));
-        resolve();
-      };
-      timeline = gsap.timeline({ onComplete: done });
-      timeline.to(media, { opacity: 1, duration: 1.1, ease: 'power2.out', clearProps: 'opacity' });
-      if (image) timeline.fromTo(image, { scale: 1.06 }, { scale: 1, duration: 1.4, ease: EASE, clearProps: 'transform' }, 0);
-      // The rest of the hero starts while the photo is still fading in.
-      timeline.call(resolve, [], 0.35);
-      if (skipped) timeline.progress(1);
-    });
+
+  ready.then(() => document.fonts.ready).then(() => {
+    const finish = () => {
+      removeListeners();
+      unwrap();
+      light.remove();
+      // Opacity only on the photo wrapper: its transform belongs to the scroll parallax.
+      gsap.set(media, { clearProps: 'opacity' });
+      gsap.set([...fades, ...nav], { clearProps: 'opacity,transform' });
+      if (image) gsap.set(image, { clearProps: 'transform' });
+    };
+    timeline = gsap.timeline({ onComplete: finish });
+    const t = INTRO;
+    // Phase 1–2: the portrait comes up out of the dark and settles.
+    timeline.to(media, { opacity: 1, duration: t.photo, ease: 'power2.out' }, t.dark);
+    if (image) timeline.fromTo(image, { scale: 1.06 }, { scale: 1, duration: t.settle, ease: 'power2.out' }, 0);
+    timeline.fromTo(light, { xPercent: -30 }, { xPercent: 30, duration: t.light, ease: 'power1.inOut' }, t.dark + 0.2)
+      .to(light, { opacity: 1, duration: t.light * 0.4, ease: 'sine.out' }, t.dark + 0.2)
+      .to(light, { opacity: 0, duration: t.light * 0.5, ease: 'sine.in' }, t.dark + 0.2 + t.light * 0.5);
+    // Phase 3: label, headline line by line (accent line last), intro, cue, navigation.
+    const c = t.content;
+    timeline.to(fades[0] ?? [], { opacity: 1, y: 0, duration: 0.8, ease: EASE }, c - 0.1)
+      .to(inners, { yPercent: 0, duration: t.line, ease: 'power3.out', stagger: t.stagger }, c)
+      .to(fades.slice(1), { opacity: 1, y: 0, duration: 0.8, ease: EASE, stagger: 0.1 }, c + 0.35)
+      .to(nav, { opacity: 1, y: 0, duration: 0.8, ease: EASE, stagger: 0.05 }, c + 0.4);
+    if (skipped) timeline.progress(1, false);
   });
 }
 
 // Split only at entry: off-screen headings keep natural wrapping until needed.
 function revealHeadings() {
   document.querySelectorAll<HTMLElement>('[data-reveal="heading"]').forEach((heading) => {
-    if (heading.closest('.footer, .services, .about') || (heading.closest('.faq') && matchMedia('(min-width: 1024px)').matches)) return;
+    if (heading.closest('.hero, .footer, .services, .about') || (heading.closest('.faq') && matchMedia('(min-width: 1024px)').matches)) return;
     if (passed(heading)) return;
     gsap.set(heading, { opacity: 0 });
     const play = async () => {
@@ -120,8 +183,7 @@ function revealHeadings() {
       gsap.set(heading, { opacity: 1 });
       gsap.to(reveal.targets, reveal.vars);
     };
-    if (heading.closest('.hero')) heroIntro.then(play);
-    else ScrollTrigger.create({ trigger: heading, start: HEADING_START, once: true, onEnter: play });
+    ScrollTrigger.create({ trigger: heading, start: HEADING_START, once: true, onEnter: play });
   });
 }
 
@@ -156,19 +218,6 @@ function scrubStatement() {
       },
     });
   });
-}
-
-// Hero entrance in one overlapping flow: H1 (revealHeadings) > intro > CTAs > navigation.
-function revealHero() {
-  const content = gsap.utils.toArray<HTMLElement>('.hero [data-reveal="fade"]');
-  const nav = gsap.utils.toArray<HTMLElement>('.site-header--overlay .site-header__inner > *');
-  // Start states first, so nothing flashes before the delayed timeline begins.
-  gsap.set(content, { opacity: 0, y: MOTION.distance });
-  gsap.set(nav, { opacity: 0, y: -10 });
-  // The navigation comes in alongside the content, not after it: the menu is a way out.
-  heroIntro.then(() => gsap.timeline({ delay: 0.05, defaults: { duration: 0.8, ease: EASE, clearProps: 'transform,opacity' } })
-    .to(content, { opacity: 1, y: 0, stagger: 0.1 })
-    .to(nav, { opacity: 1, y: 0, stagger: 0.05 }, 0.1));
 }
 
 function revealContent() {
@@ -701,12 +750,9 @@ function pageTransitions() {
   if (root.classList.contains('page-enter')) {
     gsap.set(cover, { clipPath: MENU_SHOWN });
     root.classList.remove('page-enter');
-    heroIntro = new Promise<void>(resolve => {
-      gsap.to(cover, {
-        clipPath: MENU_HIDDEN, duration: 0.7, delay: 0.1, ease: EASE_MENU,
-        onComplete: () => gsap.set(cover, { clearProps: 'clipPath' }),
-      });
-      gsap.delayedCall(0.45, resolve);
+    gsap.to(cover, {
+      clipPath: MENU_HIDDEN, duration: 0.7, delay: 0.1, ease: EASE_MENU,
+      onComplete: () => gsap.set(cover, { clearProps: 'clipPath' }),
     });
   }
 
@@ -785,7 +831,6 @@ function initializeMotion() {
     pageTransitions();
     scrubStatement();
     revealHeadings();
-    revealHero();
     heroParallax();
     revealContent();
     revealRules();

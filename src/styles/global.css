@@ -189,6 +189,13 @@ body {
   opacity: 0;
 }
 
+/* The hero only waits on the first visit of a tab (`intro`, see introHero in motion.ts);
+   on every other load it is there from the first paint, finished. */
+.js-motion:not(.intro) .hero [data-reveal],
+.js-motion:not(.intro) .site-header--overlay .site-header__inner > * {
+  opacity: 1;
+}
+
 .cursor {
   position: fixed;
   top: 0;

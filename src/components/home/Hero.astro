@@ -65,6 +65,24 @@ const lines = t.hero.title.split('\n');
     opacity: 0;
   }
 
+  /* First-visit light sweep (motion.ts creates and removes it): a soft band of light
+     that blends with the photo only, so it lifts the lit face and shoulders while the
+     black around them stays black. Moved with transform, removed when the intro ends. */
+  .hero__media :global(.hero__light) {
+    position: absolute;
+    inset: 0 -50%;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(100deg, #fff0 38%, #fff6 50%, #fff0 62%);
+    mix-blend-mode: soft-light;
+    will-change: transform, opacity;
+  }
+
+  /* Headline lines rise inside their own box during the intro. */
+  .hero__title :global(.hero__line-inner) {
+    display: block;
+  }
+
   /* Face sits at ~55% of the photo's width: these positions keep it centred. */
   .hero__media :global(img) {
     width: 100%;
