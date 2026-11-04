@@ -8,6 +8,10 @@
  *   site). They already carry their own compression, so a lossless copy would be 2–4× the bytes for no
  *   visible gain.
  *
+ * - Opt-out: a lossless source named `*.photo.<ext>` (a photographic mockup, e.g. a laptop on a table)
+ *   is treated as a photo and stays lossy at quality 100. Lossless photos are ~3× heavier for no
+ *   visible gain (Jonas, 2026-11-04).
+ *
  * At the source's own width and format Astro serves the original file untouched either way.
  * Wired in astro.config.mjs (`image.service`).
  */
@@ -36,7 +40,8 @@ const service: LocalImageService = {
   ...(sharpService as LocalImageService),
   async transform(inputBuffer, transform: ImageTransform, config, ...rest) {
     const format = transform.format ?? 'webp';
-    if (format === 'webp' && isLosslessSource(inputBuffer)) {
+    const isPhoto = /\.photo\./i.test(String(transform.src));
+    if (format === 'webp' && !isPhoto && isLosslessSource(inputBuffer)) {
       const serviceConfig = config.service.config ?? {};
       config = {
         ...config,
