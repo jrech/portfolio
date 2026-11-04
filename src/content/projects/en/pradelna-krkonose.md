@@ -71,7 +71,7 @@ visuals:
     title: For hotels and guesthouses
     brief: The customer-type sections on a tablet.
     image:
-      src: ../../../assets/images/pradelna-case-tablet.webp
+      src: ../../../assets/images/pradelna-case-tablet.photo.webp
       alt: Hands holding a tablet showing the Prádelna Krkonoše sections for hotels and wellness and for guesthouses and apartments
 
 # Approved for publication by the client (Jonas, 2026-10-28). Also shown on the homepage.
@@ -86,7 +86,7 @@ testimonial:
 related: [starobrnensky-senk, grind]
 # Homepage card, related cards and case-study hero (dark laptop mockup, Jonas 2026-11-04).
 cover:
-  src: ../../../assets/images/pradelna-case-hero-laptop.webp
+  src: ../../../assets/images/pradelna-case-hero-laptop.photo.webp
   # Wide card crops: keep the laptop screen's top edge in frame.
   position: center 35%
   alt: The Prádelna Krkonoše website on a laptop on a dark side table

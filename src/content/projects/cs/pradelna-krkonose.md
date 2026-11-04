@@ -71,7 +71,7 @@ visuals:
     title: Pro hotely i penziony
     brief: Sekce pro typy zákazníků na tabletu.
     image:
-      src: ../../../assets/images/pradelna-case-tablet.webp
+      src: ../../../assets/images/pradelna-case-tablet.photo.webp
       alt: Tablet v rukou se sekcemi webu Prádelny Krkonoše pro hotely a wellness a pro penziony a apartmány
 
 # Schváleno klientem ke zveřejnění (Jonas, 2026-10-28).
@@ -84,7 +84,7 @@ testimonial:
 related: [starobrnensky-senk, grind]
 # Homepage card, related cards and case-study hero (dark laptop mockup, Jonas 2026-11-04).
 cover:
-  src: ../../../assets/images/pradelna-case-hero-laptop.webp
+  src: ../../../assets/images/pradelna-case-hero-laptop.photo.webp
   # Wide card crops: keep the laptop screen's top edge in frame.
   position: center 35%
   alt: Web Prádelny Krkonoše na notebooku na tmavém stolku
