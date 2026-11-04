@@ -58,9 +58,19 @@ visuals:
     number: 3
     title: The details make it work
     brief: The mobile website in a phone mockup.
+    # Portrait shot in the 4:3 frame: keep the phone centred.
+    position: center 59%
     image:
-      src: ../../../assets/images/pradelna-case-mobile.webp
-      alt: The Prádelna Krkonoše website on a phone, showing the headline “Čisté prádlo včas. I v plné sezóně.” and a contact button
+      src: ../../../assets/images/pradelna-case-phone.webp
+      alt: The Prádelna Krkonoše website on a phone lying on a bench, with the headline “Čisté prádlo včas. I v plné sezóně.”
+  - variant: mockup
+    after: testimonial
+    number: 4
+    title: For hotels and guesthouses
+    brief: The customer-type sections on a tablet.
+    image:
+      src: ../../../assets/images/pradelna-case-tablet.webp
+      alt: Hands holding a tablet showing the Prádelna Krkonoše sections for hotels and wellness and for guesthouses and apartments
 
 # Approved for publication by the client (Jonas, 2026-10-28). Also shown on the homepage.
 # EN: faithful translation of the Czech original (Jonas OK'd translating, 2026-11-04).
@@ -76,4 +86,8 @@ related: [starobrnensky-senk, grind]
 cover:
   src: ../../../assets/images/pradelna-cover.webp
   alt: The Prádelna Krkonoše website on a laptop on a wooden terrace table, with the Krkonoše mountains behind it
+# Case-study hero only (dark laptop mockup, Jonas 2026-11-04); the card keeps the terrace cover.
+heroImage:
+  src: ../../../assets/images/pradelna-case-hero-laptop.webp
+  alt: The Prádelna Krkonoše website on a laptop on a dark side table
 ---

@@ -28,7 +28,7 @@ const related = await getRelatedProjects(project, getLocale(Astro));
  * Placed visuals (any `after` set): only those, where they say, numbered by `number`.
  * Otherwise the three fixed slots, with neutral placeholders for visuals not briefed yet.
  */
-const placements = ['challenge', 'approach', 'solution'] as const;
+const placements = ['challenge', 'approach', 'solution', 'testimonial'] as const;
 type Placement = (typeof placements)[number];
 const placed = visuals.some((v) => v.after);
 const variants = ['full', 'responsive', 'detail'] as const;
@@ -38,7 +38,9 @@ const slots = placed
 const visualsAfter = (section: Placement) =>
   placed
     ? visuals.flatMap((v, i) => (v.after === section ? [{ ...v, index: v.number ?? i + 1 }] : []))
-    : [slots[placements.indexOf(section)]!];
+    : section === 'testimonial'
+      ? []
+      : [slots[placements.indexOf(section)]!];
 ---
 
 <BaseLayout title={`${title}${t.metaTitleSuffix}`} description={description} noindex={!isPublished(project)}>
@@ -60,6 +62,7 @@ const visualsAfter = (section: Placement) =>
   <CaseSection id="outcome" index="[04]" label={t.outcome} content={outcome} last />
 
   {testimonial && <Testimonial testimonial={testimonial} />}
+  {visualsAfter('testimonial').map((visual) => <CaseVisual {...visual} />)}
 
   <RelatedWork projects={related} />
 

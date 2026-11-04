@@ -22,13 +22,15 @@ interface Props {
   title: string;
   /** Caption text without the number; defaults to the upper-cased title. */
   caption?: string;
+  /** Mockup only: CSS object-position of the cropped image, e.g. "center 65%". */
+  position?: string;
   brief: string;
   mobileLabel?: string;
   image?: { src: ImageMetadata; alt: string; mobileSrc?: ImageMetadata; mobileAlt?: string };
 }
 
 const t = useT(Astro).case;
-const { index, variant, title, brief, mobileLabel = t.mobileView, image } = Astro.props;
+const { index, variant, title, brief, mobileLabel = t.mobileView, image, position } = Astro.props;
 const number = String(index).padStart(2, '0');
 const flatTitle = (Astro.props.caption ?? title.replace(/\n/g, ' ')).toUpperCase();
 const caption = image ? `/ ${flatTitle}` : `/ ${flatTitle} — ${t.captionToFollow}`;
@@ -56,7 +58,7 @@ const isResponsive = variant === 'responsive';
       </div>
     ) : image && variant === 'mockup' ? (
       <div class="visual__frame">
-        <Image class="visual__image" src={image.src} alt={image.alt} widths={fitWidths([800, 1440, 2640], image.src.width)} sizes="100vw" quality={100} />
+        <Image class="visual__image" src={image.src} alt={image.alt} widths={fitWidths([800, 1440, 2640], image.src.width)} sizes="100vw" quality={100} style={position ? { objectPosition: position } : undefined} />
       </div>
     ) : image ? (
       <div class="visual__frame">
