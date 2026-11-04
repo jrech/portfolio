@@ -33,5 +33,7 @@ export default defineConfig({
     defaultLocale: 'cs',
     routing: { prefixDefaultLocale: false },
   },
+  // Every <Image> asks for quality={100}; the service also keeps lossless sources lossless.
+  image: { service: { entrypoint: './src/lib/image-service.ts' } },
   devToolbar: { enabled: false },
 });
