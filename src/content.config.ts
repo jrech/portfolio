@@ -25,7 +25,7 @@ const editorialSection = z.object({
  * mockup  — a finished device mockup shown as a plain image, no frame.
  */
 export const visualVariants = ['full', 'responsive', 'detail', 'screens', 'mockup'] as const;
-export const visualPlacements = ['challenge', 'approach', 'solution'] as const;
+export const visualPlacements = ['challenge', 'approach', 'solution', 'testimonial'] as const;
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/projects' }),
@@ -57,7 +57,8 @@ const projects = defineCollection({
       /** Shown under the hero visual while the case study is not final. */
       notice: z.string().optional(),
 
-      cover: z.object({ src: image(), alt: z.string() }).optional(),
+      /** `position`: CSS object-position for the cropped card/hero (default centre). */
+      cover: z.object({ src: image(), alt: z.string(), position: z.string().optional() }).optional(),
       /** Case-study hero image when it differs from the homepage card `cover`. */
       heroImage: z.object({ src: image(), alt: z.string() }).optional(),
 
@@ -72,7 +73,7 @@ const projects = defineCollection({
       outcome: editorialSection.optional(),
 
       /**
-       * Up to three large visuals. Without `after` they fill the three slots after the
+       * Up to four large visuals. Without `after` they fill the three slots after the
        * challenge, approach and solution (missing slots get neutral placeholders).
        * As soon as one visual sets `after`, only the listed visuals render, where they say.
        */
@@ -86,6 +87,10 @@ const projects = defineCollection({
             number: z.number().optional(),
             /** Caption text without the number; defaults to the upper-cased title. */
             caption: z.string().optional(),
+            /** Mockup only: CSS object-position of the cropped image (default "center 42%"). */
+            position: z.string().optional(),
+            /** Mockup only: CSS aspect-ratio of the frame (default 4 / 3). */
+            ratio: z.string().optional(),
             /** `\n` forces a line break. */
             title: z.string(),
             /** Brief for the final capture, shown while there is no image. */
@@ -95,7 +100,7 @@ const projects = defineCollection({
             image: z.object({ src: image(), alt: z.string(), mobileSrc: image().optional(), mobileAlt: z.string().optional() }).optional(),
           }),
         )
-        .max(3)
+        .max(4)
         .default([]),
 
       /** Only for a quote the client has approved for publication. */

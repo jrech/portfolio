@@ -189,10 +189,16 @@ const noticeText = status === 'in-preparation' ? (notice ?? t.defaultNotice) : n
       letter-spacing: var(--heading-tracking);
     }
 
+    /* Items spread edge to edge: the last one (Year) ends flush right (Jonas 2026-11-04). */
     .case-hero__meta {
       display: flex;
       flex-direction: row;
+      justify-content: space-between;
       gap: 32px;
+    }
+
+    .case-hero__meta-item {
+      flex: 0 1 auto;
     }
 
     .case-hero :global(.case-hero__visual) {

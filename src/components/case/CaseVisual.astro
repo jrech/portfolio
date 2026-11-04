@@ -22,13 +22,19 @@ interface Props {
   title: string;
   /** Caption text without the number; defaults to the upper-cased title. */
   caption?: string;
+  /** Mockup only: CSS object-position of the cropped image, e.g. "center 65%". */
+  position?: string;
+  /** Mockup only: CSS aspect-ratio of the frame instead of the default 4 / 3, e.g. "16 / 9". */
+  ratio?: string;
+  /** Extra space below (the last visual on the page, right before Related work). */
+  spaced?: boolean;
   brief: string;
   mobileLabel?: string;
   image?: { src: ImageMetadata; alt: string; mobileSrc?: ImageMetadata; mobileAlt?: string };
 }
 
 const t = useT(Astro).case;
-const { index, variant, title, brief, mobileLabel = t.mobileView, image } = Astro.props;
+const { index, variant, title, brief, mobileLabel = t.mobileView, image, position, ratio, spaced } = Astro.props;
 const number = String(index).padStart(2, '0');
 const flatTitle = (Astro.props.caption ?? title.replace(/\n/g, ' ')).toUpperCase();
 const caption = image ? `/ ${flatTitle}` : `/ ${flatTitle} — ${t.captionToFollow}`;
@@ -37,7 +43,7 @@ const isResponsive = variant === 'responsive';
 ---
 
 <figure
-  class:list={['visual container', `visual--${variant}`, { 'visual--filled': image }]}
+  class:list={['visual container', `visual--${variant}`, { 'visual--filled': image, 'visual--spaced': spaced }]}
   data-reveal="fade"
 >
   {
@@ -55,8 +61,8 @@ const isResponsive = variant === 'responsive';
         ))}
       </div>
     ) : image && variant === 'mockup' ? (
-      <div class="visual__frame">
-        <Image class="visual__image" src={image.src} alt={image.alt} widths={fitWidths([800, 1440, 2640], image.src.width)} sizes="100vw" quality={100} />
+      <div class="visual__frame" style={ratio ? { aspectRatio: ratio } : undefined}>
+        <Image class="visual__image" src={image.src} alt={image.alt} widths={fitWidths([800, 1440, 2640], image.src.width)} sizes="100vw" quality={100} style={position ? { objectPosition: position } : undefined} />
       </div>
     ) : image ? (
       <div class="visual__frame">
@@ -92,10 +98,13 @@ const isResponsive = variant === 'responsive';
       </div>
     )
   }
-  <figcaption class="visual__caption caption">
-    <span class="caption--accent">{number}</span>
-    <span>{caption}</span>
-  </figcaption>
+  {/* Finished images speak for themselves (Jonas 2026-11-04); the caption stays on placeholders. */}
+  {!image && (
+    <figcaption class="visual__caption caption">
+      <span class="caption--accent">{number}</span>
+      <span>{caption}</span>
+    </figcaption>
+  )}
 </figure>
 
 <style>
@@ -104,6 +113,10 @@ const isResponsive = variant === 'responsive';
     display: flex;
     flex-direction: column;
     gap: 32px;
+  }
+
+  .visual--spaced {
+    padding-bottom: 96px;
   }
 
   .visual__frame {
@@ -269,6 +282,10 @@ const isResponsive = variant === 'responsive';
       gap: 24px;
     }
 
+    .visual--spaced {
+      padding-bottom: 120px;
+    }
+
     .visual__frame {
       padding: 40px;
     }
@@ -309,6 +326,10 @@ const isResponsive = variant === 'responsive';
   @media (min-width: 1024px) {
     .visual {
       gap: 16px;
+    }
+
+    .visual--spaced {
+      padding-bottom: 160px;
     }
 
     .visual__frame {
