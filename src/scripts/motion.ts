@@ -605,30 +605,73 @@ const MENU_HIDDEN = 'inset(0% 0% 100% 0%)';
 const MENU_SHOWN = 'inset(0% 0% 0% 0%)';
 
 // Magnetic hover on CTAs and the logo (not inside the menu): the element leans
-// toward the pointer by a fraction of the distance and springs back on leave.
+// toward the pointer and springs back. The pull works in a zone a bit larger than
+// the element and fades to zero at the zone's edge, so it eases in and out instead
+// of jumping several pixels the moment the pointer crosses the element's border
+// (the logo "stutter", Jonas 2026-11-04). One rAF-throttled listener for all.
 function magnet() {
   if (!matchMedia('(pointer: fine)').matches) return;
-  const STRENGTH = 0.12;
-  document.querySelectorAll<HTMLElement>('.cta, .wordmark').forEach((el) => {
-    if (el.closest('#site-menu')) return;
-    el.classList.add('magnet');
-    el.addEventListener('pointermove', (e) => {
-      if (e.pointerType !== 'mouse') return;
+  const STRENGTH = 0.16;
+  const ZONE = 36; // px around the element where the pull fades in
+  const items = gsap.utils.toArray<HTMLElement>('.cta, .wordmark')
+    .filter((el) => !el.closest('#site-menu'))
+    .map((el) => {
+      el.classList.add('magnet');
+      // quickTo can't add a unit to a custom property, so tween a proxy and write px.
+      const pos = { x: 0, y: 0 };
+      const write = () => {
+        el.style.setProperty('--mx', `${pos.x}px`);
+        el.style.setProperty('--my', `${pos.y}px`);
+      };
+      return {
+        el,
+        x: gsap.quickTo(pos, 'x', { duration: 0.6, ease: EASE, onUpdate: write }),
+        y: gsap.quickTo(pos, 'y', { duration: 0.6, ease: EASE, onUpdate: write }),
+        mx: 0,
+        my: 0,
+        active: false,
+      };
+    });
+  if (!items.length) return;
+
+  let px = 0;
+  let py = 0;
+  let queued = false;
+  const update = () => {
+    queued = false;
+    for (const item of items) {
       // Measure without the current offset, so the pull doesn't feed back into itself.
-      const r = el.getBoundingClientRect();
-      const mx = parseFloat(el.style.getPropertyValue('--mx')) || 0;
-      const my = parseFloat(el.style.getPropertyValue('--my')) || 0;
-      gsap.to(el, {
-        '--mx': `${(e.clientX - (r.left - mx + r.width / 2)) * STRENGTH}px`,
-        '--my': `${(e.clientY - (r.top - my + r.height / 2)) * STRENGTH}px`,
-        duration: 0.5,
-        ease: EASE,
-        overwrite: true,
-      });
-    });
-    el.addEventListener('pointerleave', () => {
-      gsap.to(el, { '--mx': '0px', '--my': '0px', duration: 0.8, ease: EASE, overwrite: true });
-    });
+      const r = item.el.getBoundingClientRect();
+      const cx = r.left - item.mx + r.width / 2;
+      const cy = r.top - item.my + r.height / 2;
+      const dx = px - cx;
+      const dy = py - cy;
+      const t = Math.max(Math.abs(dx) / (r.width / 2 + ZONE), Math.abs(dy) / (r.height / 2 + ZONE));
+      const pull = t < 1 ? 1 - t * t : 0;
+      if (!pull && !item.active) continue;
+      item.active = pull > 0;
+      item.mx = dx * STRENGTH * pull;
+      item.my = dy * STRENGTH * pull;
+      item.x(item.mx);
+      item.y(item.my);
+    }
+  };
+  addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    px = e.clientX;
+    py = e.clientY;
+    if (!queued) {
+      queued = true;
+      requestAnimationFrame(update);
+    }
+  }, { passive: true });
+  // Leaving the window: everything settles back.
+  document.documentElement.addEventListener('pointerleave', () => {
+    px = py = -1e4;
+    if (!queued) {
+      queued = true;
+      requestAnimationFrame(update);
+    }
   });
 }
 

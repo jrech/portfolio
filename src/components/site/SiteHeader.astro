@@ -188,28 +188,47 @@ const locale = getLocale(Astro);
       height: 44px;
     }
 
+    /* hero_astra (2026-11-04): 14px semibold, +0.7px, primary ink. */
     .site-nav__link {
       position: relative;
-      font-size: 15px;
-      font-weight: var(--weight-bold);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.7px;
       line-height: normal;
       text-transform: uppercase;
-      color: var(--color-text-secondary);
+      color: var(--color-text-primary);
       transition: color var(--duration-fast) var(--ease-out);
     }
 
     .site-nav__link {
-      --roll-hover: var(--color-text-display);
+      --roll-hover: var(--color-accent);
     }
 
     .site-nav__cta {
+      --roll-hover: var(--color-text-display);
       color: var(--color-accent);
     }
 
 
+    /* Short 16px divider before EN / CZ, set in the nav face (hero_astra). */
     .site-nav :global(.site-nav__lang) {
-      padding-left: 32px;
-      border-left: 1px solid var(--color-rule);
+      position: relative;
+      padding-left: 33px;
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: var(--weight-bold);
+      letter-spacing: 0.6px;
+    }
+
+    .site-nav :global(.site-nav__lang)::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 1px;
+      height: 16px;
+      margin-top: -8px;
+      background: var(--color-rule);
     }
   }
 </style>
