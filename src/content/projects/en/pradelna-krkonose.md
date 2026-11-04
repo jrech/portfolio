@@ -63,11 +63,12 @@ visuals:
       alt: The Prádelna Krkonoše website on a phone, showing the headline “Čisté prádlo včas. I v plné sezóně.” and a contact button
 
 # Approved for publication by the client (Jonas, 2026-10-28). Also shown on the homepage.
+# EN: faithful translation of the Czech original (Jonas OK'd translating, 2026-11-04).
 testimonial:
-  quote: "„Jonas rychle pochopil, co potřebujeme, a všechno s námi průběžně konzultoval. Výsledný web vypadá skvěle a hlavně dává smysl našim zákazníkům.“"
+  quote: "“Jonas quickly understood what we needed and kept us in the loop the whole way through. The finished website looks great and, above all, it makes sense to our customers.”"
   name: Markéta Bláhová
   company: Prádelna Krkonoše
-  lang: cs
+  lang: en
 
 # Order from the Pen frame "More selected work".
 related: [starobrnensky-senk, grind]
