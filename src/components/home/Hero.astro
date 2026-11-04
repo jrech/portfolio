@@ -1,6 +1,6 @@
 ---
 /**
- * Homepage hero (Pen: "Portrait-led hero — Minimal navigation", export "HERO HERO.html").
+ * Homepage hero (Pen: "Portrait-led hero — Minimal navigation", export "hero_astra.html", 2026-11-04).
  * Full-bleed portrait with blended edges, a fine animated film grain (hero only),
  * a centred stacked headline with the last line in accent, and a baseline with the
  * short intro and a link down to the work.
@@ -31,12 +31,12 @@ const lines = t.hero.title.split('\n');
       <p class="hero__intro" data-reveal="fade">{t.hero.intro}</p>
     </div>
 
-    <!-- Centred scroll cue, arrow under the text (Jonas's layout, 2026-11-04). -->
+    <!-- Centred scroll cue, text + arrow in one row (hero_astra, 2026-11-04). -->
     <div class="hero__base">
       <div class="hero__baseline" data-reveal="fade">
         <a class="hero__explore" href="#work">
           <span>{t.hero.explore}</span>
-          <Icon name="arrow-down" size={14} />
+          <Icon name="arrow-down" size={18} />
         </a>
       </div>
     </div>
@@ -98,7 +98,7 @@ const lines = t.hero.title.split('\n');
     z-index: -2;
     background:
       linear-gradient(90deg, var(--color-background) 0%, #10100f00 18%, #10100f00 82%, var(--color-background) 100%),
-      linear-gradient(180deg, var(--color-background) 0%, #10100f00 16%, #10100f00 62%, var(--color-background) 100%);
+      linear-gradient(180deg, var(--color-background) 0%, #10100f00 16%, #10100f00 70%, var(--color-background) 100%);
   }
 
   /* Fine film grain, hero only (Jonas, 2026-11-03): Jonas's feTurbulence tile,
@@ -169,22 +169,22 @@ const lines = t.hero.title.split('\n');
     font-family: var(--font-caption);
     font-size: var(--caption-size);
     font-weight: var(--weight-regular);
-    letter-spacing: 1.3px;
+    letter-spacing: 1px;
     line-height: normal;
     text-transform: uppercase;
     color: var(--color-text-secondary);
   }
 
-  /* Rethink Sans Bold (112 on desktop per Jonas's 2026-11-04 layout; export had 126), tracking -7.2px (≈ -0.057em), caps, centred. */
+  /* hero_astra: Rethink Sans Bold 120/110, tracking -4.8px (-0.04em), caps, centred. */
   .hero__title {
     display: flex;
     flex-direction: column;
     align-items: center;
     font-family: var(--font-display);
-    font-size: clamp(52px, 19.5vw, 112px);
+    font-size: clamp(52px, 19.5vw, 120px);
     font-weight: var(--weight-bold);
-    line-height: 0.897;
-    letter-spacing: -0.057em;
+    line-height: 0.917;
+    letter-spacing: -0.04em;
     text-transform: uppercase;
     color: var(--color-text-primary);
   }
@@ -216,15 +216,16 @@ const lines = t.hero.title.split('\n');
   .hero__baseline {
     display: flex;
     justify-content: center;
+    align-items: center;
+    min-height: 44px;
   }
 
   .hero__explore {
     display: inline-flex;
-    flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
     flex-shrink: 0;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: var(--weight-medium);
     line-height: normal;
     color: var(--color-text-primary);
@@ -279,7 +280,7 @@ const lines = t.hero.title.split('\n');
 
     .hero__inner {
       padding-top: var(--header-height);
-      padding-bottom: 28px;
+      padding-bottom: 40px;
     }
 
     /* Headline block centred on the whole frame, as in the export (label at 232,
@@ -292,6 +293,7 @@ const lines = t.hero.title.split('\n');
     .hero__center {
       position: absolute;
       inset: 0;
+      gap: 26px;
       padding: 0;
       pointer-events: none;
     }
@@ -305,9 +307,13 @@ const lines = t.hero.title.split('\n');
       margin-top: auto;
     }
 
+    /* hero_astra: 18/27, 480 wide. */
     .hero__intro {
-      max-width: 440px;
-      margin-top: 14px;
+      max-width: 480px;
+      margin-top: 0;
+      font-size: 18px;
+      line-height: 27px;
+      letter-spacing: -0.1px;
     }
   }
 
