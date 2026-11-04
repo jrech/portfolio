@@ -23,6 +23,19 @@ const { href = localePath(getLocale(Astro), '/') } = Astro.props;
     line-height: normal;
     color: var(--color-text-display);
     white-space: nowrap;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  /* Orange on hover (Jonas, 2026-11-04). */
+  .wordmark:hover,
+  .wordmark:focus-visible {
+    color: var(--color-accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wordmark {
+      transition: none;
+    }
   }
 
   /* The ® glyph renders as a raised mark in Rethink Sans at this size. */
