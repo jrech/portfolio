@@ -88,6 +88,8 @@ const projects = defineCollection({
             caption: z.string().optional(),
             /** Mockup only: CSS object-position of the cropped image (default "center 42%"). */
             position: z.string().optional(),
+            /** Mockup only: CSS aspect-ratio of the frame (default 4 / 3). */
+            ratio: z.string().optional(),
             /** `\n` forces a line break. */
             title: z.string(),
             /** Brief for the final capture, shown while there is no image. */

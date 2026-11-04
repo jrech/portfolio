@@ -45,13 +45,15 @@ outcome:
     - "Visitors can see what the laundry offers, find out how it works and send an enquiry. I designed and built the site from scratch, with layouts for both desktop and mobile."
 
 visuals:
-  - variant: screens
+  - variant: mockup
     after: challenge
+    # Pre-composed 16:9 board of three page sections (first_impr.webp, Jonas 2026-11-04).
+    ratio: 1800 / 1013
     number: 1
     title: A clear first impression
     brief: The full Prádelna Krkonoše homepage, shown as three columns from top to bottom.
     image:
-      src: ../../../assets/images/pradelna-case-website.webp
+      src: ../../../assets/images/pradelna-case-first-impression.webp
       alt: The Prádelna Krkonoše homepage from top to bottom, from the hero with the delivery van to the services, customer types and footer
   - variant: mockup
     after: solution
