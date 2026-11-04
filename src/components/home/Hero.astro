@@ -28,14 +28,15 @@ const lines = t.hero.title.split('\n');
         {lines.map((line) => <span class="hero__line">{line}</span>)}
         <span class="hero__line hero__accent">{t.hero.titleAccent}</span>
       </h1>
+      <p class="hero__intro" data-reveal="fade">{t.hero.intro}</p>
     </div>
 
+    <!-- Centred scroll cue, arrow under the text (Jonas's layout, 2026-11-04). -->
     <div class="hero__base">
-      <p class="hero__intro" data-reveal="fade">{t.hero.intro}</p>
       <div class="hero__baseline" data-reveal="fade">
         <a class="hero__explore" href="#work">
           <span>{t.hero.explore}</span>
-          <Icon name="arrow-down" size={16} />
+          <Icon name="arrow-down" size={14} />
         </a>
       </div>
     </div>
@@ -156,13 +157,13 @@ const lines = t.hero.title.split('\n');
     color: var(--color-text-secondary);
   }
 
-  /* Export: Rethink Sans Bold 126/113, tracking -7.2px (≈ -0.057em), caps, centred. */
+  /* Rethink Sans Bold (112 on desktop per Jonas's 2026-11-04 layout; export had 126), tracking -7.2px (≈ -0.057em), caps, centred. */
   .hero__title {
     display: flex;
     flex-direction: column;
     align-items: center;
     font-family: var(--font-display);
-    font-size: clamp(52px, 19.5vw, 126px);
+    font-size: clamp(52px, 19.5vw, 112px);
     font-weight: var(--weight-bold);
     line-height: 0.897;
     letter-spacing: -0.057em;
@@ -181,30 +182,29 @@ const lines = t.hero.title.split('\n');
 
   .hero__base {
     display: flex;
-    flex-direction: column;
-    gap: 24px;
+    justify-content: center;
   }
 
+  /* Short centred subline under the headline. */
   .hero__intro {
-    max-width: 382px;
+    max-width: 380px;
+    margin-top: 8px;
     font-size: 16px;
     line-height: 24px;
     color: var(--color-text-secondary);
-    text-wrap: pretty;
+    text-wrap: balance;
   }
 
-  /* Only the link down to the work, on the right (Jonas, 2026-11-03). */
   .hero__baseline {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 16px;
+    justify-content: center;
   }
 
   .hero__explore {
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     flex-shrink: 0;
     font-size: 15px;
     font-weight: var(--weight-medium);
@@ -251,9 +251,6 @@ const lines = t.hero.title.split('\n');
       line-height: 25px;
     }
 
-    .hero__base {
-      gap: 32px;
-    }
   }
 
   /* Desktop (1440 × 960 frame): intro and baseline pinned to the bottom edge. */
@@ -286,18 +283,13 @@ const lines = t.hero.title.split('\n');
       pointer-events: auto;
     }
 
-    /* Intro left, "Koukněte dál" right, on one bottom line (Jonas, 2026-11-03). */
     .hero__base {
       margin-top: auto;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 46px;
     }
 
-    /* Two lines on desktop (Jonas, 2026-11-03). */
     .hero__intro {
-      max-width: 620px;
+      max-width: 440px;
+      margin-top: 14px;
     }
   }
 
