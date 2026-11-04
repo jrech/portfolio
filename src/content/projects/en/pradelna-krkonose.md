@@ -45,22 +45,34 @@ outcome:
     - "Visitors can see what the laundry offers, find out how it works and send an enquiry. I designed and built the site from scratch, with layouts for both desktop and mobile."
 
 visuals:
-  - variant: screens
+  - variant: mockup
     after: challenge
+    # Pre-composed 16:9 board of three page sections (first_impr.webp, Jonas 2026-11-04).
+    ratio: 1800 / 1013
     number: 1
     title: A clear first impression
     brief: The full Prádelna Krkonoše homepage, shown as three columns from top to bottom.
     image:
-      src: ../../../assets/images/pradelna-case-website.webp
+      src: ../../../assets/images/pradelna-case-first-impression.webp
       alt: The Prádelna Krkonoše homepage from top to bottom, from the hero with the delivery van to the services, customer types and footer
   - variant: mockup
     after: solution
     number: 3
     title: The details make it work
     brief: The mobile website in a phone mockup.
+    # Portrait shot in the 4:3 frame: keep the phone centred.
+    position: center 59%
     image:
-      src: ../../../assets/images/pradelna-case-mobile.webp
-      alt: The Prádelna Krkonoše website on a phone, showing the headline “Čisté prádlo včas. I v plné sezóně.” and a contact button
+      src: ../../../assets/images/pradelna-case-phone.webp
+      alt: The Prádelna Krkonoše website on a phone lying on a bench, with the headline “Čisté prádlo včas. I v plné sezóně.”
+  - variant: mockup
+    after: testimonial
+    number: 4
+    title: For hotels and guesthouses
+    brief: The customer-type sections on a tablet.
+    image:
+      src: ../../../assets/images/pradelna-case-tablet.webp
+      alt: Hands holding a tablet showing the Prádelna Krkonoše sections for hotels and wellness and for guesthouses and apartments
 
 # Approved for publication by the client (Jonas, 2026-10-28). Also shown on the homepage.
 # EN: faithful translation of the Czech original (Jonas OK'd translating, 2026-11-04).
@@ -72,8 +84,10 @@ testimonial:
 
 # Order from the Pen frame "More selected work".
 related: [starobrnensky-senk, grind]
-# Homepage card, related cards and case-study hero (terrace mockup, Jonas 2026-11-01).
+# Homepage card, related cards and case-study hero (dark laptop mockup, Jonas 2026-11-04).
 cover:
-  src: ../../../assets/images/pradelna-cover.webp
-  alt: The Prádelna Krkonoše website on a laptop on a wooden terrace table, with the Krkonoše mountains behind it
+  src: ../../../assets/images/pradelna-case-hero-laptop.webp
+  # Wide card crops: keep the laptop screen's top edge in frame.
+  position: center 35%
+  alt: The Prádelna Krkonoše website on a laptop on a dark side table
 ---

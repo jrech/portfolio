@@ -36,6 +36,7 @@ const disciplines = formatServices(services);
           widths={fitWidths([640, 960, 1320, 2640], cover.src.width)}
           sizes={featured ? '(min-width: 1440px) 1320px, 100vw' : '(min-width: 1024px) 50vw, 100vw'}
           quality={100}
+          style={cover.position ? { objectPosition: cover.position } : undefined}
         />
       ) : (
         <slot name="media" />

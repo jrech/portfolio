@@ -45,22 +45,34 @@ outcome:
     - "Návštěvníci uvidí, co prádelna nabízí, zjistí, jak to funguje, a pošlou poptávku. Web jsem navrhl a postavil od nuly, s rozvržením pro počítač i mobil."
 
 visuals:
-  - variant: screens
+  - variant: mockup
     after: challenge
+    # Pre-composed 16:9 board of three page sections (first_impr.webp, Jonas 2026-11-04).
+    ratio: 1800 / 1013
     number: 1
     title: Jasný první dojem
     brief: Celá homepage Prádelny Krkonoše ve třech sloupcích odshora dolů.
     image:
-      src: ../../../assets/images/pradelna-case-website.webp
+      src: ../../../assets/images/pradelna-case-first-impression.webp
       alt: Homepage Prádelny Krkonoše odshora dolů, od úvodu s dodávkou přes služby a typy zákazníků až po patičku
   - variant: mockup
     after: solution
     number: 3
     title: Na detailech záleží
     brief: Mobilní verze webu v mockupu telefonu.
+    # Portrait shot in the 4:3 frame: keep the phone centred.
+    position: center 59%
     image:
-      src: ../../../assets/images/pradelna-case-mobile.webp
-      alt: Web Prádelny Krkonoše v mobilu s nadpisem „Čisté prádlo včas. I v plné sezóně.“ a tlačítkem pro kontakt
+      src: ../../../assets/images/pradelna-case-phone.webp
+      alt: Web Prádelny Krkonoše v mobilu položeném na lavičce, s nadpisem „Čisté prádlo včas. I v plné sezóně.“
+  - variant: mockup
+    after: testimonial
+    number: 4
+    title: Pro hotely i penziony
+    brief: Sekce pro typy zákazníků na tabletu.
+    image:
+      src: ../../../assets/images/pradelna-case-tablet.webp
+      alt: Tablet v rukou se sekcemi webu Prádelny Krkonoše pro hotely a wellness a pro penziony a apartmány
 
 # Schváleno klientem ke zveřejnění (Jonas, 2026-10-28).
 testimonial:
@@ -70,8 +82,10 @@ testimonial:
   lang: cs
 
 related: [starobrnensky-senk, grind]
-# Homepage card, related cards and case-study hero (terrace mockup, Jonas 2026-11-01).
+# Homepage card, related cards and case-study hero (dark laptop mockup, Jonas 2026-11-04).
 cover:
-  src: ../../../assets/images/pradelna-cover.webp
-  alt: Web Prádelny Krkonoše na notebooku na dřevěném stole na terase, v pozadí hory Krkonoš
+  src: ../../../assets/images/pradelna-case-hero-laptop.webp
+  # Wide card crops: keep the laptop screen's top edge in frame.
+  position: center 35%
+  alt: Web Prádelny Krkonoše na notebooku na tmavém stolku
 ---
