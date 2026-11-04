@@ -34,6 +34,11 @@ const { decisions } = Astro.props;
     border-top: 1px solid var(--color-rule);
   }
 
+  /* Only rules between rows; none above the first (Jonas, 2026-11-04). */
+  .decision:first-child {
+    border-top: 0;
+  }
+
   .decision__number {
     width: 48px;
     font-size: 12px;
@@ -59,12 +64,17 @@ const { decisions } = Astro.props;
   @media (min-width: 1024px) {
     .decision {
       flex-direction: row;
+      align-items: center;
       gap: 32px;
       padding-block: 32px;
     }
 
+    /* Number vertically centred on the title and ~half the old gap to it
+       (Jonas, 2026-11-04): 48px box -> 16px. */
     .decision__number {
       flex-shrink: 0;
+      width: 16px;
+      line-height: 1;
     }
 
     .decision__title {
