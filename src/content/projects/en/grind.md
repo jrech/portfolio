@@ -5,8 +5,8 @@ title: GRIND.
 client: GRIND.
 services: [Web design, Art direction]
 status: in-preparation
-description: A bold visual identity and digital concept built around the energy of strength training.
-positioning: A bold visual identity and digital concept built around the energy of strength training.
+description: A bold visual identity and digital concept for a skate magazine that lives on the street.
+positioning: A bold visual identity and digital concept for a skate magazine that lives on the street.
 order: 3
 cover:
   src: ../../../assets/images/project-grind.webp
