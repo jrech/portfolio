@@ -39,7 +39,6 @@
     "explore": "Koukněte dál"
   },
   "work": {
-    "eyebrow": "Pár věcí, které jsem vytvořil",
     "title": "Dobrá práce. Skutečný dopad.",
     "years": "2024 — 2026"
   },
@@ -47,7 +46,6 @@
     "text": "Dobrý web ukáže, čím jste jiní a proč si zákazníci mají vybrat právě vás."
   },
   "services": {
-    "eyebrow": "Co spolu můžeme postavit",
     "title": "Všechno, co potřebujete.\nPod jednou střechou.",
     "lead": "Strategie, design a vývoj.\nJeden jasný směr.",
     "items": [
@@ -74,7 +72,6 @@
     ]
   },
   "about": {
-    "eyebrow": "O mně",
     "title": "Žádná agentura.\nČlověk na vaší straně.",
     "photoLabel": "Jonas na horské stezce",
     "hello": "Ahoj, jsem Jonas.",
@@ -85,7 +82,6 @@
     "photoCaption": "Jo, to jsem já."
   },
   "process": {
-    "eyebrow": "Od prvního hovoru po spuštění",
     "title": "Dobrá práce začíná\ndobrými otázkami.",
     "steps": [
       {
@@ -111,7 +107,6 @@
     ]
   },
   "faq": {
-    "eyebrow": "Možná vás zajímá",
     "title": "Než\nzačneme.",
     "note": "Ještě vám něco vrtá hlavou?\nProbereme to spolu.",
     "items": [
@@ -138,7 +133,6 @@
     ]
   },
   "footer": {
-    "eyebrow": "Vaše další kapitola",
     "headline": "Máte něco v plánu?",
     "lead": "Pojďme probrat vaši firmu a to, co ji čeká dál.",
     "writeMe": "NAPIŠTE MI",
@@ -193,7 +187,6 @@
     "footerLead": "Máte něco v plánu? Pojďme to probrat."
   },
   "notFound": {
-    "eyebrow": "CHYBA 404 / STRÁNKA NENALEZENA",
     "title": "Trochu jsme sjeli z cesty.",
     "text": "Tahle stránka se přestěhovala, nebo nikdy neexistovala. Pojďme vás vrátit k něčemu dobrému.",
     "back": "Zpět na úvod",

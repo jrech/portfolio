@@ -19,7 +19,7 @@ src/
   styles/global.css        reset, base, .caption, .container, .grid, a11y helpers
   layouts/BaseLayout.astro html shell, fonts, skip link, header/footer slots
   components/
-    ui/        CtaButton, Eyebrow, Icon (Lucide), MediaFrame, Wordmark
+    ui/        CtaButton, Icon (Lucide), MediaFrame, Wordmark
     site/      SiteHeader, MenuOverlay (fullscreen <dialog>), SiteFooter
     ui/        + ArrowBadge, Lines
     home/      homepage sections

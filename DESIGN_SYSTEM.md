@@ -135,9 +135,9 @@ Content: caption `TAKE A LOOK AROUND`; links `01 Work · 02 Services · 03 About
 
 Pen reusable component `GBUkS`: height 56, padding `8 8 8 22`, gap 26, radius 28, `--color-accent` fill; label 18/700 `--color-ink`; 40px `--color-text-display` circle with 20px Lucide `arrow-up-right`. `block` prop stretches it full width with `space-between` (mobile hero).
 
-### Eyebrow (`Eyebrow.astro`) — Implemented
+### No eyebrows (Jonas, 2026-11-08)
 
-`[NN]` orange index + secondary caption, gap 12 (e.g. `[01] A few things I’ve made`). `accent` variant without index (`YOUR NEXT CHAPTER`).
+Section headings stand on their own: no small uppercase kicker or `[NN]` index above an H2, on the homepage, the case studies, the footer invitation or the 404 page. The old `Eyebrow.astro` component and its copy keys are gone; don't bring the pattern back. Numbers that belong to a list (service rows, process steps, footer links, case visuals) stay.
 
 ### Media frame (`MediaFrame.astro`) — Implemented (placeholder)
 
@@ -166,15 +166,15 @@ Portrait is a neutral placeholder; pass final media through the `media` slot.
 
 Top rule, `--color-background`, `id="contact"`.
 
-- **`centered`** (homepage desktop, Cream rhythm frame): `YOUR NEXT CHAPTER` (accent) → 80px headline broken after "something" → lead *"Let’s talk about your business and what comes next."* → CTA, all centered in a `104 160 108` block; then centered bio (17/26, max 696) and 36px email; rule; `EXPLORE` / `ELSEWHERE` columns (gap 14, 15px links); rule; legal row `© 2026 JONAS RECH · Privacy policy · EN / CZ · Back to top ↑`.
-- **`split`** (case studies): eyebrow, headline left + CTA right (gap 64), supporting line, email, link rows, legal row. Supported now; used from Phase 2.
-- **Tablet / mobile** (both variants): left-aligned stack — `[06] Your next chapter`, headline, CTA, secondary email, inline link row, social row, legal (row on tablet; stacked on mobile in the order copyright, privacy, back to top, language). Gaps: tablet 44 / padding 80; mobile 36 / padding 64; email → links always 40.
+- **`centered`** (homepage desktop, Cream rhythm frame): 80px headline broken after "something" → lead *"Let’s talk about your business and what comes next."* → CTA, all centered in a `104 160 108` block; then centered bio (17/26, max 696) and 36px email; rule; `EXPLORE` / `ELSEWHERE` columns (gap 14, 15px links); rule; legal row `© 2026 JONAS RECH · Privacy policy · EN / CZ · Back to top ↑`.
+- **`split`** (case studies): headline left + CTA right (gap 64), supporting line, email, link rows, legal row. Supported now; used from Phase 2.
+- **Tablet / mobile** (both variants): left-aligned stack — headline, CTA, secondary email, inline link row, social row, legal (row on tablet; stacked on mobile in the order copyright, privacy, back to top, language). Gaps: tablet 44 / padding 80; mobile 36 / padding 64; email → links always 40.
 
 ### Homepage sections (Phase 2) — Implemented
 
 Order (from the Pen frame): Hero → Selected work → Proposition → Services → Testimonial → About → Process → FAQ → Contact/footer. Copy lives in `src/data/home.ts`; components in `src/components/home/`.
 
-Every section sits on the one `--color-background` (#10100F; Jonas, 2026-10-29). `.theme-cream` = cream surface that **remaps** `--color-text-primary/-display/-secondary` and `--color-rule` to the cream tokens, so captions, eyebrows and rules adapt without variants.
+Every section sits on the one `--color-background` (#10100F; Jonas, 2026-10-29). `.theme-cream` = cream surface that **remaps** `--color-text-primary/-display/-secondary` and `--color-rule` to the cream tokens, so captions and rules adapt without variants.
 
 | Section (id) | Surface | Padding D / T / M | Key values D · T · M |
 |---|---|---|---|
@@ -226,7 +226,7 @@ Case-study decisions and deviations:
 - **Prádelna Krkonoše (2026-11-01)**: built from Jonas's export `casestudy desktop.html`. Visuals are placed per project (`after` + `number` in the content file): screens after the challenge (01), phone mockup after the solution (03), no visual 02. In the export the 03 caption sat alone above the outcome and the mockup inside it; here the mockup carries its caption, like visual 01. Metadata shows `YEAR` when a year is set, otherwise `STATUS / YEAR`.
 
 - **Gutter**: 60 px like the rest of the site, not the 64 px of the case frames (see discrepancy 8).
-- **Eyebrow labels**: Pen has "The challenge" without a period and the other three with one; all four use the period.
+- **Section labels** ("The challenge", "The approach" …): removed with the eyebrows (2026-11-08); a label now only appears as the H2 when a section has no own heading (the solution).
 - **Visual placeholder photos + tint** in the frames are reference images; they are not used. A supplied `image` fills the frame and replaces the brief.
 - **Visual captions** are `nowrap` in the mobile frame and run past 390 px; implemented wrapping.
 - **Related card titles**: 28 px for Starobrněnský šenk but 30 px for GRIND on desktop (24/28 on mobile); unified to 28 desktop / 24 mobile.
@@ -282,7 +282,7 @@ Honor `prefers-reduced-motion`: no parallax, reveals, text-roll or autoplay prev
 
 1. **Background / ink:** Pen variables say `#171817`; every approved frame and export uses `#10100F` (and `#0F0F0E` for Selected projects). Implemented `#10100F`. → Update the Pen variables, or confirm `#171817` is intended.
 2. **Desktop homepage frame missing from `portfo.pen`:** the export is "2. Quiet confidence — Cream rhythm", but the `.pen` file only contains "1. Quiet confidence". Their footers differ (Cream rhythm: centered, with bio and EXPLORE/ELSEWHERE labels; Quiet confidence: left headline + right CTA). Implemented the export (newer). → Re-save `portfo.pen` so it contains the approved frame.
-3. **Footer content differs by breakpoint:** desktop has the bio, lead line and column labels; tablet/mobile omit them and use an `[06]` eyebrow. Implemented as designed (content hidden below desktop). → Confirm the bio should really disappear on mobile.
+3. **Footer content differs by breakpoint:** desktop has the bio, lead line and column labels; tablet/mobile omit them (the `[06]` eyebrow is gone since 2026-11-08). Implemented as designed (content hidden below desktop). → Confirm the bio should really disappear on mobile.
 4. **Mobile footer `FAQ` link** is Space Mono 10px in `#D5D3CA` while its siblings are Rethink Sans 13px. Treated as a design slip: implemented consistently with the other links.
 5. **Social labels in the menu:** Rethink Sans 11/700 on desktop, Space Mono on tablet/mobile. Implemented per frame. → Pick one.
 6. **Explore the work anchor:** Rethink Sans on desktop, Space Mono on tablet/mobile. Implemented per frame.

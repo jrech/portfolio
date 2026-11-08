@@ -221,7 +221,7 @@ function scrubStatement() {
 }
 
 function revealContent() {
-  const selector = '[data-reveal="fade"], .eyebrow, .footer__lead, .footer__email, .footer__legal, .footer__invite .cta';
+  const selector = '[data-reveal="fade"], .footer__lead, .footer__email, .footer__legal, .footer__invite .cta';
   const candidates = gsap.utils.toArray<HTMLElement>(selector).filter(el =>
     !el.closest('.hero, #site-menu, .footer, .services, .about, .testimonial') && visible(el) &&
     !(matchMedia('(min-width: 1024px)').matches && el.matches('.step, .faq__item')));
@@ -271,13 +271,12 @@ function revealServices() {
   const intro = section.querySelector<HTMLElement>('.services__intro');
   const heading = section.querySelector<HTMLElement>('[data-reveal="heading"]');
   if (!intro || !heading) return;
-  const eyebrow = [...intro.querySelectorAll<HTMLElement>('.eyebrow')].filter(visible);
   const lead = [...intro.querySelectorAll<HTMLElement>('.services__lead')].filter(visible);
   const rows = [...section.querySelectorAll<HTMLElement>('.service')].filter(visible);
 
   let previous: Promise<void> = Promise.resolve();
   if (!passed(intro)) {
-    gsap.set([...eyebrow, ...lead], { opacity: 0, y: MOTION.distance });
+    gsap.set(lead, { opacity: 0, y: MOTION.distance });
     gsap.set(heading, { opacity: 0 });
     previous = new Promise<void>(resolve => {
       ScrollTrigger.create({
@@ -285,18 +284,15 @@ function revealServices() {
         onEnter: async () => {
           await document.fonts.ready;
           if (!root.classList.contains('js-motion') || passed(intro)) {
-            gsap.set([heading, ...eyebrow, ...lead], { clearProps: 'opacity,transform' });
+            gsap.set([heading, ...lead], { clearProps: 'opacity,transform' });
             resolve();
             return;
           }
           const reveal = splitHeading(heading);
           const timeline = gsap.timeline();
           gsap.delayedCall(0.35, resolve);
-          if (eyebrow.length) timeline.to(eyebrow, {
-            opacity: 1, y: 0, duration: 0.45, ease: EASE, clearProps: 'transform,opacity',
-          });
           timeline.set(heading, { opacity: 1 });
-          timeline.to(reveal.targets, reveal.vars, eyebrow.length ? '-=0.3' : 0);
+          timeline.to(reveal.targets, reveal.vars, 0);
           if (lead.length) timeline.to(lead, {
             opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
             clearProps: 'transform,opacity',
@@ -426,14 +422,13 @@ function revealTestimonial() {
   });
 }
 
-// About plays in reading order instead of all at once: eyebrow + H2, then the
+// About plays in reading order instead of all at once: the H2, then the
 // portrait, then the text column beside it (Jonas, 2026-10-29). Each block still
 // waits for its own entry, so on stacked layouts nothing finishes off screen.
 function revealAbout() {
   const section = document.querySelector<HTMLElement>('.about');
   const heading = section?.querySelector<HTMLElement>('[data-reveal="heading"]');
   if (!section || !heading || passed(heading)) return;
-  const eyebrow = [...section.querySelectorAll<HTMLElement>('.about__heading .eyebrow')].filter(visible);
   const blocks = gsap.utils.toArray<HTMLElement>('.about__portrait, .about__intro').filter(visible);
   // The text column itself stays put; its heading, paragraphs and action come in one
   // after another (Jonas, 2026-10-29). `.about__links` is display: contents on mobile,
@@ -443,7 +438,7 @@ function revealAbout() {
       .filter((el): el is HTMLElement => el instanceof HTMLElement && visible(el))
     : [block];
   gsap.set(heading, { opacity: 0 });
-  gsap.set([...eyebrow, ...blocks.flatMap(itemsOf)], { opacity: 0, y: MOTION.distance });
+  gsap.set(blocks.flatMap(itemsOf), { opacity: 0, y: MOTION.distance });
 
   let previous = new Promise<void>(resolve => {
     ScrollTrigger.create({
@@ -453,9 +448,8 @@ function revealAbout() {
         if (!root.classList.contains('js-motion')) return resolve();
         const reveal = splitHeading(heading);
         const timeline = gsap.timeline({ defaults: { ease: EASE } });
-        if (eyebrow.length) timeline.to(eyebrow, { opacity: 1, y: 0, duration: 0.45, clearProps: 'transform,opacity' });
         timeline.set(heading, { opacity: 1 });
-        timeline.to(reveal.targets, reveal.vars, eyebrow.length ? '-=0.3' : 0);
+        timeline.to(reveal.targets, reveal.vars, 0);
         // The next block may start once the heading is well under way.
         timeline.call(resolve, [], '-=0.45');
       },
@@ -486,7 +480,6 @@ function revealFooter() {
   const invite = footer.querySelector<HTMLElement>('.footer__invite');
   if (!heading || !invite) return;
 
-  const eyebrow = [...invite.querySelectorAll<HTMLElement>('.eyebrow')].filter(visible);
   const action = invite.querySelector<HTMLElement>('.cta');
   const lead = invite.querySelector<HTMLElement>('.footer__lead');
   const support = [lead, action]
@@ -497,7 +490,7 @@ function revealFooter() {
   // leaving a long trail of invisible content.
   let previous: Promise<void> = Promise.resolve();
   if (!passed(invite)) {
-    gsap.set([...eyebrow, ...support], { opacity: 0, y: MOTION.distance });
+    gsap.set(support, { opacity: 0, y: MOTION.distance });
     gsap.set(heading, { opacity: 0 });
     previous = new Promise<void>(resolve => {
       ScrollTrigger.create({
@@ -505,18 +498,15 @@ function revealFooter() {
         onEnter: async () => {
           await document.fonts.ready;
           if (!root.classList.contains('js-motion') || passed(invite)) {
-            gsap.set([heading, ...eyebrow, ...support], { clearProps: 'opacity,transform' });
+            gsap.set([heading, ...support], { clearProps: 'opacity,transform' });
             resolve();
             return;
           }
           const reveal = splitHeading(heading);
           const timeline = gsap.timeline();
           gsap.delayedCall(0.35, resolve);
-          if (eyebrow.length) timeline.to(eyebrow, {
-            opacity: 1, y: 0, duration: 0.45, ease: EASE, clearProps: 'transform,opacity',
-          });
           timeline.set(heading, { opacity: 1 });
-          timeline.to(reveal.targets, reveal.vars, eyebrow.length ? '-=0.3' : 0);
+          timeline.to(reveal.targets, reveal.vars, 0);
           support.forEach(el => timeline.to(el, {
             opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
             clearProps: 'transform,opacity',

@@ -1,5 +1,4 @@
 ---
-import Eyebrow from '../ui/Eyebrow.astro';
 import ProjectCard from './ProjectCard.astro';
 import { getProjects } from '@/lib/projects';
 import { getLocale, useT } from '@/i18n';
@@ -11,10 +10,7 @@ const projects = await getProjects(getLocale(Astro));
 <section id="work" class="work" aria-labelledby="work-title">
   <div class="work__inner container">
     <header class="work__heading">
-      <div class="work__title-group">
-        <Eyebrow index="[01]">{t.work.eyebrow}</Eyebrow>
-        <h2 id="work-title" class="work__title" data-reveal="heading">{t.work.title}</h2>
-      </div>
+      <h2 id="work-title" class="work__title" data-reveal="heading">{t.work.title}</h2>
       <p class="caption">{t.work.years}</p>
     </header>
 
@@ -57,12 +53,6 @@ const projects = await getProjects(getLocale(Astro));
     gap: 18px;
   }
 
-  .work__title-group {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
   .work__title {
     font-size: 36px;
     font-weight: var(--weight-medium);
@@ -96,10 +86,6 @@ const projects = await getProjects(getLocale(Astro));
       flex-direction: row;
       align-items: flex-end;
       justify-content: space-between;
-    }
-
-    .work__title-group {
-      gap: 16px;
     }
 
     .work__title {

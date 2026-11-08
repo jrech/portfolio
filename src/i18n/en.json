@@ -39,7 +39,6 @@
     "explore": "See what I mean"
   },
   "work": {
-    "eyebrow": "A few things I’ve made",
     "title": "Good work. Real impact.",
     "years": "2024 — 2026"
   },
@@ -47,7 +46,6 @@
     "text": "A good website shows what makes you different and why customers should choose you."
   },
   "services": {
-    "eyebrow": "What we can build together",
     "title": "Everything you need.\nUnder one roof.",
     "lead": "Strategy, design and development.\nOne clear direction.",
     "items": [
@@ -74,7 +72,6 @@
     ]
   },
   "about": {
-    "eyebrow": "About me",
     "title": "Not an agency.\nA person in your corner.",
     "photoLabel": "Jonas on a mountain trail",
     "hello": "Hi, I’m Jonas.",
@@ -85,7 +82,6 @@
     "photoCaption": "Yep, that’s me."
   },
   "process": {
-    "eyebrow": "From hello to launch",
     "title": "Good work starts\nwith good questions.",
     "steps": [
       {
@@ -111,7 +107,6 @@
     ]
   },
   "faq": {
-    "eyebrow": "You might be wondering",
     "title": "Before we\nget started.",
     "note": "Still wondering about something?\nLet’s talk it through.",
     "items": [
@@ -138,7 +133,6 @@
     ]
   },
   "footer": {
-    "eyebrow": "Your next chapter",
     "headline": "Have something in mind?",
     "lead": "Let’s talk about your business and what comes next.",
     "writeMe": "WRITE ME",
@@ -193,7 +187,6 @@
     "footerLead": "Have something in mind? Let’s talk."
   },
   "notFound": {
-    "eyebrow": "ERROR 404 / PAGE NOT FOUND",
     "title": "A little off track.",
     "text": "This page has moved, or never existed. Let’s get you back to something good.",
     "back": "Back to home",

@@ -1,5 +1,4 @@
 ---
-import Eyebrow from '../ui/Eyebrow.astro';
 import Icon from '../ui/Icon.astro';
 import Lines from '../ui/Lines.astro';
 import { useT } from '@/i18n';
@@ -12,7 +11,6 @@ const steps = t.process.steps;
   <div class="process__inner container">
     <header class="process__intro">
       <div class="process__heading">
-        <Eyebrow index="[04]">{t.process.eyebrow}</Eyebrow>
         <h2 id="process-title" class="process__title" data-reveal="heading"><Lines text={t.process.title} /></h2>
       </div>
     </header>

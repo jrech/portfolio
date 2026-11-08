@@ -1,16 +1,14 @@
 ---
 /**
- * Numbered editorial section (Pen: "The challenge. section" …): eyebrow, then
- * heading + 552px reading column side by side on desktop. Extra content
+ * Editorial section (Pen: "The challenge. section" …): heading + 552px reading column side by side on desktop. Extra content
  * (e.g. the solution's decision list) goes in the default slot.
  * Without `content` it renders a clearly marked "content to follow" placeholder.
  */
-import Eyebrow from '../ui/Eyebrow.astro';
 import Lines from '../ui/Lines.astro';
 import { useT } from '@/i18n';
 
 interface Props {
-  index: string;
+  /** Fallback heading when the content has none (e.g. "The solution"). */
   label: string;
   content?: { heading?: string; paragraphs: string[] };
   /** Outcome: no bottom padding on mobile, equal padding on desktop. */
@@ -19,13 +17,12 @@ interface Props {
   id: string;
 }
 
-const { index, label, content, last = false } = Astro.props;
+const { label, content, last = false } = Astro.props;
 const id = `case-${Astro.props.id}`;
 const t = useT(Astro).case;
 ---
 
 <section class:list={['case-section container', { 'case-section--last': last }]} aria-labelledby={id}>
-  <Eyebrow index={index}>{label}</Eyebrow>
   <div class="case-section__columns">
     <h2 id={id} class="case-section__heading" data-reveal="heading"><Lines text={content?.heading ?? label} /></h2>
     <div class="case-section__reading" data-reveal="fade">

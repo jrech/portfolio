@@ -1,5 +1,4 @@
 ---
-import Eyebrow from '../ui/Eyebrow.astro';
 import Lines from '../ui/Lines.astro';
 import { useT } from '@/i18n';
 
@@ -11,7 +10,6 @@ const services = t.services.items;
   <div class="services__inner container">
     <header class="services__intro">
       <div class="services__headline">
-        <Eyebrow index="[02]">{t.services.eyebrow}</Eyebrow>
         <h2 id="services-title" class="services__title" data-reveal="heading"><Lines text={t.services.title} /></h2>
       </div>
       <p class="services__lead" data-reveal="fade"><Lines text={t.services.lead} /></p>

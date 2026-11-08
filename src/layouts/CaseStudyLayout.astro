@@ -48,18 +48,18 @@ const visualsAfter = (section: Placement) =>
 
   <CaseHero project={project} />
 
-  <CaseSection id="challenge" index="[01]" label={t.challenge} content={challenge} />
+  <CaseSection id="challenge" label={t.challenge} content={challenge} />
   {visualsAfter('challenge').map((visual) => <CaseVisual {...visual} />)}
 
-  <CaseSection id="approach" index="[02]" label={t.approach} content={approach} />
+  <CaseSection id="approach" label={t.approach} content={approach} />
   {visualsAfter('approach').map((visual) => <CaseVisual {...visual} />)}
 
-  <CaseSection id="solution" index="[03]" label={t.solution} content={solution}>
+  <CaseSection id="solution" label={t.solution} content={solution}>
     {solution && solution.decisions.length > 0 && <CaseDecisions decisions={solution.decisions} />}
   </CaseSection>
   {visualsAfter('solution').map((visual) => <CaseVisual {...visual} />)}
 
-  <CaseSection id="outcome" index="[04]" label={t.outcome} content={outcome} last />
+  <CaseSection id="outcome" label={t.outcome} content={outcome} last />
 
   {testimonial && <Testimonial testimonial={testimonial} />}
   {visualsAfter('testimonial').map((visual, i, all) => <CaseVisual {...visual} spaced={i === all.length - 1} />)}
