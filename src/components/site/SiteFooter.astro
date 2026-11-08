@@ -6,7 +6,6 @@
  * (which pass their own headline and lead).
  */
 import CtaButton from '../ui/CtaButton.astro';
-import Eyebrow from '../ui/Eyebrow.astro';
 import LangSwitch from '../ui/LangSwitch.astro';
 import { footerNav, site, socials } from '@/data/site';
 import Roll from '../ui/Roll.astro';
@@ -16,12 +15,11 @@ const t = useT(Astro);
 const locale = getLocale(Astro);
 
 interface Props {
-  eyebrow?: string;
   headline?: string;
   lead?: string;
 }
 
-const { eyebrow = t.footer.eyebrow, headline = t.footer.headline, lead = t.footer.lead } = Astro.props;
+const { headline = t.footer.headline, lead = t.footer.lead } = Astro.props;
 const pad = (n: number) => String(n).padStart(2, '0');
 ---
 
@@ -32,7 +30,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
   <div class="footer__ambient" aria-hidden="true" data-footer-aurora></div>
   <div class="footer__inner container">
     <section class="footer__invite" aria-labelledby="footer-title">
-      <Eyebrow accent class="footer__eyebrow">{eyebrow.toUpperCase()}</Eyebrow>
       <h2 id="footer-title" class="footer__title" data-reveal="heading">{headline}</h2>
       {lead && <p class="footer__lead">{lead}</p>}
       <CtaButton href="#contact" label={t.cta.startProject} />

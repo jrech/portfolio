@@ -36,6 +36,6 @@
 
 ## Verification scope
 Code audit covered motion.ts, global styles, base layout, tokens, hero, services,
-process, FAQ, project cards, about, testimonial, CTA, eyebrow and footer.
+process, FAQ, project cards, about, testimonial, CTA and footer.
 Deployment build is the compilation gate. Visual timing on a real mobile and desktop
 still needs a browser review; an award-level result cannot be established by code alone.

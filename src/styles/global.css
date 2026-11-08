@@ -111,7 +111,7 @@ body {
 /* ---------- Surface themes ---------- */
 
 /* Cream rhythm (Services, Process): remaps the text/rule tokens so shared
-   components (captions, eyebrows, rules) adapt without extra variants. */
+   components (captions, rules) adapt without extra variants. */
 .theme-cream {
   --color-text-primary: var(--color-cream-ink);
   --color-text-display: var(--color-cream-ink);

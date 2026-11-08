@@ -1,5 +1,4 @@
 ---
-import Eyebrow from '../ui/Eyebrow.astro';
 import CtaButton from '../ui/CtaButton.astro';
 import Lines from '../ui/Lines.astro';
 import { getLocale, localePath, useT } from '@/i18n';
@@ -11,7 +10,6 @@ const locale = getLocale(Astro);
 <section id="about" class="about" aria-labelledby="about-title">
   <div class="about__inner container">
     <header class="about__heading">
-      <Eyebrow index="[03]">{t.about.eyebrow}</Eyebrow>
       <h2 id="about-title" class="about__title" data-reveal="heading"><Lines text={t.about.title} /></h2>
     </header>
 
