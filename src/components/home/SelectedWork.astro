@@ -92,7 +92,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
   }
 
   .work__gallery {
-    --panel-gap: 8px;
+    /* Stacked cards need air so they don't read as one block (Jonas, 2026-11-18); the desktop row keeps the design's 8. */
+    --panel-gap: 32px;
     /* Open panel vs. closed panels (flex-grow): ~half the row at 1440, less on small laptops. */
     --open-grow: 2.4;
     display: grid;
@@ -161,6 +162,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     }
 
     .work__gallery {
+      --panel-gap: 8px;
       display: flex;
       flex-direction: row;
       height: clamp(440px, 36vw, 520px);
