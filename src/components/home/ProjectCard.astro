@@ -106,25 +106,6 @@ const words = title.split(/\s+/);
     background: linear-gradient(180deg, #10100f00 30%, #10100fb3 62%, #10100ff7 100%);
   }
 
-  /* Stacked layout only: closed strips are short, so the title needs a darker veil. */
-  .panel__shade::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, #10100fe0 0%, #10100fa6 100%);
-    transition: opacity 500ms var(--ease-out);
-  }
-
-  .panel.is-open .panel__shade::after {
-    opacity: 0;
-  }
-
-  @media (min-width: 1024px) {
-    .panel__shade::after {
-      display: none;
-    }
-  }
-
   /* Closed panels: the whole panel is the toggle. Open: it steps aside for the link. */
   .panel__toggle {
     position: absolute;
@@ -275,46 +256,110 @@ const words = title.split(/\s+/);
     color: var(--color-text-intro);
   }
 
-  /* Mobile + tablet: a vertical accordion of full-width strips. */
-  .panel {
-    height: 104px;
-    transition: height 700ms var(--ease-out);
-  }
-
-  .panel.is-open {
-    height: 440px;
-  }
-
-  .panel__peek-title {
-    font-size: 24px;
-  }
-
-  @media (min-width: 640px) {
+  /* Mobile + tablet: no accordion. Every project sits open in a two-column grid
+     (Jonas, 2026-11-18: the stacked strips were hard to scan on a phone). */
+  @media (max-width: 1023.98px) {
     .panel {
-      height: 120px;
+      height: 340px;
     }
 
-    .panel.is-open {
-      height: 500px;
-    }
-
-    .panel__peek-title {
-      font-size: 28px;
+    /* More copy sits on a narrow card, so the veil starts higher. */
+    .panel__shade {
+      background: linear-gradient(180deg, #10100f00 15%, #10100fc7 50%, #10100ff7 100%);
     }
 
     .panel__peek,
-    .panel__details {
-      padding: 0 24px 22px;
+    .panel__toggle {
+      display: none;
+    }
+
+    .panel__details,
+    .panel.is-open .panel__details {
+      gap: 12px;
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .panel__details > *,
+    .panel__cover {
+      pointer-events: auto;
+    }
+
+    .panel__head {
+      align-items: flex-end;
+      gap: 8px;
     }
 
     .panel__title {
-      font-size: 40px;
-      letter-spacing: -1.4px;
+      font-size: 21px;
+      line-height: 1.1;
+      letter-spacing: -0.6px;
+    }
+
+    .panel__head :global(.arrow-badge) {
+      width: 34px;
+      height: 34px;
+    }
+
+    .panel__head :global(.arrow-badge svg) {
+      width: 16px;
+      height: 16px;
     }
 
     .panel__description {
-      font-size: 16px;
-      line-height: 22px;
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .panel__row--meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .panel__disciplines {
+      font-size: 9px;
+      letter-spacing: 0.6px;
+    }
+
+    .panel:not(.panel--static):hover .panel__name {
+      color: var(--color-accent);
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 1023.98px) {
+    .panel {
+      height: 460px;
+    }
+
+    .panel__details {
+      gap: 16px;
+      padding: 0 20px 20px;
+    }
+
+    .panel__title {
+      font-size: 30px;
+      letter-spacing: -1px;
+    }
+
+    .panel__head :global(.arrow-badge) {
+      width: 42px;
+      height: 42px;
+    }
+
+    .panel__description {
+      font-size: 15px;
+      line-height: 21px;
+    }
+
+    .panel__row--meta {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .panel__disciplines {
+      font-size: var(--caption-size);
     }
   }
 
@@ -329,6 +374,20 @@ const words = title.split(/\s+/);
     .panel.is-open {
       flex-grow: var(--open-grow);
       height: auto;
+    }
+
+    /* Closed panels sit back: darker and slightly out of focus (Jonas, 2026-11-18).
+       On the frame, not the img, so the scroll-in focus reveal on the img is untouched;
+       the scale hides the blurred edge. */
+    .panel :global(.panel__media) {
+      transition:
+        filter 600ms var(--ease-out),
+        transform 750ms var(--ease-out);
+    }
+
+    .panel:not(.is-open) :global(.panel__media) {
+      filter: brightness(0.62) blur(3px);
+      transform: scale(1.06);
     }
 
     .panel__peek-title span {
@@ -367,7 +426,7 @@ const words = title.split(/\s+/);
 
   @media (prefers-reduced-motion: reduce) {
     .panel,
-    .panel__shade::after,
+    .panel :global(.panel__media),
     .panel__peek,
     .panel__details,
     .panel.is-open .panel__details {

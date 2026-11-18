@@ -4,7 +4,7 @@
  * Jonas 2026-11-18). The first project starts open. On desktop with a fine pointer,
  * hovering a panel opens it; focus and tap open it everywhere. The last opened panel
  * stays open, and the indicator below shows which one that is.
- * Below 1024 px the panels stack into a vertical accordion.
+ * Below 1024 px every project is open, two per row (Jonas, 2026-11-18).
  */
 import ProjectCard from './ProjectCard.astro';
 import { getProjects } from '@/lib/projects';
@@ -95,14 +95,15 @@ const pad = (n: number) => String(n).padStart(2, '0');
     --panel-gap: 8px;
     /* Open panel vs. closed panels (flex-grow): ~half the row at 1440, less on small laptops. */
     --open-grow: 2.4;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--panel-gap);
     container-type: inline-size;
   }
 
+  /* The indicator only means something where one panel is open at a time. */
   .work__nav {
-    display: flex;
+    display: none;
     align-items: center;
     gap: 10px;
   }
@@ -154,8 +155,13 @@ const pad = (n: number) => String(n).padStart(2, '0');
     }
 
     .work__gallery {
+      display: flex;
       flex-direction: row;
       height: clamp(440px, 36vw, 520px);
+    }
+
+    .work__nav {
+      display: flex;
     }
   }
 
