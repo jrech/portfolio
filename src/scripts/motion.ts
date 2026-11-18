@@ -62,16 +62,15 @@ function splitHeading(heading: HTMLElement) {
 }
 
 // First visit per tab, "From the dark" (Jonas, 2026-11-04): the hero stays black, the
-// portrait itself (the real DOM image, no loader screen) is lit up out of the dark with a
-// soft light passing over it, then the headline rises line by line and the label, intro,
+// portrait itself (the real DOM image, no loader screen) comes up out of the dark,
+// then the headline rises line by line and the label, intro,
 // scroll cue and navigation fade in. Every other load shows the finished hero at once.
 // Waits for the photo to decode (capped), and any scroll, tap or key skips to the end.
 const INTRO = {
   wait: 1000, // longest wait for the photo before starting anyway
-  dark: 0.2, // black before the light comes up
+  dark: 0.2, // black before the portrait comes up
   photo: 1.1, // portrait opacity 0 → 1
   settle: 1.7, // portrait scale 1.06 → 1
-  light: 1.0, // light sweep across the portrait
   content: 1.15, // headline starts, photo mostly visible
   line: 0.8, // each headline line
   stagger: 0.11,
@@ -109,12 +108,6 @@ function introHero() {
     line.style.removeProperty('clip-path');
   });
 
-  // A soft light that passes over the portrait while it comes up. It blends with the
-  // photo only, so the black around it stays black.
-  const light = document.createElement('div');
-  light.className = 'hero__light';
-  media.append(light);
-
   // Start states before the class that hid them goes, so nothing flashes.
   gsap.set(media, { opacity: 0 });
   gsap.set(inners, { yPercent: 120 });
@@ -145,7 +138,6 @@ function introHero() {
     const finish = () => {
       removeListeners();
       unwrap();
-      light.remove();
       // Opacity only on the photo wrapper: its transform belongs to the scroll parallax.
       gsap.set(media, { clearProps: 'opacity' });
       gsap.set([...fades, ...nav], { clearProps: 'opacity,transform' });
@@ -156,9 +148,6 @@ function introHero() {
     // Phase 1–2: the portrait comes up out of the dark and settles.
     timeline.to(media, { opacity: 1, duration: t.photo, ease: 'power2.out' }, t.dark);
     if (image) timeline.fromTo(image, { scale: 1.06 }, { scale: 1, duration: t.settle, ease: 'power2.out' }, 0);
-    timeline.fromTo(light, { xPercent: -30 }, { xPercent: 30, duration: t.light, ease: 'power1.inOut' }, t.dark + 0.2)
-      .to(light, { opacity: 1, duration: t.light * 0.4, ease: 'sine.out' }, t.dark + 0.2)
-      .to(light, { opacity: 0, duration: t.light * 0.5, ease: 'sine.in' }, t.dark + 0.2 + t.light * 0.5);
     // Phase 3: label, headline line by line (accent line last), intro, cue, navigation.
     const c = t.content;
     timeline.to(fades[0] ?? [], { opacity: 1, y: 0, duration: 0.8, ease: EASE }, c - 0.1)

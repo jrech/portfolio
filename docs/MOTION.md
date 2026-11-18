@@ -17,8 +17,8 @@
   so a long heading takes about 1.7 s, triggered at 82%. Blur (12 px to zero) only with a fine pointer.
 - Project images: 1.4 s focus-in (scale 1.04 to 1, brightness 0.8 to 1); blur only with a fine pointer.
 - First visit per tab ("From the dark", motion.ts `introHero`, timings in `INTRO`): the hero stays black,
-  the real hero photo (no loader screen) comes up from 0.2 s (opacity 1.1 s, scale 1.06 to 1 over 1.7 s)
-  while a soft-light band sweeps across it. From 1.15 s the headline rises line by line in a mask
+  the real hero photo (no loader screen) comes up from 0.2 s (opacity 1.1 s, scale 1.06 to 1 over 1.7 s),
+  no light sweep (removed 2026-11-18). From 1.15 s the headline rises line by line in a mask
   (0.8 s, 0.11 s stagger, accent line last), with label, intro, scroll cue and navigation fading in.
   Done after ~2.4 s. Starts once the photo is decoded, at most 1 s wait. Scroll, tap or key skips it.
   Every other load (reload, same tab, from another page) shows the finished hero at first paint.
