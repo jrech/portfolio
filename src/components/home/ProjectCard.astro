@@ -331,7 +331,17 @@ const words = title.split(/\s+/);
   /* Phone: title and services only, no description or arrow (Jonas, 2026-11-18). */
   @media (max-width: 639.98px) {
     .panel {
-      height: 260px;
+      height: 240px;
+    }
+
+    .panel__title {
+      font-size: 26px;
+      letter-spacing: -0.8px;
+    }
+
+    .panel__row--meta {
+      flex-direction: row;
+      align-items: center;
     }
 
     .panel__description,
