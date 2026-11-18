@@ -39,8 +39,10 @@
     "explore": "Koukněte dál"
   },
   "work": {
-    "title": "Dobrá práce. Skutečný dopad.",
-    "years": "2024 — 2026"
+    "title": "Vybrané práce.",
+    "years": "2024 — 2026",
+    "caseStudy": "PŘÍPADOVÁ STUDIE",
+    "expand": "Rozbalit projekt"
   },
   "proposition": {
     "text": "Dobrý web ukáže, čím jste jiní a proč si zákazníci mají vybrat právě vás."

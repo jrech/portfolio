@@ -1,100 +1,173 @@
 ---
+/**
+ * Selected work as an expanding gallery (Pen "Vybrané práce / rozbalovací galerie",
+ * Jonas 2026-11-18). The first project starts open. On desktop with a fine pointer,
+ * hovering a panel opens it; focus and tap open it everywhere. The last opened panel
+ * stays open, and the indicator below shows which one that is.
+ * Below 1024 px the panels stack into a vertical accordion.
+ */
 import ProjectCard from './ProjectCard.astro';
 import { getProjects } from '@/lib/projects';
 import { getLocale, useT } from '@/i18n';
 
 const t = useT(Astro);
-const projects = await getProjects(getLocale(Astro));
+const projects = (await getProjects(getLocale(Astro))).filter((p) => p.data.home !== false);
+const pad = (n: number) => String(n).padStart(2, '0');
 ---
 
 <section id="work" class="work" aria-labelledby="work-title">
   <div class="work__inner container">
-    <header class="work__heading">
-      <h2 id="work-title" class="work__title" data-reveal="heading">{t.work.title}</h2>
-      <p class="caption">{t.work.years}</p>
-    </header>
+    <h2 id="work-title" class="work__title" data-reveal="heading">{t.work.title}</h2>
 
-    <div class="work__grid">
-      {projects.map((project, i) => <ProjectCard project={project} featured={i === 0} />)}
+    <div class="work__body">
+      <div class="work__gallery" data-gallery style={{ "--panel-count": projects.length }}>
+        {projects.map((project, i) => <ProjectCard project={project} index={i} open={i === 0} />)}
+      </div>
+
+      <div class="work__nav" aria-hidden="true">
+        <span class="work__bars">
+          {projects.map((_, i) => <span class:list={['work__bar', { 'is-active': i === 0 }]} />)}
+        </span>
+        <span class="caption work__count"><span data-gallery-current>01</span> / {pad(projects.length)}</span>
+      </div>
     </div>
   </div>
 </section>
 
+<script>
+  const HOVER = '(min-width: 1024px) and (hover: hover) and (pointer: fine)';
+
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((gallery) => {
+    const panels = [...gallery.querySelectorAll<HTMLElement>('[data-panel]')];
+    const section = gallery.closest('.work');
+    const bars = [...(section?.querySelectorAll<HTMLElement>('.work__bar') ?? [])];
+    const current = section?.querySelector<HTMLElement>('[data-gallery-current]');
+    const hover = window.matchMedia(HOVER);
+    let timer = 0;
+
+    const open = (index: number) => {
+      panels.forEach((panel, i) => {
+        panel.classList.toggle('is-open', i === index);
+        panel.querySelector('.panel__toggle')?.setAttribute('aria-expanded', String(i === index));
+      });
+      bars.forEach((bar, i) => bar.classList.toggle('is-active', i === index));
+      if (current) current.textContent = String(index + 1).padStart(2, '0');
+    };
+
+    panels.forEach((panel, i) => {
+      // A short hover intent, so sweeping the pointer across the row doesn't flick every panel open.
+      panel.addEventListener('pointerenter', (e) => {
+        if (e.pointerType !== 'mouse' || !hover.matches) return;
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => open(i), 70);
+      });
+      panel.addEventListener('pointerleave', () => window.clearTimeout(timer));
+      panel.addEventListener('focusin', () => open(i));
+      panel.querySelector('.panel__toggle')?.addEventListener('click', () => open(i));
+    });
+  });
+</script>
+
 <style>
-  /* Hovering a project dims the others (Jonas, 2026-10-29). Children fade, not the card,
-     so the card's own GSAP reveal is never fighting a CSS transition. */
-  .work__grid :global(.project > *) {
-    transition: opacity 450ms var(--ease-out);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .work__grid:has(:global(.project:hover)) :global(.project:not(:hover) > *) {
-      opacity: 0.6;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .work__grid :global(.project > *) {
-      transition: none;
-    }
-  }
-
   /* Mobile (390) */
   .work__inner {
     display: flex;
     flex-direction: column;
-    gap: var(--section-stack);
+    gap: 40px;
     padding-block: var(--section-space);
   }
 
-  .work__heading {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-
   .work__title {
-    font-size: 36px;
+    font-size: 44px;
     font-weight: var(--weight-medium);
-    line-height: normal;
-    letter-spacing: var(--heading-tracking);
+    line-height: 1.03;
+    letter-spacing: -0.039em;
     color: var(--color-text-display);
   }
 
-  .work__grid {
-    display: grid;
-    gap: 56px;
+  .work__body {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .work__gallery {
+    --panel-gap: 8px;
+    /* Open panel vs. closed panels (flex-grow): ~half the row at 1440, less on small laptops. */
+    --open-grow: 2.4;
+    display: flex;
+    flex-direction: column;
+    gap: var(--panel-gap);
+    container-type: inline-size;
+  }
+
+  .work__nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .work__bars {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .work__bar {
+    width: 15px;
+    height: 3px;
+    background: #5d5e57;
+    transition:
+      width 600ms var(--ease-out),
+      background-color 600ms var(--ease-out);
+  }
+
+  .work__bar.is-active {
+    width: 34px;
+    background: var(--color-accent);
+  }
+
+  .work__count {
+    font-size: 10px;
+    letter-spacing: 0.8px;
   }
 
   /* Tablet (834) */
   @media (min-width: 640px) {
-
-    .work__title {
-      font-size: 48px;
+    .work__inner {
+      gap: 48px;
     }
 
-    .work__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 72px 24px;
+    .work__title {
+      font-size: 64px;
     }
   }
 
   /* Desktop (1440) */
   @media (min-width: 1024px) {
-
-    .work__heading {
-      flex-direction: row;
-      align-items: flex-end;
-      justify-content: space-between;
+    .work__inner {
+      gap: 56px;
     }
 
     .work__title {
-      font-size: 54px;
-      letter-spacing: var(--heading-tracking);
+      font-size: 88px;
     }
 
-    .work__grid {
-      gap: 80px 28px;
+    .work__gallery {
+      flex-direction: row;
+      height: clamp(440px, 36vw, 520px);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .work__gallery {
+      --open-grow: 3.1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .work__bar {
+      transition: none;
     }
   }
 </style>
