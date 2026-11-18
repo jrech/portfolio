@@ -201,7 +201,7 @@ Components:
 - Desktop (≥ 1024): one row of panels, height clamp(440, 36vw, 520), gap 8. One panel is open (flex-grow 3.1 from 1200 px, 2.4 below; closed = 1): full-bleed cover, title 44, description 16/22, disciplines joined with " / " on a 25% rule, 46 px arrow badge when published, otherwise "PŘIPRAVUJEME" on the rule. Closed panels: title one word per line (sized to fit "Starobrněnský"), status + plus.
 - Hover (fine pointer, 70 ms intent), focus or click opens a panel; the last opened stays open. Indicator below: 34 px accent bar + 15 px grey bars, "01 / 04".
 - Closed desktop panels: cover at brightness 0.62 + 3 px blur (scaled 1.06), cleared as the panel opens.
-- Below 1024: no accordion and no indicator; every project is open in a 2-column grid (card height 340 phone / 460 tablet), Jonas 2026-11-18.
+- Below 1024: no accordion and no indicator; every project is open in a 2-column grid (card height 260 phone / 460 tablet), Jonas 2026-11-18. Phone (<640) shows title + services only: no description, no arrow badge.
 - Open copy is laid out at the open width the whole time and fades in after the panel grows, so nothing re-wraps mid-animation. Reduced motion: instant switch.
 - Projects come from the collection (`home: false` leaves one out; GRIND. is out per the design). Only `status: published` panels link to the case study.
 

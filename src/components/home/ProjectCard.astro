@@ -328,6 +328,22 @@ const words = title.split(/\s+/);
     }
   }
 
+  /* Phone: title and services only, no description or arrow (Jonas, 2026-11-18). */
+  @media (max-width: 639.98px) {
+    .panel {
+      height: 260px;
+    }
+
+    .panel__description,
+    .panel__head :global(.arrow-badge) {
+      display: none;
+    }
+
+    .panel__shade {
+      background: linear-gradient(180deg, #10100f00 35%, #10100fc7 65%, #10100ff7 100%);
+    }
+  }
+
   @media (min-width: 640px) and (max-width: 1023.98px) {
     .panel {
       height: 460px;
