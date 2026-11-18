@@ -39,8 +39,10 @@
     "explore": "See what I mean"
   },
   "work": {
-    "title": "Good work. Real impact.",
-    "years": "2024 — 2026"
+    "title": "Selected work.",
+    "years": "2024 — 2026",
+    "caseStudy": "CASE STUDY",
+    "expand": "Show project"
   },
   "proposition": {
     "text": "A good website shows what makes you different and why customers should choose you."

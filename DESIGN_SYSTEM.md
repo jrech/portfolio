@@ -195,10 +195,15 @@ Components:
 - **Process step**: big index (secondary color), title, description, outcome caption with 15px accent arrow. The Pen promise line ("No handoffs. No guesswork.", Lucide `messages-square`) was **removed** at Jonas's request (2026-10-29), CZ and EN.
 - **FAQ**: native `<details name="faq">` — exclusive accordion, keyboard accessible, zero JS; first item open; `+` (primary) / `−` (accent) icons, 22px.
 
-### Selected work grid (updated 2026-10-28, approved by Jonas)
+### Selected work gallery (2026-11-18, Pen "Vybrané práce / rozbalovací galerie")
 
-- "Coming soon" card removed. The first project spans the full grid width from tablet up (media 400 tablet / 600 desktop — **no Pen frame, my proposal**), the other two sit side by side below. Mobile is unchanged (stack).
-- Cards are generated from the `projects` collection. While a project's `status` is `in-preparation` the card is **not a link** (title is plain text, arrow stays as a visual, no hover rotation). Setting `status: published` makes it link to `/work/<slug>`.
+- Heading "Vybrané práce." / "Selected work." 88 / 64 / 44, tracking −0.039em; years caption dropped.
+- Desktop (≥ 1024): one row of panels, height clamp(440, 36vw, 520), gap 8. One panel is open (flex-grow 3.1 from 1200 px, 2.4 below; closed = 1): full-bleed cover, title 44, description 16/22, disciplines joined with " / " on a 25% rule, 46 px arrow badge when published, otherwise "PŘIPRAVUJEME" on the rule. Closed panels: title one word per line (sized to fit "Starobrněnský"), status + plus.
+- Hover (fine pointer, 70 ms intent), focus or click opens a panel; the last opened stays open. Indicator below: 34 px accent bar + 15 px grey bars, "01 / 04".
+- Closed desktop panels: cover at brightness 0.62 + 3 px blur (scaled 1.06), cleared as the panel opens.
+- Below 1024: no accordion and no indicator; every project is open: 1 column on phone (card 240), 2 columns on tablet (card 460), gap 32 (desktop row keeps 8), Jonas 2026-11-18. Phone (<640) shows title + services only: no description, no arrow badge.
+- Open copy is laid out at the open width the whole time and fades in after the panel grows, so nothing re-wraps mid-animation. Reduced motion: instant switch.
+- Projects come from the collection (`home: false` leaves one out; GRIND. is out per the design). Only `status: published` panels link to the case study.
 
 ### Case study (Phase 3) — Implemented
 

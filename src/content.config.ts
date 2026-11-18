@@ -52,6 +52,8 @@ const projects = defineCollection({
       positioning: z.string(),
       /** Homepage order (ascending). */
       order: z.number().default(0),
+      /** false = left out of the homepage Selected work gallery (page and related cards stay). */
+      home: z.boolean().default(true),
       /** Drafts are left out of the build entirely (no page, no card). */
       draft: z.boolean().default(false),
       /** Shown under the hero visual while the case study is not final. */

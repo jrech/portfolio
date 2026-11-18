@@ -1,190 +1,466 @@
 ---
 /**
- * Selected-work card: media, title, description, disciplines + arrow badge.
- * The whole card is clickable via the title link's stretched hit area.
+ * Selected-work panel (Pen "Vybrané práce / rozbalovací galerie", Jonas 2026-11-18).
+ * One panel is open at a time: full-bleed cover, title, description, disciplines and
+ * the arrow badge. Closed panels show only the title, status and a plus. SelectedWork
+ * switches the open panel on hover (fine pointer, desktop), focus or tap.
+ *
+ * Both layers are always in the DOM: the closed "peek" is visual only, the open
+ * details carry the heading, copy and link, so assistive tech reads every project.
  */
 import { Image } from 'astro:assets';
 import MediaFrame from '../ui/MediaFrame.astro';
 import ArrowBadge from '../ui/ArrowBadge.astro';
-import WorksBadge from '../ui/WorksBadge.astro';
-import { fitWidths, formatServices, isPublished, projectUrl, type ProjectEntry } from '@/lib/projects';
-import { getLocale } from '@/i18n';
+import Icon from '../ui/Icon.astro';
+import { fitWidths, isPublished, projectUrl, type ProjectEntry } from '@/lib/projects';
+import { getLocale, useT } from '@/i18n';
 
 interface Props {
   project: ProjectEntry;
-  /** Lead card spanning the full grid width. */
-  featured?: boolean;
+  index: number;
+  open?: boolean;
 }
 
-const { project, featured = false } = Astro.props;
-const { title, cardTitle, description, services, descriptionWidth, cover } = project.data;
+const { project, index, open = false } = Astro.props;
+const t = useT(Astro);
+const { title, description, services, cover } = project.data;
 const href = isPublished(project) ? projectUrl(project, getLocale(Astro)) : undefined;
-const disciplines = formatServices(services);
+const status = href ? t.work.caseStudy : t.case.inTheWorks;
+const detailsId = `work-panel-${project.slug}`;
+const words = title.split(/\s+/);
 ---
 
 <article
-  class:list={['project', { 'project--featured': featured, 'project--static': !href, 'arrow-host': href }]}
+  class:list={['panel', { 'is-open': open, 'arrow-host': href, 'panel--static': !href }]}
+  data-panel={index}
   data-reveal="fade"
   data-cursor={href ? 'project' : undefined}
 >
-  <MediaFrame class="project__media">
+  <MediaFrame class="panel__media project__media">
     {
-      cover ? (
+      cover && (
         <Image
           src={cover.src}
           alt={cover.alt}
           widths={fitWidths([640, 960, 1320, 2640], cover.src.width)}
-          sizes={featured ? '(min-width: 1440px) 1320px, 100vw' : '(min-width: 1024px) 50vw, 100vw'}
+          sizes="(min-width: 1440px) 680px, (min-width: 1024px) 50vw, 100vw"
           quality={100}
+          loading={index === 0 ? 'eager' : 'lazy'}
           style={cover.position ? { objectPosition: cover.position } : undefined}
         />
-      ) : (
-        <slot name="media" />
       )
     }
+    {/* Whole open panel is the link; the title link stays the one keyboard/AT stop. */}
+    {href && <a class="panel__cover" href={href} tabindex="-1" aria-hidden="true" />}
   </MediaFrame>
-  <div class="project__details">
-    <div class="project__text">
-      <h3 class="project__title">
-        {href ? <a class="project__link project__name" href={href}>{cardTitle ?? title}</a> : <span class="project__name">{cardTitle ?? title}</span>}
-      </h3>
-      <p
-        class="project__description"
-        style={descriptionWidth ? { '--desktop-measure': `${descriptionWidth}px` } : undefined}
-      >
-        {description}
-      </p>
+  <span class="panel__shade" aria-hidden="true"></span>
+
+  <button class="panel__toggle" type="button" aria-expanded={open ? 'true' : 'false'} aria-controls={detailsId}>
+    <span class="visually-hidden">{t.work.expand}: {title}</span>
+  </button>
+
+  <div class="panel__peek" aria-hidden="true">
+    <p class="panel__peek-title">{words.map((word) => <span>{word} </span>)}</p>
+    <div class="panel__row">
+      <span class="caption panel__status">{status}</span>
+      <Icon name="plus" size={16} class="panel__plus" />
     </div>
-    <div class="project__meta">
-      <p class="project__disciplines caption">{disciplines}</p>
-      {href ? <ArrowBadge /> : <WorksBadge />}
+  </div>
+
+  <div class="panel__details" id={detailsId}>
+    <div class="panel__text">
+      <div class="panel__head">
+        <h3 class="panel__title">
+          {href ? <a class="panel__link panel__name" href={href}>{title}</a> : <span class="panel__name">{title}</span>}
+        </h3>
+        {href && <ArrowBadge />}
+      </div>
+      <p class="panel__description">{description}</p>
+    </div>
+    <div class="panel__row panel__row--meta">
+      <p class="caption panel__disciplines">{services.join(' / ')}</p>
+      {!href && <span class="caption panel__status">{status}</span>}
     </div>
   </div>
 </article>
 
 <style>
-  /* Mobile (390) */
-  .project {
+  /* Shared by both layouts: everything sits on the cover, bottom aligned. */
+  .panel {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    overflow: hidden;
+    min-width: 0;
+    background: var(--color-surface);
+    color: var(--color-text-display);
   }
 
-  .project :global(.project__media) {
-    height: 230px;
+  .panel :global(.panel__media) {
+    position: absolute;
+    inset: 0;
   }
 
-  /* Grow to the row height so arrows line up when descriptions wrap differently. */
-  .project__details {
+  .panel__shade {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, #10100f00 30%, #10100fb3 62%, #10100ff7 100%);
+  }
+
+  /* Closed panels: the whole panel is the toggle. Open: it steps aside for the link. */
+  .panel__toggle {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .panel__toggle:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+  }
+
+  .panel.is-open .panel__toggle {
+    pointer-events: none;
+  }
+
+  .panel__peek,
+  .panel__details {
+    position: absolute;
+    left: 0;
+    bottom: 0;
     display: flex;
-    flex: 1;
     flex-direction: column;
+    pointer-events: none;
+  }
+
+  .panel__peek {
+    right: 0;
     gap: 14px;
+    padding: 0 16px 18px;
+    transition: opacity 260ms var(--ease-out);
   }
 
-  .project__text {
+  .panel.is-open .panel__peek {
+    opacity: 0;
+  }
+
+  .panel__peek-title {
+    font-size: 26px;
+    font-weight: var(--weight-medium);
+    line-height: 1.04;
+    letter-spacing: -1px;
+  }
+
+  .panel__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f2efe940;
+  }
+
+  .panel__status {
+    color: var(--color-text-intro);
+    white-space: nowrap;
+  }
+
+  .panel :global(.panel__plus) {
+    flex-shrink: 0;
+    color: var(--color-text-display);
+    stroke-width: 1.5;
+  }
+
+  /* Open details are laid out at the open width all the time, so the copy never
+     re-wraps while the panel grows; they only fade and lift in. */
+  .panel__details {
+    z-index: 2;
+    width: 100%;
+    gap: 16px;
+    padding: 0 16px 18px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 220ms var(--ease-out),
+      transform 220ms var(--ease-out);
+  }
+
+  .panel.is-open .panel__details {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 500ms var(--ease-out) 260ms,
+      transform 700ms var(--ease-out) 260ms;
+  }
+
+  .panel.is-open .panel__details > * {
+    pointer-events: auto;
+  }
+
+  .panel__text {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
 
-  .project__title {
-    font-size: 24px;
-    font-weight: var(--weight-medium);
-    line-height: normal;
-    letter-spacing: -0.6px;
-    color: var(--color-text-display);
-  }
-
-  .project__link::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-  }
-
-  .project__link:focus-visible {
-    outline: none;
-  }
-
-  .project__link:focus-visible::after {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 4px;
-  }
-
-  .project__description {
-    font-size: 14px;
-    line-height: 20px;
-    color: var(--color-text-secondary);
-  }
-
-  .project__meta {
-    margin-top: auto;
+  .panel__head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
   }
 
-  /* Disciplines are hidden in the tablet and mobile frames. */
-  .project__disciplines {
-    display: none;
-    text-transform: uppercase;
+  .panel__title {
+    font-size: 30px;
+    font-weight: var(--weight-medium);
+    line-height: 1.09;
+    letter-spacing: -1px;
   }
 
-  /* Tablet (834) */
-  @media (min-width: 640px) {
-    .project :global(.project__media) {
+  .panel__cover {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .panel.is-open .panel__cover {
+    pointer-events: auto;
+  }
+
+  .panel__link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
+  .panel__name {
+    transition: color 350ms var(--ease-out);
+  }
+
+  .panel:not(.panel--static).is-open:hover .panel__name,
+  .panel:not(.panel--static):focus-within .panel__name {
+    color: var(--color-accent);
+  }
+
+  .panel__description {
+    max-width: 470px;
+    font-size: 15px;
+    line-height: 21px;
+    color: var(--color-paper);
+  }
+
+  .panel__disciplines {
+    color: var(--color-text-intro);
+  }
+
+  /* Mobile + tablet: no accordion. Every project sits open in a two-column grid
+     (Jonas, 2026-11-18: the stacked strips were hard to scan on a phone). */
+  @media (max-width: 1023.98px) {
+    .panel {
+      height: 340px;
+    }
+
+    /* More copy sits on a narrow card, so the veil starts higher. */
+    .panel__shade {
+      background: linear-gradient(180deg, #10100f00 15%, #10100fc7 50%, #10100ff7 100%);
+    }
+
+    .panel__peek,
+    .panel__toggle {
+      display: none;
+    }
+
+    .panel__details,
+    .panel.is-open .panel__details {
+      gap: 12px;
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .panel__details > *,
+    .panel__cover {
+      pointer-events: auto;
+    }
+
+    .panel__head {
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .panel__title {
+      font-size: 21px;
+      line-height: 1.1;
+      letter-spacing: -0.6px;
+    }
+
+    .panel__head :global(.arrow-badge) {
+      width: 34px;
+      height: 34px;
+    }
+
+    .panel__head :global(.arrow-badge svg) {
+      width: 16px;
+      height: 16px;
+    }
+
+    .panel__description {
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .panel__row--meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .panel__disciplines {
+      font-size: 9px;
+      letter-spacing: 0.6px;
+    }
+
+    .panel:not(.panel--static):hover .panel__name {
+      color: var(--color-accent);
+    }
+  }
+
+  /* Phone: title and services only, no description or arrow (Jonas, 2026-11-18). */
+  @media (max-width: 639.98px) {
+    .panel {
       height: 240px;
     }
 
-    /* Lead project spans the grid (Jonas, 2026-10-28; no Pen frame — see DESIGN_SYSTEM.md). */
-    .project--featured {
-      grid-column: 1 / -1;
-    }
-
-    .project--featured :global(.project__media) {
-      height: 400px;
-    }
-
-    .project__title {
-      font-size: 23px;
-    }
-  }
-
-  /* Desktop (1440) */
-  @media (min-width: 1024px) {
-    .project :global(.project__media) {
-      height: 345px;
-    }
-
-    .project--featured :global(.project__media) {
-      height: 600px;
-    }
-
-    .project__title {
-      font-size: 30px;
+    .panel__title {
+      font-size: 26px;
       letter-spacing: -0.8px;
     }
 
-    .project__description {
-      max-width: var(--desktop-measure, none);
+    .panel__row--meta {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .panel__description,
+    .panel__head :global(.arrow-badge) {
+      display: none;
+    }
+
+    .panel__shade {
+      background: linear-gradient(180deg, #10100f00 30%, #10100fb3 62%, #10100fd9 100%);
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 1023.98px) {
+    .panel {
+      height: 460px;
+    }
+
+    .panel__details {
+      gap: 16px;
+      padding: 0 20px 20px;
+    }
+
+    .panel__title {
+      font-size: 30px;
+      letter-spacing: -1px;
+    }
+
+    .panel__head :global(.arrow-badge) {
+      width: 42px;
+      height: 42px;
+    }
+
+    .panel__description {
       font-size: 15px;
       line-height: 21px;
     }
 
-    .project__disciplines {
-      display: block;
+    .panel__row--meta {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .panel__disciplines {
+      font-size: var(--caption-size);
     }
   }
 
-  /* Hover: title turns accent (no underline, no image zoom). */
-  .project__name {
-    transition: color 350ms var(--ease-out);
+  /* Desktop: side-by-side panels; the open one takes about half the row. */
+  @media (min-width: 1024px) {
+    .panel {
+      flex: 1 1 0;
+      height: auto;
+      transition: flex-grow 750ms var(--ease-out);
+    }
+
+    .panel.is-open {
+      flex-grow: var(--open-grow);
+      height: auto;
+    }
+
+    /* Closed panels sit back: darker and slightly out of focus (Jonas, 2026-11-18).
+       On the frame, not the img, so the scroll-in focus reveal on the img is untouched;
+       the scale hides the blurred edge. */
+    .panel :global(.panel__media) {
+      transition:
+        filter 600ms var(--ease-out),
+        transform 750ms var(--ease-out);
+    }
+
+    .panel:not(.is-open) :global(.panel__media) {
+      filter: brightness(0.62) blur(3px);
+      transform: scale(1.06);
+    }
+
+    .panel__peek-title span {
+      display: block;
+    }
+
+    .panel__peek {
+      padding: 0 16px 18px;
+      container-type: inline-size;
+    }
+
+    .panel__peek-title {
+      /* "Starobrněnský" is the longest word; it has to fit the narrow panel. */
+      font-size: min(30px, 100cqi / 6.4);
+    }
+
+    .panel__details {
+      /* The open panel's width (see SelectedWork): its share of the row without the gaps. */
+      width: calc(
+        (100cqw - (var(--panel-count) - 1) * var(--panel-gap)) * var(--open-grow) /
+          (var(--open-grow) + var(--panel-count) - 1)
+      );
+      padding: 0 24px 22px;
+    }
+
+    .panel__title {
+      font-size: clamp(36px, 3.1vw, 44px);
+      letter-spacing: -1.6px;
+    }
+
+    .panel__head :global(.arrow-badge) {
+      width: 46px;
+      height: 46px;
+    }
   }
 
-  .project:not(.project--static):hover .project__name,
-  .project:not(.project--static):focus-within .project__name {
-    color: var(--color-accent);
+  @media (prefers-reduced-motion: reduce) {
+    .panel,
+    .panel :global(.panel__media),
+    .panel__peek,
+    .panel__details,
+    .panel.is-open .panel__details {
+      transition: none;
+    }
+
+    .panel__details {
+      transform: none;
+    }
   }
 </style>

@@ -84,10 +84,12 @@ testimonial:
 
 # Order from the Pen frame "More selected work".
 related: [starobrnensky-senk, grind]
-# Homepage card, related cards and case-study hero (dark laptop mockup, Jonas 2026-11-04).
+# Homepage card + related cards: mountain-view laptop from pradelna.html (Jonas, 2026-11-18; only 1536 px in the export).
 cover:
+  src: ../../../assets/images/pradelna-card-mountains.webp
+  alt: The Prádelna Krkonoše website on a laptop by a window with a mountain view
+# Case-study hero keeps the dark laptop mockup (Jonas 2026-11-04).
+heroImage:
   src: ../../../assets/images/pradelna-case-hero-laptop.photo.webp
-  # Wide card crops: keep the laptop screen's top edge in frame.
-  position: center 35%
   alt: The Prádelna Krkonoše website on a laptop on a dark side table
 ---
