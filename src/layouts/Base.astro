@@ -1,0 +1,104 @@
+---
+import geistLatin from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
+import geistLatinExtended from '@fontsource-variable/geist/files/geist-latin-ext-wght-normal.woff2?url';
+import SitePreferences from '../components/SitePreferences.astro';
+import { getLocale, localeLinks, locales, translator } from '../i18n';
+import '../styles/fonts.css';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** stránky, které nemají být ve vyhledávání (404) */
+  noindex?: boolean;
+}
+const { title, description, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const locale = getLocale(Astro.currentLocale);
+const links = localeLinks(Astro.url.pathname);
+const t = translator(locale);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: t('Jonáš Rech – webdesign', 'Jonáš Rech – web design'),
+  url: 'https://www.jonasrech.com/',
+  email: 'hello@jonasrech.com',
+  founder: { '@type': 'Person', name: 'Jonáš Rech', jobTitle: t('Webdesignér', 'Web designer') },
+  address: { '@type': 'PostalAddress', addressLocality: 'Brno', addressCountry: 'CZ' },
+  areaServed: 'CZ',
+  sameAs: ['https://www.instagram.com/jonasrech.design/', 'https://www.linkedin.com/in/jonasrech/'],
+};
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fafafa" />
+    <script is:inline>
+      // Motiv nastavit hned, ještě před CSS, aby tmavý režim neprobliknul světlým (přepínač: scripts/theme.ts).
+      (function () {
+        var theme = null;
+        try {
+          theme = localStorage.getItem('theme');
+        } catch (e) {}
+        if (theme !== 'dark' && theme !== 'light') {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.dataset.theme = theme;
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', theme === 'dark' ? '#0b0b0a' : '#fafafa');
+      })();
+    </script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    {!noindex && locales.map((lang) => <link rel="alternate" hreflang={lang} href={new URL(links[lang], Astro.site).href} />)}
+    {!noindex && <link rel="alternate" hreflang="x-default" href={new URL(links.cs, Astro.site).href} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href={geistLatinExtended} as="font" type="font/woff2" crossorigin="anonymous" />
+    <script is:inline>
+      (function () {
+        var html = document.documentElement;
+        window.addEventListener('pagereveal', function (event) {
+          if (!event.viewTransition) return;
+          html.classList.add('page-transition');
+          // přerušený přechod (rychlé přesměrování, skrytá karta) není chyba stránky
+          event.viewTransition.ready.catch(function () {});
+          event.viewTransition.finished.catch(function () {});
+        });
+        window.addEventListener('pageswap', function (event) {
+          if (!event.viewTransition) return;
+          event.viewTransition.ready.catch(function () {});
+          event.viewTransition.finished.catch(function () {});
+        });
+        html.classList.add('js');
+        if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) html.classList.add('anim');
+        // Pojistka pro obsah, pokud se hlavní skript nenačte.
+        setTimeout(function () {
+          if (window.__motionReady) return;
+          html.classList.remove('anim');
+        }, 1200);
+      })();
+    </script>
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={t('cs_CZ', 'en_GB')} />
+    <meta property="og:locale:alternate" content={t('en_GB', 'cs_CZ')} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <!-- [DOPLNIT] og:image 1200×630 -->
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#obsah">{t('Přeskočit na obsah', 'Skip to content')}</a>
+    <slot />
+    <SitePreferences locale={locale} links={localeLinks('/')} />
+  </body>
+</html>

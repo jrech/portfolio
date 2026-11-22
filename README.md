@@ -1,58 +1,47 @@
-# jonasrech.com — Astro
+# jonasrech.com — Astro (redesign 2026)
 
-Personal portfolio of Jonas Rech. Astro + TypeScript, scoped CSS with design tokens, no UI framework.
+Personal portfolio of Jonáš Rech. Astro + TypeScript, scoped CSS with design tokens in `src/styles/global.css`, GSAP + Lenis for motion, light/dark theme. Static output on Vercel; the contact form posts to a Vercel Function (`api/contact.ts`).
 
 ## Commands
 
 ```sh
 npm install
-npm run dev      # http://localhost:4321
-npm run build    # static output in dist/ (static; deploy target: Vercel)
-npm run check    # astro check (types + diagnostics)
+npm run dev           # http://localhost:4321 (no middleware, no /api/contact)
+npm run build         # static output in dist/
+npm run check         # astro check
+npm run test:contact  # api/contact.ts against mocked Notion + Resend, nothing is sent
 ```
 
 ## Structure
 
 ```
 src/
-  styles/tokens.css        design tokens (colors, type, spacing, layout, motion)
-  styles/global.css        reset, base, .caption, .container, .grid, a11y helpers
-  layouts/BaseLayout.astro html shell, fonts, skip link, header/footer slots
-  components/
-    ui/        CtaButton, Icon (Lucide), MediaFrame, Wordmark
-    site/      SiteHeader, MenuOverlay (fullscreen <dialog>), SiteFooter
-    ui/        + ArrowBadge, Lines
-    home/      homepage sections
-    case/      CaseHero, CaseSection, CaseDecisions, CaseVisual, RelatedWork, RelatedCard
-  layouts/CaseStudyLayout.astro
-  data/site.ts             nav items, email, socials
-  i18n/en.json, cs.json    every visitor-facing string; cs.json mirrors en.json key for key
-  i18n/index.ts            locale helpers, localePath(), Czech non-breaking-space typesetting
-  content/projects/<cs|en>/*.md  one file per project and language (schema in content.config.ts)
-  lib/projects.ts          sorting, related projects, published check
-  components/pages/HomePage.astro  homepage body shared by both languages
-  pages/index.astro, pages/en/index.astro
-  pages/work/[slug].astro, pages/en/work/[slug].astro  case studies
-middleware.ts              Vercel Routing Middleware: first-visit geo redirect to /en/
+  layouts/Base.astro        html shell, theme (no-flash inline script), hreflang, language + theme switch
+  views/                    page bodies shared by both languages (Home, PradelnaKrkonose, NotFound)
+  pages/                    Czech at the root, English under en/ (thin wrappers around views/)
+  components/               landing sections (Hero, Work, Problems, Deliverables, …), Header, Contact
+  scripts/                  main.ts → motion (GSAP), smooth scroll + anchor centring (Lenis), form, theme, …
+  styles/global.css         tokens (light + dark), base styles
+  data/inquiry.ts           form definitions + server-side validation (questionnaire and short form)
+  i18n.ts                   locale helpers, localeLinks()
+api/contact.ts, api/_lib/   Vercel Function: Notion lead + Resend emails
+middleware.ts               Vercel Routing Middleware: first-visit geo redirect to /en/
+vercel.json                 redirects for old URLs
 ```
-
-Design reference: `DESIGN_SYSTEM.md`, `portfo.pen`, `pen_exports/`.
-
-Status: Phase 1 (foundation), Phase 2 (homepage) and Phase 3 (case-study template) done. GSAP motion, final media, CS/EN and deployment come later.
-
-## Publishing a case study
-
-Case studies are built but hidden until their content is ready: `status: in-preparation` keeps the homepage card unlinked and the page `noindex`. Preview them directly at `/work/<slug>`. Fill in the Markdown file in `src/content/projects/`, then set `status: published`.
 
 ## Languages
 
-Czech is the default at `/`, English lives under `/en/` (Astro i18n). Visitors outside CZ/SK are redirected to `/en/` by `middleware.ts` (Vercel only, header `x-vercel-ip-country`); bots are never redirected, and the EN / CZ switch stores the choice in a `lang` cookie that the redirect respects. Locally (`npm run dev`) there is no geo redirect; open `/en/` directly.
+Czech is the default at `/` (no prefix), English lives under `/en/` (Astro i18n, `prefixDefaultLocale: false`). Old `/cs/…` URLs 301 to the unprefixed path (`vercel.json`). Visitors outside CZ/SK are redirected to `/en/` on their first visit by `middleware.ts` (Vercel only); bots are never redirected. The language switch stores the choice in the `lang` cookie, which the redirect respects.
+
+Case studies that don't exist yet (etecsa, grind, kids-garden, starobrnensky-senk) redirect temporarily (302) to `/#prace` / `/en/#prace`.
 
 ## Project inquiry
 
-The main CTA opens a fullscreen seven-step questionnaire (one single-choice question per step, contact last), in Czech or English after the page language (`src/components/site/InquiryDialog.astro`, `src/scripts/inquiry.ts`; questions in `src/data/inquiry.ts`).
+The contact card at the bottom of every page has a short form (name, phone or email, current website, a few words about the business; `src/components/Contact.astro`, `src/scripts/form.ts`). It posts JSON with `form: 'short'` to `/api/contact`; the fields are defined and validated by `getShortForm()` / `validateShortForm()` in `src/data/inquiry.ts`. The previous seven-step questionnaire (`getInquiry()`) is still accepted by the same endpoint.
 
-On the last step the answers are posted to `api/contact.ts`, a Vercel Function next to the static site (no Astro adapter; like `middleware.ts` it does not run under `astro dev`, use `vercel dev` or a preview deploy). It:
+Short-form specifics: no questionnaire answers are invented (project type, budget and timing stay empty in Notion); a phone number instead of an email leaves the Notion e-mail empty, goes into the brief and skips the client confirmation (Jonas still gets the notification). If sending fails, the error message offers a pre-filled mailto.
+
+Both are posted to `api/contact.ts`, a Vercel Function next to the static site (no Astro adapter; like `middleware.ts` it does not run under `astro dev`, use `vercel dev` or a preview deploy). It:
 
 1. rejects cross-origin requests, oversized bodies, a filled honeypot (`website`, answered with a fake success), submissions finished in under 4 s, and more than 5 requests per IP in 10 minutes (per warm instance, best effort);
 2. validates the answers against `src/data/inquiry.ts` (known options only, required fields, lengths, control characters stripped);

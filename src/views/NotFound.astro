@@ -1,0 +1,123 @@
+---
+/* Stránka 404. Česká verze je v kořeni (/404.html, Vercel ji vrací pro každou neexistující adresu),
+   anglická na /en/404/ (src/pages/en/404.astro). Na /en/… adrese česká 404 přepne na anglickou (skript níže). */
+import { getLocale, localeLinks, translator } from '../i18n';
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Contact from '../components/Contact.astro';
+import CursorDot from '../components/CursorDot.astro';
+import CtaButton from '../components/CtaButton.astro';
+
+const locale = getLocale(Astro.currentLocale);
+const t = translator(locale);
+const home = localeLinks('/')[locale];
+---
+
+<Base
+  title={t('Stránka nenalezena | Jonáš Rech', 'Page not found | Jonáš Rech')}
+  description={t('Tahle stránka neexistuje. Zpět na úvod, nebo mi rovnou napište.', 'This page doesn’t exist. Head back to the homepage or send me a message.')}
+  noindex
+>
+  {
+    locale === 'cs' && (
+      <script is:inline>
+        // Vercel (i astro preview) zná jen kořenovou 404.html: na /en/… adrese přepnout na anglickou 404.
+        var p = location.pathname;
+        if ((p === '/en' || p.indexOf('/en/') === 0) && p.indexOf('/en/404') !== 0) location.replace('/en/404/');
+      </script>
+    )
+  }
+  <CursorDot />
+  <Header hasContact />
+  <main id="obsah">
+    <section class="nf container" aria-labelledby="nf-title" data-study-hero>
+      <h1 class="nf-code" id="nf-title" aria-label={t('404 – stránka nenalezena', '404 – page not found')}>
+        <span class="wm" aria-hidden="true"><span class="wi">4</span></span>
+        <span class="wm" aria-hidden="true"><span class="wi hl">0</span></span>
+        <span class="wm" aria-hidden="true"><span class="wi">4</span></span>
+      </h1>
+      <div class="nf-sub" data-study-sub>
+        <p class="nf-line">
+          {t('Tahle stránka se neozvala. Na rozdíl od webů, které dělám.', 'This page didn’t get back to you. Unlike the websites I build.')}
+        </p>
+        <p class="nf-help">
+          {t(
+            'Odkaz je možná starý nebo v adrese chybí písmenko. Vraťte se na úvod, nebo mi rovnou napište.',
+            'The link may be out of date or the address has a typo. Head back to the homepage or just send me a message.',
+          )}
+        </p>
+        <div class="nf-actions">
+          <CtaButton href={home} label={t('Zpět na úvod', 'Back to homepage')} openForm={false} />
+          <a class="nf-link" href="#kontakt" data-open-form>{t('Napsat mi', 'Write to me')}</a>
+        </div>
+      </div>
+    </section>
+
+    <Contact />
+  </main>
+  <script>
+    import '../scripts/main';
+  </script>
+</Base>
+
+<style>
+  main { position: relative; z-index: 1; }
+  .nf {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+    align-items: end;
+    /* stejná mezera nad i pod blokem (pod ním hned začíná karta kontaktu) */
+    --nf-gap: clamp(80px, 11.1vw, 160px);
+    padding-block: calc(var(--nf-gap) - 8px) var(--nf-gap); /* 8 px = spodní padding sticky hlavičky */
+  }
+  .nf-code {
+    grid-column: 1 / span 7;
+    display: flex;
+    font-size: clamp(132px, 24vw, 344px);
+    line-height: 0.86;
+    letter-spacing: -0.07em;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  /* maska pro vyjetí číslic – stejný princip jako hero na úvodu (motion.ts → studyHero) */
+  .wm { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.04em 0.02em 0.06em; margin: -0.04em -0.01em -0.06em; }
+  .wi { display: inline-block; }
+  .hl { color: var(--accent-text); }
+  :global(.anim) .wi { transform: translateY(115%) rotate(4deg); }
+  :global(.anim) [data-study-sub] { opacity: 0; }
+
+  .nf-sub { grid-column: 8 / -1; display: flex; flex-direction: column; gap: 24px; padding-bottom: 0.4em; }
+  .nf-line {
+    font-size: clamp(26px, 2.36vw, 34px);
+    line-height: 1.15;
+    letter-spacing: -0.032em;
+    font-weight: 500;
+    text-wrap: balance;
+  }
+  .nf-help { max-width: 44ch; color: var(--muted); font-size: clamp(17px, 1.39vw, 20px); line-height: 1.55; text-wrap: pretty; }
+  .nf-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; padding-top: 8px; }
+  .nf-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 18px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+    transition: color 0.2s var(--ease);
+  }
+  .nf-link:hover { color: var(--accent-text); }
+
+  @media (max-width: 960px) {
+    .nf { grid-template-columns: minmax(0, 1fr); row-gap: 32px; }
+    .nf-code, .nf-sub { grid-column: 1; }
+  }
+  @media (max-width: 640px) {
+    .nf-actions { flex-direction: column; align-items: stretch; gap: 8px; }
+    .nf-actions :global(.cta) { width: 100%; }
+    .nf-link { justify-content: center; }
+  }
+</style>

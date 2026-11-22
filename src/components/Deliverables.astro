@@ -1,0 +1,323 @@
+---
+import { translator } from '../i18n';
+const t = translator(Astro.currentLocale);
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import RoofBrowserBar from './RoofBrowserBar.astro';
+import pokryvac from '../assets/img/pokryvac-na-strese.webp';
+
+const services = [
+  { title: t('Web na míru', 'A custom website'), desc: t('Hned je jasné, co děláte a jak se vám ozvat. Na počítači i na mobilu.', 'Visitors can quickly see what you do and how to reach you, on desktop and mobile.') },
+  { title: t('Texty napíšu za vás', 'Copy written for you'), desc: t('Vy mi řeknete, jak pracujete. Já to napíšu tak, aby tomu rozuměli i lidi mimo váš obor.', 'Tell me how you work and I’ll explain it in language your customers can understand.') },
+  {
+    title: t('Základ pro místní SEO', 'Local SEO essentials'),
+    desc: t('Připravím názvy a popisy stránek podle toho, co děláte a kde působíte. Pomůžu i s firemním profilem na Googlu.', 'I’ll write page titles and descriptions that reflect what you do and where you work. I’ll also help with your Google Business Profile.'),
+  },
+];
+const extras = [
+  { icon: 'camera', label: t('Vlastní fotky', 'Original photography') },
+  { icon: 'phone', label: t('Telefon a formulář', 'Phone and contact form') },
+  { icon: 'zap', label: t('Jednoduché automatizace', 'Simple automations') },
+  { icon: 'trending-up', label: t('Správa reklamních kampaní', 'Ad campaign management') },
+] as const;
+---
+
+<section class="deliv container" aria-labelledby="deliv-h">
+  <h2 class="h2" id="deliv-h" data-reveal>{t('Co dostanete s webem na míru', 'What comes with your website')}</h2>
+
+  <div class="main">
+    <div class="fit preview" data-fit="600" data-reveal-item style="aspect-ratio: 600 / 560">
+      <div class="fit-inner panel" style="width:600px;height:560px" aria-hidden="true" data-pv data-pv-state="1" data-copy="real">
+        <div class="pv-browser">
+          <RoofBrowserBar alt={t('pokrývač Brno', 'roofer Brno')} />
+          <div class="pv-stage">
+            <div class="pv-page">
+              <div class="pv-nav">
+                <b>{t('Novák Střechy', 'Novák Roofing')}</b>
+                <span class="pv-navr">
+                  <i style="width:36px"></i><i style="width:30px"></i><i style="width:40px"></i>
+                  <span class="pv-call"><Icon name="phone" size={11} />{t('Zavolat', 'Call')}</span>
+                </span>
+              </div>
+              <div class="pv-hero">
+                <span class="pv-eyebrow mono">{t('POKRÝVAČ · BRNO A OKOLÍ', 'ROOFING · BRNO AND SURROUNDING AREA')}</span>
+                <span class="pv-h copy">
+                  <span class="c-generic">{t('Vítejte na našich stránkách', 'Welcome to our website')}</span>
+                  <span class="c-real">{t('Opravy střech v Brně a okolí', 'Roof repairs in and around Brno')}</span>
+                </span>
+                <span class="pv-sub copy">
+                  <span class="c-generic">{t('Jsme firma s dlouholetou tradicí. Nabízíme kvalitní služby za výhodné ceny.', 'We are a company with a long tradition. We offer quality services at great prices.')}</span>
+                  <span class="c-real">{t('Od zatékání po novou střechu. Zavolejte a domluvíme se na prohlídce.', 'From fixing leaks to replacing roofs. Call to arrange an inspection.')}</span>
+                </span>
+                <span class="pv-btns">
+                  <span class="pv-primary"><Icon name="phone" size={12} />{t('Zavolat', 'Call')}</span>
+                  <span class="pv-secondary">{t('Poslat poptávku', 'Request a quote')}</span>
+                </span>
+              </div>
+              <div class="pv-gallery">
+                <Image class="pv-photo" src={pokryvac} alt="" widths={[400, 700]} sizes="340px" />
+                <span class="pv-review">
+                  <span class="pv-stars">{[0, 1, 2, 3, 4].map(() => <Icon name="star" size={11} filled stroke={1} />)}</span>
+                  <span class="pv-quote">{t('Podívejte se na naše střechy', 'Take a look at our roofs')}</span>
+                  <span class="pv-author mono">{t('Ukázky realizací', 'Past projects')}</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- 03: výsledky vyhledávání (obecné, bez značky vyhledávače) -->
+            <div class="pv-serp">
+              <span class="sr-field">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+                {t('pokrývač Brno', 'roofer Brno')}
+              </span>
+              <span class="sr-top">
+                <span class="sr-site"><span class="sr-fav">N</span><span class="sr-url mono">strechy-novak.example</span></span>
+                <span class="sr-title">{t('Novák Střechy – Opravy střech v Brně a okolí', 'Novák Roofing – Roof repairs in and around Brno')}</span>
+                <span class="sr-snip">{t('Od zatékání po novou střechu. Pokrývač pro Brno a okolí. Zavolejte a domluvíme se na prohlídce.', 'From fixing leaks to replacing roofs. A roofer for Brno and the surrounding area. Call to arrange an inspection.')}</span>
+              </span>
+              <span class="sr-biz">
+                <span class="sr-map"><i class="sr-pin"></i></span>
+                <span class="sr-biz-text">
+                  <b>{t('Novák Střechy', 'Novák Roofing')}</b>
+                  <span class="sr-rating">4,9 <span class="pv-stars">{[0, 1, 2, 3, 4].map(() => <Icon name="star" size={10} filled stroke={1} />)}</span> <span class="sr-dim">{t('(37 recenzí)', '(37 reviews)')}</span></span>
+                  <span class="sr-dim">{t('Pokrývač · Otevřeno · Brno-Líšeň', 'Roofer · Open · Brno-Líšeň')}</span>
+                </span>
+              </span>
+              <span class="sr-grey"><i style="width:46%"></i><i style="width:88%"></i><i style="width:70%"></i></span>
+              <span class="sr-grey"><i style="width:38%"></i><i style="width:82%"></i><i style="width:60%"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- bubliny pro každý stav; první dvě mají i úvodní „naskočení“ při scrollu (motion.ts) -->
+        <span class="slot s1" style="left:364px;top:236px"><span class="annot" data-annot><i></i>{t('Co a kde děláte', 'What you do and where')}</span></span>
+        <span class="slot s1 d2" style="left:312px;top:338px"><span class="annot" data-annot><i></i>{t('Telefon na jedno ťuknutí', 'Tap to call')}</span></span>
+        <span class="slot s2" style="left:350px;top:228px"><span class="annot"><i></i>{t('Mluví jazykem zákazníka', 'Speaks your customers’ language')}</span></span>
+        <span class="slot s2 d2" style="left:290px;top:330px"><span class="annot"><i></i>{t('Jasný další krok', 'A clear next step')}</span></span>
+        <span class="slot s3" style="left:316px;top:380px"><span class="annot"><i></i>{t('Najdou vás v okolí', 'Found by people nearby')}</span></span>
+      </div>
+    </div>
+
+    <div class="index">
+      <div class="services" data-reveal-item>
+        {
+          services.map((s, i) => (
+            <details class="svc" name="sluzby" open={i === 0} data-pv-item>
+              <summary>
+                <span class="svc-num mono">{String(i + 1).padStart(2, '0')}</span>
+                <h3 class="svc-title">{s.title}</h3>
+                <span class="svc-toggle" aria-hidden="true">
+                  <Icon name="plus" size={18} class="i-plus" />
+                  <Icon name="minus" size={18} class="i-minus" />
+                </span>
+              </summary>
+              <p class="svc-desc">{s.desc}</p>
+            </details>
+          ))
+        }
+      </div>
+
+      <div class="extras" data-reveal-item>
+        <div class="extras-head">
+          <h3 class="extras-label">{t('Další služby', 'Additional services')}</h3>
+          <p class="extras-note">{t('Přidám k webu, když dávají smysl.', 'I can add these if they suit your project.')}</p>
+        </div>
+        <ul class="extras-grid">
+          {
+            extras.map((e) => (
+              <li>
+                <span class="tile">
+                  <Icon name={e.icon} size={18} />
+                </span>
+                {e.label}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .deliv { display: flex; flex-direction: column; gap: 56px; padding-block: var(--sec-y); }
+  @media (min-width: 701px) { .deliv { padding-bottom: clamp(120px, 10vw, 160px); } }
+  .main { display: grid; grid-template-columns: minmax(0, 600px) minmax(0, 1fr); gap: 64px; align-items: center; }
+
+  .preview { border-radius: var(--radius-panel); background: var(--surface); }
+  .panel { padding: 44px 44px 0; }
+  .pv-browser {
+    width: 512px;
+    height: 516px;
+    background: var(--white);
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgb(10 10 10 / 0.1);
+  }
+  .pv-page { display: flex; flex-direction: column; gap: 22px; padding: 22px 28px; }
+  .pv-nav { display: flex; justify-content: space-between; align-items: center; font-size: 14px; letter-spacing: -0.3px; }
+  .pv-navr { display: flex; align-items: center; gap: 16px; }
+  .pv-navr i { height: 5px; border-radius: 3px; background: var(--line); }
+  .pv-call, .pv-primary { display: flex; align-items: center; gap: 6px; border-radius: 99px; background: var(--accent); color: var(--on-accent); font-weight: 600; }
+  .pv-call { padding: 6px 12px; font-size: 11px; }
+  .pv-hero { display: flex; flex-direction: column; gap: 12px; padding-top: 10px; }
+  .pv-eyebrow { color: var(--muted); font-size: 10px; letter-spacing: 0.4px; }
+  .pv-h { width: 380px; font-size: 32px; line-height: 35px; font-weight: 600; letter-spacing: -1px; }
+  .pv-sub { width: 340px; color: var(--muted); font-size: 13px; line-height: 20px; }
+  .pv-btns { display: flex; gap: 8px; padding-top: 6px; }
+  .pv-primary { padding: 9px 16px; font-size: 12px; }
+  .pv-secondary { padding: 9px 16px; font-size: 12px; font-weight: 500; }
+  .pv-gallery { display: flex; gap: 10px; }
+  .pv-gallery :global(.pv-photo) { flex: 1; min-width: 0; height: 170px; object-fit: cover; border-radius: 10px; }
+  .pv-review { display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; width: 150px; height: 170px; padding: 14px; border-radius: 10px; background: var(--surface); }
+  .pv-stars { display: flex; gap: 2px; color: var(--accent); }
+  .pv-quote { font-size: 12px; line-height: 16px; font-weight: 500; }
+  .pv-author { color: var(--muted); font-size: 9px; }
+  .annot {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px 7px 10px;
+    border-radius: 99px;
+    background: var(--ink);
+    color: var(--on-dark);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: inset 0 0 0 1px var(--dark-edge), 0 8px 20px rgb(10 10 10 / 0.15);
+  }
+  .annot i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* Náhled se mění podle otevřené služby: scripts/preview.ts nastavuje data-pv-state (1–3) a data-copy.
+     Bez JS zůstává stav 1, s reduced-motion se přepíná bez přechodu. */
+  .pv-stage { position: relative; height: 467px; }
+  .pv-page, .pv-serp { position: absolute; inset: 0; transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); }
+  .pv-serp { opacity: 0; transform: translateY(14px) scale(0.985); }
+  .panel[data-pv-state='3'] .pv-page { opacity: 0; transform: translateY(-10px) scale(0.985); }
+  .panel[data-pv-state='3'] .pv-serp { opacity: 1; transform: none; }
+
+  /* 02: text se „přepíše“ z obecné šablony na konkrétní */
+  .copy { display: grid; }
+  .copy > span { grid-area: 1 / 1; transition: opacity 0.6s var(--ease), filter 0.6s var(--ease), transform 0.6s var(--ease); }
+  .c-generic { opacity: 0; filter: blur(6px); }
+  .pv-h .c-generic { color: var(--muted); }
+  .panel[data-copy='generic'] .c-generic { opacity: 1; filter: none; }
+  .panel[data-copy='generic'] .c-real { opacity: 0; filter: blur(8px); transform: translateY(4px); }
+  .panel.pv-snap,
+  .panel.pv-snap * { transition: none !important; }
+
+  /* 03: obecné výsledky vyhledávání (bez značky konkrétního vyhledávače) */
+  .pv-serp { display: flex; flex-direction: column; gap: 14px; padding: 20px 28px; font-size: 12px; --link: #1a4fb8; --url: #1e7a3c; }
+  :global(:root[data-theme='dark']) .pv-serp { --link: #8ab4f8; --url: #7cc48e; }
+  .sr-field { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 16px; border-radius: 99px; background: var(--white); box-shadow: inset 0 0 0 1px var(--line); font-size: 14px; }
+  .sr-field svg { flex: none; color: var(--muted); }
+  .sr-top { display: flex; flex-direction: column; gap: 4px; margin-inline: -14px; padding: 12px 14px; border-radius: 12px; background: color-mix(in srgb, var(--accent) 7%, transparent); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 45%, transparent); }
+  .sr-site { display: flex; align-items: center; gap: 8px; }
+  .sr-fav { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-size: 10px; font-weight: 700; }
+  .sr-url { color: var(--url); font-size: 11px; }
+  .sr-title { color: var(--link); font-size: 17px; line-height: 1.25; font-weight: 500; letter-spacing: -0.2px; }
+  .sr-snip { color: var(--muted); font-size: 12px; line-height: 18px; }
+  .sr-biz { display: flex; gap: 14px; padding: 12px; border-radius: 12px; background: var(--surface); }
+  .sr-map {
+    position: relative;
+    flex: none;
+    width: 104px;
+    height: 80px;
+    border-radius: 8px;
+    background-color: color-mix(in srgb, var(--accent) 6%, var(--white));
+    background-image:
+      linear-gradient(30deg, transparent 46%, var(--line) 46% 54%, transparent 54%),
+      linear-gradient(120deg, transparent 47%, var(--line) 47% 53%, transparent 53%);
+    background-size: 40px 40px, 56px 56px;
+  }
+  .sr-pin { position: absolute; left: 50%; top: 44%; width: 14px; height: 14px; border-radius: 50% 50% 50% 0; background: var(--accent); transform: translate(-50%, -50%) rotate(-45deg); }
+  .sr-biz-text { display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+  .sr-biz-text b { font-size: 14px; font-weight: 600; }
+  .sr-rating { display: flex; align-items: center; gap: 6px; }
+  .sr-dim { color: var(--muted); }
+  .sr-grey { display: flex; flex-direction: column; gap: 7px; padding-top: 2px; opacity: 0.8; }
+  .sr-grey i { height: 7px; border-radius: 4px; background: var(--line); }
+  .sr-grey i:nth-child(2) { height: 10px; }
+
+  /* bubliny: každý stav má svoje, naskočí s mírným překmitem (jako back.out) */
+  .slot { position: absolute; z-index: 2; opacity: 0; transform: scale(0.8); transform-origin: 0 50%; transition: opacity 0.2s var(--ease), transform 0.2s var(--ease); }
+  .panel[data-pv-state='1'] .s1,
+  .panel[data-pv-state='2'] .s2,
+  .panel[data-pv-state='3'] .s3 {
+    opacity: 1;
+    transform: none;
+    transition: opacity 0.35s var(--ease) 0.25s, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s;
+  }
+  .panel[data-pv-state='1'] .s1.d2,
+  .panel[data-pv-state='2'] .s2.d2 { transition-delay: 0.42s; }
+  @media (prefers-reduced-motion: reduce) {
+    .pv-page, .pv-serp, .copy > span, .slot { transition: none !important; }
+  }
+
+  .index { display: flex; flex-direction: column; justify-content: space-between; gap: 40px; align-self: stretch; }
+  .services { display: flex; flex-direction: column; }
+  .svc { border-bottom: 1px solid var(--line); background: var(--white); border-radius: 16px; transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease); }
+  .svc summary {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 19px 24px;
+    cursor: pointer;
+    list-style: none;
+    border-radius: 16px;
+  }
+  .svc summary::-webkit-details-marker { display: none; }
+  .svc-num { width: 30px; flex: none; color: var(--muted); font-size: 14px; letter-spacing: 0.3px; }
+  .svc-title { flex: 1; transition: color 0.2s var(--ease); font-size: clamp(22px, 2.08vw, 30px); line-height: 1.13; font-weight: 500; letter-spacing: -0.035em; }
+  .svc-toggle { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 22px; background: var(--surface); color: var(--text); transition: background-color 0.2s var(--ease), transform 0.2s var(--ease); }
+  .svc-toggle :global(.i-minus) { display: none; }
+  .svc summary:hover .svc-toggle { background: var(--line); }
+  .svc-desc { padding: 0 88px 26px 68px; color: #d8d8d5; font-size: clamp(16px, 1.25vw, 18px); line-height: 1.45; }
+
+  .svc[open]:not(.is-closing) { background: var(--open-bg); border-bottom-color: transparent; }
+  .svc[open]:not(.is-closing) summary { align-items: flex-start; padding: 26px 24px 12px; }
+  .svc[open]:not(.is-closing) .svc-num { padding-top: 10px; color: var(--accent); }
+  .svc[open]:not(.is-closing) .svc-title { color: var(--on-dark); font-size: clamp(26px, 2.64vw, 38px); }
+  .svc[open]:not(.is-closing) .svc-toggle { background: var(--accent); color: var(--on-accent); transform: rotate(180deg); }
+  .svc[open]:not(.is-closing) .svc-toggle :global(.i-plus) { display: none; }
+  .svc[open]:not(.is-closing) .svc-toggle :global(.i-minus) { display: block; }
+  .svc summary:focus-visible { outline-offset: -2px; }
+  .svc[open]:not(.is-closing) summary:focus-visible { outline-color: var(--on-dark); }
+
+  .extras { display: flex; flex-direction: column; gap: 16px; padding: 24px; border-radius: var(--radius-panel); background: var(--surface); }
+  .extras-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
+  .extras-label { font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -0.02em; }
+  .extras-note { color: var(--muted); font-size: 15px; }
+  .extras-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .extras-grid li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--white);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  .tile { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 10px; background: var(--surface); color: #8a8a85; }
+
+  @media (max-width: 1100px) {
+    .main { grid-template-columns: 1fr; gap: 40px; }
+    .preview { max-width: 600px; }
+  }
+  @media (max-width: 640px) {
+    .preview .panel { left: -6.5%; transform: scale(calc(var(--fit, 1) * 1.13)); }
+    .deliv { gap: 32px; }
+    .svc summary { padding: 16px; }
+    .svc[open]:not(.is-closing) summary { padding: 20px 16px 10px; }
+    .svc-desc { padding: 0 16px 20px 60px; }
+    .extras { padding: 16px; }
+    .extras-grid { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .svc-toggle { transition-property: background-color; }
+    .svc[open]:not(.is-closing) .svc-toggle { transform: none; }
+  }
+</style>

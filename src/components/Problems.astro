@@ -1,0 +1,396 @@
+---
+import { translator } from '../i18n';
+const t = translator(Astro.currentLocale);
+import Icon from './Icon.astro';
+import RoofBrowserBar from './RoofBrowserBar.astro';
+import StockPhoto from './StockPhoto.astro';
+
+/* marker/badge/tooltip: px souřadnice ve stránce makety 765 × 520 (pod lištou prohlížeče) */
+const problems = [
+  {
+    title: t('Na číslo nejde ťuknout.', 'The phone number isn’t tappable.'),
+    desc: t('Když si ho na mobilu musí opsat, je snazší zavolat jinam.', 'If visitors have to copy the number by hand, it’s easier to call someone else.'),
+    icon: 'phone-off',
+    marker: { l: 14, t: 382, w: 184, h: 46 },
+    badge: { l: 185, t: 392 },
+    tip: { text: t('Číslo je jen obrázek – nejde na něj kliknout', 'The number is an image and can’t be tapped'), l: 226, t: 390 },
+  },
+  {
+    title: t('Fotky neukazují vaši práci.', 'The photos don’t show your work.'),
+    desc: t('Na fotce z fotobanky nikdo neuvidí, jak vypadá vaše práce ani kdo za ní stojí.', 'Stock photos don’t show what your work looks like or who’s behind it.'),
+    icon: 'image',
+    marker: { l: 9, t: 101, w: 747, h: 194 },
+    badge: { l: 742, t: 185 },
+    tip: { text: t('Fotka z fotobanky místo vaší práce', 'A stock photo in place of your work'), l: 262, t: 248 },
+  },
+  {
+    title: t('Není jasné, co děláte a kde.', 'Your services and location are unclear.'),
+    desc: t('Děláte i drobné opravy? Jezdíte i za Brno? Člověk by to neměl hledat po celém webu.', 'Do you do small repairs? Do you travel outside Brno? Visitors shouldn’t have to search the whole site for answers.'),
+    icon: 'map-pin',
+    marker: { l: 14, t: 294, w: 424, h: 82 },
+    badge: { l: 424, t: 322 },
+    tip: { text: t('Obecný text bez služeb a lokality', 'Generic copy without services or locations'), l: 150, t: 252 },
+  },
+  {
+    title: t('Na webu jsou staré informace.', 'The information is out of date.'),
+    desc: t('Když je poslední novinka z roku 2008, člověk neví, jestli ještě fungujete.', 'If your last update was in 2008, people might wonder whether you’re still in business.'),
+    icon: 'calendar',
+    marker: { l: 452, t: 292, w: 296, h: 108 },
+    badge: { l: 734, t: 333 },
+    tip: { text: t('Poslední novinka z roku 2008', 'Last updated in 2008'), l: 470, t: 252 },
+  },
+  {
+    title: t('Chybí výrazné tlačítko.', 'The main button is hard to spot.'),
+    desc: t('Když „Kontaktujte nás“ splývá se zbytkem stránky, člověk ani nepozná, kam kliknout. Hlavní tlačítko má být vidět na první pohled.', 'If “Contact us” blends into the page, visitors won’t know where to click. The main button should stand out straight away.'),
+    icon: 'mouse-pointer',
+    marker: { l: 14, t: 438, w: 138, h: 42 },
+    badge: { l: 140, t: 446 },
+    tip: { text: t('Tlačítko splývá s pozadím', 'The button blends into the background'), l: 182, t: 444 },
+  },
+];
+---
+
+<div class="problems-wrap" id="co-nefunguje">
+  <section class="problems" aria-labelledby="problems-h">
+    <h2 class="h2" id="problems-h" data-reveal>{t('Proč se lidi z webu neozvou', 'Why website visitors don’t get in touch')}</h2>
+
+    <div class="row" data-problems>
+      <div class="figure" data-reveal-item>
+        <div class="fit browser" data-fit="765" style="aspect-ratio: 765 / 569">
+          <div class="fit-inner old" style="width:765px;height:569px" aria-hidden="true">
+            <RoofBrowserBar />
+            <div class="page">
+              <!-- hlavička ~2008: přechod, logo se střechou, vyhledávání -->
+              <div class="o-header">
+                <svg class="o-logo" viewBox="0 0 40 32" aria-hidden="true">
+                  <path d="M2 18 20 3l18 15" fill="none" stroke="#ffb347" stroke-width="4" stroke-linejoin="round" />
+                  <path d="M8 16v13h24V16" fill="#ffffff" fill-opacity="0.9" />
+                  <rect x="17" y="20" width="7" height="9" fill="#2a5fa8" />
+                </svg>
+                <span class="o-brand">{t('STŘECHY NOVÁK s.r.o.', 'NOVÁK ROOFING LTD')}</span>
+                <span class="o-tagline">{t('Kvalitně a levně již od roku 1994', 'Quality work at low prices since 1994')}</span>
+                <span class="o-search"><span>{t('Hledat…', 'Search…')}</span><b>OK</b></span>
+              </div>
+              <div class="o-menu">
+                <span class="is-active">{t('Úvod', 'Home')}</span><i>|</i><span>{t('O nás', 'About')}</span><i>|</i><span>{t('Služby', 'Services')}</span><i>|</i><span>{t('Galerie', 'Gallery')}</span><i>|</i><span>{t('Kontakt', 'Contact')}</span>
+              </div>
+
+              <div class="o-photo"><StockPhoto watermark={t('FOTOBANKA', 'STOCKPHOTO')} /></div>
+
+              <span class="o-abs o-h" style="left:24px;top:302px">{t('Vítejte na našich stránkách!', 'Welcome to our website!')}</span>
+              <span class="o-abs o-p" style="left:24px;top:336px">{t('Jsme firma s dlouholetou tradicí. Nabízíme kvalitní služby', 'We’re an established company providing quality services')}<br />{t('za výhodné ceny. Neváhejte nás kontaktovat.', 'at competitive prices. Don’t hesitate to get in touch.')}</span>
+
+              <!-- telefon jako obrázek (rozmazaný „JPEG“) -->
+              <span class="o-abs o-phone" style="left:24px;top:390px">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z" fill="#2a8a2a" /></svg>
+                <span>Tel.: 777 123 456</span>
+              </span>
+              <span class="o-abs o-cta" style="left:24px;top:446px">{t('Kontaktujte nás', 'Contact us')}</span>
+
+              <!-- novinky z roku 2008 a počítadlo návštěv -->
+              <div class="o-news" style="left:460px;top:300px">
+                <b>{t('Novinky', 'News')}</b>
+                <p><i>»</i> 12. 3. 2008 – {t('Spustili jsme nové webové stránky!', 'We launched our new website!')}</p>
+                <p class="o-dim"><i>»</i> 24. 12. 2007 – {t('Přejeme veselé Vánoce!', 'Merry Christmas to all!')}</p>
+              </div>
+              <span class="o-abs o-counter" style="left:460px;top:414px">{t('Počet návštěv:', 'Visitors:')} {['0', '0', '1', '2', '8', '4'].map((d) => <i>{d}</i>)}</span>
+
+              <div class="o-footer">© 2008 {t('Střechy Novák s.r.o.', 'Novák Roofing Ltd')} &nbsp;|&nbsp; {t('Optimalizováno pro 1024×768', 'Best viewed at 1024×768')} &nbsp;|&nbsp; Webdesign: WebStudio XY</div>
+
+              {
+                problems.map((p, i) => (
+                  <>
+                    <span
+                      class:list={['marker', { 'is-active': i === 0 }]}
+                      data-marker={i}
+                      style={`left:${p.marker.l}px;top:${p.marker.t}px;width:${p.marker.w}px;height:${p.marker.h}px`}
+                    />
+                    <span class:list={['badge mono', { 'is-active': i === 0 }]} data-badge={i} style={`left:${p.badge.l}px;top:${p.badge.t}px`}>
+                      {i + 1}
+                    </span>
+                    <span class:list={['tip', { 'is-active': i === 0 }]} data-tip={i} style={`left:${p.tip.l}px;top:${p.tip.t}px`}>
+                      <Icon name={p.icon} size={15} />
+                      {p.tip.text}
+                    </span>
+                  </>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="list-wrap">
+        <ol class="list">
+          {
+            problems.map((p, i) => (
+              <li class="item" data-reveal-item data-problem={i} data-active={i === 0 ? '' : undefined}>
+                <button
+                  class="item-btn"
+                  type="button"
+                  aria-expanded={i === 0 ? 'true' : 'false'}
+                  aria-controls={`problem-desc-${i}`}
+                >
+                  <span class="num mono" aria-hidden="true">{i + 1}</span>
+                  <span class="item-title">{p.title}</span>
+                  <Icon name="chevron-right" size={16} class="chev" />
+                </button>
+                <div class="item-desc-wrap" id={`problem-desc-${i}`}>
+                  <p class="item-desc">{p.desc}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  .problems-wrap { padding-inline: var(--wrap-x); max-width: calc(var(--max) + 0px); margin-inline: auto; }
+  .problems {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+    padding: clamp(64px, 7.8vw, 112px) clamp(16px, 4.44vw, 64px);
+    border-radius: clamp(24px, 2.2vw, 32px);
+    position: relative;
+  }
+  .problems::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    border-radius: inherit;
+    background-color: var(--surface);
+    background-image: radial-gradient(ellipse 55% 60% at 28% 58%, rgb(255 77 24 / 0.14) 0%, rgb(255 77 24 / 0) 100%);
+  }
+  .row { display: grid; grid-template-columns: minmax(0, 765fr) minmax(0, 451fr); gap: 64px; align-items: stretch; }
+
+  .figure { display: flex; flex-direction: column; gap: 12px; }
+  .browser {
+    /* maketa starého webu zůstává světlá i v tmavém režimu */
+    --white: #fff; --surface: #f4f4f2; --line: #e5e5e2; --muted: #5c5c5c; --text: #0a0a0a; --accent-text: #c93a0e;
+    color-scheme: light; color: var(--text);
+    background: var(--white); outline: 1px solid var(--line); outline-offset: -0.5px; border-radius: 16px; }
+  .old { font-family: Verdana, Tahoma, Geneva, Arial, sans-serif; }
+  @media (max-width: 640px) {
+    .page:has([data-marker="0"].is-active) { transform: scale(1.2); transform-origin: left 80%; }
+  }
+  .page { position: relative; width: 765px; height: 520px; overflow: hidden; background: #fff; transition: transform 0.4s var(--ease); }
+  .o-abs { position: absolute; white-space: nowrap; }
+
+  /* hlavička: lesklý modrý přechod se zkoseným spodkem */
+  .o-header {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 70px;
+    background: linear-gradient(180deg, #3a78c9 0%, #2a5fa8 48%, #1d4b8f 52%, #1a4580 100%);
+    border-bottom: 2px solid #0f2d57;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35);
+  }
+  .o-logo { position: absolute; left: 20px; top: 16px; width: 40px; height: 32px; filter: drop-shadow(1px 1px 0 rgb(0 0 0 / 0.35)); }
+  .o-brand { position: absolute; left: 70px; top: 15px; color: #fff; font-size: 21px; font-weight: 700; letter-spacing: 0.5px; text-shadow: 2px 2px 1px #0b2347; }
+  .o-tagline { position: absolute; left: 71px; top: 42px; color: #bcd6f5; font-size: 10px; font-style: italic; }
+  .o-search { position: absolute; right: 18px; top: 22px; display: flex; font-size: 10px; }
+  .o-search span { width: 120px; padding: 3px 5px; border: 1px solid #7f9db9; background: #fff; color: #999; box-shadow: inset 1px 1px 2px rgb(0 0 0 / 0.15); }
+  .o-search b { padding: 3px 7px; border: 1px solid #0f2d57; background: linear-gradient(#f4f4f4, #cfcfcf); color: #333; font-weight: 700; }
+
+  /* menu: šedomodrý pruh, oddělovače |, aktivní záložka */
+  .o-menu {
+    position: absolute;
+    inset: 72px 0 auto 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 26px;
+    padding-left: 16px;
+    background: linear-gradient(180deg, #f2f6fb 0%, #d3dfef 100%);
+    border-bottom: 1px solid #9fb3d1;
+    color: #1a4580;
+    font-family: Tahoma, Verdana, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .o-menu span { padding: 3px 9px; }
+  .o-menu span.is-active { background: #fff; border: 1px solid #9fb3d1; border-bottom-color: #fff; color: #c25700; margin-bottom: -6px; padding-bottom: 6px; }
+  .o-menu i { color: #8aa0c0; font-style: normal; font-weight: 400; }
+
+  .o-photo { position: absolute; left: 16px; top: 108px; width: 733px; height: 180px; border: 3px double #b8c7dd; overflow: hidden; }
+
+  .o-h { color: #1a4580; font-size: 21px; font-weight: 700; letter-spacing: -0.3px; text-shadow: 1px 1px 0 #d9e4f2; }
+  .o-p { color: #333; font-size: 12px; line-height: 19px; }
+
+  /* telefon jen jako obrázek: rámeček, rozmazané písmo, kompresní šum */
+  .o-phone {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 12px 5px 8px;
+    border: 1px solid #c9c9c9;
+    background: linear-gradient(180deg, #fffdf2, #f5ecc8);
+    box-shadow: 2px 2px 0 #e2e2e2;
+  }
+  .o-phone svg { width: 16px; height: 16px; filter: blur(0.3px); }
+  .o-phone span { color: #b30000; font-family: Arial, sans-serif; font-size: 15px; font-weight: 700; font-style: italic; filter: blur(0.45px); text-shadow: 0.6px 0.6px 0 rgb(179 0 0 / 0.35), -0.4px 0 0 rgb(0 0 0 / 0.12); }
+
+  /* záměrně slabé tlačítko: nízký kontrast, splývá se stránkou */
+  .o-cta { padding: 4px 14px; border: 1px solid #d9dde3; border-radius: 3px; background: #eef0f3; color: #b4bac3; font-size: 12px; line-height: 18px; }
+
+  .o-news { position: absolute; width: 280px; border: 1px solid #9fb3d1; background: #f7faff; font-size: 11px; line-height: 16px; color: #333; }
+  .o-news b { display: block; padding: 4px 8px; background: linear-gradient(180deg, #e6eef9, #c9d8ee); border-bottom: 1px solid #9fb3d1; color: #1a4580; font-size: 13px; }
+  .o-news p { padding: 6px 8px 0; }
+  .o-news p:last-child { padding-bottom: 8px; }
+  .o-news i { color: #c25700; font-style: normal; font-weight: 700; }
+  .o-news .o-dim { color: #888; }
+  .o-counter { display: flex; align-items: center; gap: 2px; color: #555; font-size: 10px; }
+  .o-counter i { display: inline-grid; place-items: center; width: 11px; height: 15px; margin-left: 1px; background: #111; color: #4cff4c; font-family: 'Courier New', monospace; font-size: 11px; font-style: normal; font-weight: 700; }
+  .o-counter i:first-of-type { margin-left: 5px; }
+
+  .o-footer {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border-top: 1px solid #b9c4d3;
+    background: linear-gradient(180deg, #eef1f5, #d9dfe7);
+    color: #6b7686;
+    font-family: Tahoma, Verdana, sans-serif;
+    font-size: 10px;
+  }
+
+  /* anotace: obrysy v akcentu, čísla jako čipy webu, tmavý tooltip s ikonou */
+  .marker {
+    position: absolute;
+    z-index: 20;
+    border-radius: 10px;
+    outline: 1.5px solid rgb(255 77 24 / 0.45);
+    outline-offset: -0.75px;
+    transition: background-color 0.35s var(--ease), box-shadow 0.35s var(--ease), outline-color 0.35s var(--ease);
+  }
+  .marker.is-active { background: rgb(255 77 24 / 0.07); outline: 2px solid var(--accent); box-shadow: 0 0 0 4px rgb(255 77 24 / 0.14), 0 0 22px rgb(255 77 24 / 0.3); }
+  .badge {
+    position: absolute;
+    z-index: 21;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 13px;
+    background: #fff;
+    outline: 1.5px solid var(--accent);
+    outline-offset: -0.75px;
+    color: #c93a0e;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgb(10 10 10 / 0.12);
+    transition: background-color 0.3s var(--ease), color 0.3s var(--ease), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .badge.is-active { background: var(--accent); color: var(--on-accent); transform: scale(1.12); }
+  .tip {
+    position: absolute;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px 8px 11px;
+    border-radius: 999px;
+    background: #0a0a0a;
+    color: #fafafa;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.22);
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+    transform-origin: 0 50%;
+    transition: opacity 0.25s var(--ease), transform 0.35s var(--ease);
+    pointer-events: none;
+  }
+  .tip :global(svg) { flex: none; color: var(--accent); }
+  .tip.is-active { opacity: 1; transform: none; }
+
+  .list-wrap { display: flex; flex-direction: column; gap: 16px; }
+  .list { display: flex; flex-direction: column; gap: 6px; }
+  .item {
+    border-radius: 16px;
+    outline: 1px solid transparent;
+    outline-offset: -0.5px;
+    transition: background-color 0.45s var(--ease), box-shadow 0.45s var(--ease), outline-color 0.45s var(--ease);
+  }
+  .item-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+    padding: 14px 20px;
+    border: 0;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 16px;
+    transition: padding 0.45s var(--ease);
+  }
+  .num {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 14px;
+    outline: 1px solid var(--line);
+    outline-offset: -0.5px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    transition: background-color 0.35s var(--ease), color 0.35s var(--ease), outline-color 0.35s var(--ease);
+  }
+  .item-title {
+    flex: 1;
+    padding-top: 1px;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 26px;
+    font-weight: 500;
+    transition: color 0.35s var(--ease), font-size 0.45s var(--ease);
+  }
+  .item :global(.chev) { margin-top: 5px; color: var(--muted); flex: none; transition: opacity 0.3s var(--ease), transform 0.45s var(--ease); }
+  /* rozbalení popisu: výška 0 → auto přes grid (ease-out) */
+  .item-desc-wrap { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.5s var(--ease); }
+  .item-desc {
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 20px 0 64px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 25px;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.35s var(--ease), transform 0.45s var(--ease), padding 0.5s var(--ease);
+  }
+  .item:hover .item-title { color: var(--text); }
+
+  .item[data-active] { background: var(--white); outline-color: var(--line); box-shadow: 0 8px 24px rgb(0 0 0 / 0.06); }
+  .item[data-active] .item-btn { padding: 20px 20px 10px; }
+  .item[data-active] .num { background: var(--accent); outline-color: transparent; color: var(--on-accent); }
+  .item[data-active] .item-title { color: var(--text); font-size: 18px; font-weight: 600; }
+  .item[data-active] :global(.chev) { opacity: 0; transform: rotate(90deg); }
+  .item[data-active] .item-desc-wrap { grid-template-rows: 1fr; }
+  .item[data-active] .item-desc { padding-bottom: 20px; opacity: 1; transform: none; transition-delay: 0.08s, 0.08s, 0s; }
+
+
+  @media (max-width: 1100px) {
+    .row { grid-template-columns: 1fr; gap: 32px; }
+  }
+  @media (max-width: 640px) {
+    .problems { gap: 32px; }
+    .item-desc { padding-left: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marker, .badge, .tip, .item, .item-btn, .num, .item-title, .item-desc-wrap, .item-desc, .item :global(.chev) { transition: none; }
+  }
+</style>

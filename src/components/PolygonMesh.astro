@@ -1,0 +1,188 @@
+---
+interface Props { dark?: boolean }
+const { dark = false } = Astro.props;
+const clusters = [
+  { x: 30, y: 76, points: [[0,64],[48,8],[94,46],[59,102],[151,82],[174,166],[201,172],[136,231]], edges: [[0, 1, 2, 3, 0], [1, 3, 4, 2], [2, 5, 4, 6, 5, 7, 6]] },
+  { x: 992, y: 35, points: [[0,96],[54,53],[86,0],[134,39],[100,102],[192,75]], edges: [[0, 1, 2, 3, 4, 1, 3, 5]] },
+  { x: 175, y: 382, points: [[0,16],[67,0],[39,48],[112,78]], edges: [[0, 1, 2, 0], [2, 3]] },
+  { x: 1008, y: 360, points: [[0,20],[52,60],[100,9],[149,47],[190,0]], edges: [[0, 1, 2, 3, 1], [3, 4]] },
+  { foreground: true, x: -48, y: 355, points: [[0,80],[57,8],[138,73],[80,156]], edges: [[0,1,2,3]] },
+  { foreground: true, x: 1008, y: -36, points: [[0,18],[62,92],[136,63],[192,153],[245,37]], edges: [[0,1,2,3,4],[2,4]] },
+];
+
+// Scatter the extra clusters at build time, leaving room for the central copy.
+const pockets = [[250, 35], [870, 65], [100, 300], [985, 240], [350, 475], [835, 445]];
+const foregroundPockets = [[32, 32], [190, 238], [992, 296], [892, 508]];
+if (dark) foregroundPockets.push([286, 485], [890, 105]);
+const placements = [
+  ...pockets.map(([x, y]) => ({ x, y, foreground: false })),
+  ...foregroundPockets.map(([x, y]) => ({ x, y, foreground: true })),
+];
+for (const { x: anchorX, y: anchorY, foreground } of placements) {
+  const count = 3 + Math.floor(Math.random() * 4);
+  const width = (foreground ? 85 : 48) + Math.random() * 58;
+  const height = 20 + Math.random() * 32;
+  const points = Array.from({ length: count }, (_, i) => [
+    Math.round(width * i / (count - 1)),
+    Math.round((i % 2 ? 1 : -1) * height * (0.3 + Math.random() * 0.7)),
+  ]);
+  const edges = [points.map((_, i) => i)];
+  for (let i = 2; i < count; i++) {
+    if (i === 2 || Math.random() < 0.65) edges.push([i - 2, i]);
+  }
+  clusters.push({
+    foreground,
+    x: Math.round(anchorX + (Math.random() - 0.5) * 80),
+    y: Math.round(anchorY + (Math.random() - 0.5) * 44),
+    points, edges,
+  });
+}
+---
+
+  <div class:list={["mesh-layer", { dark }]} aria-hidden="true">
+  <svg class="polygon-mesh" viewBox="0 0 1200 540" preserveAspectRatio={dark ? "xMidYMid meet" : "xMidYMid slice"} focusable="false">
+    {clusters.map(({ x, y, points, edges, foreground }) => (
+      <g transform={`translate(${x} ${y})`}>
+        <g data-mesh-cluster data-foreground={foreground || undefined}>
+          {edges.flatMap(indices => indices.slice(1).map((to, i) => {
+            const from = indices[i];
+            return <line data-from={from} data-to={to} x1={points[from][0]} y1={points[from][1]}
+              x2={points[to][0]} y2={points[to][1]} stroke="currentColor" stroke-width=".8" opacity=".18" />;
+          }))}
+          {points.map(([cx, cy], i) => <circle cx={cx} cy={cy} r={i % 3 === 0 ? 2.5 : 1.7} fill="currentColor" opacity=".32" />)}
+        </g>
+      </g>
+    ))}
+  </svg>
+  </div>
+
+<script>
+  for (const mesh of document.querySelectorAll<SVGSVGElement>('.polygon-mesh')) {
+    const clusters = Array.from(mesh.querySelectorAll('[data-mesh-cluster]'), (group, groupIndex) => {
+      const foreground = group.hasAttribute('data-foreground');
+      const nodes = Array.from(group.querySelectorAll('circle'), (circle, i) => {
+        const seed = groupIndex * 7 + i;
+        return {
+          circle, x: circle.cx.baseVal.value, y: circle.cy.baseVal.value,
+          phase: seed * 2.4, speed: 0.24 + (seed % 5) * 0.035,
+        };
+      });
+      const paths = Array.from(group.querySelectorAll('line'), line => ({
+        line, from: Number(line.dataset.from), to: Number(line.dataset.to),
+      }));
+      const centerX = nodes.reduce((sum, node) => sum + node.x, 0) / nodes.length;
+      const centerY = nodes.reduce((sum, node) => sum + node.y, 0) / nodes.length;
+      return { nodes, paths, centerX, centerY, foreground };
+    });
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    let visible = false;
+    let frame = 0;
+    let elapsed = 0;
+    let last = 0;
+
+    function render() {
+      for (const { nodes, paths, centerX, centerY, foreground } of clusters) {
+        const positions = nodes.map(({ circle, x, y, phase, speed }) => {
+          const t = elapsed * speed;
+          const depth = (1 + Math.sin(t * 0.52 + phase)) / 2;
+          const scale = 1 / (1.12 - 0.24 * depth);
+          const dx = x - centerX + 12 * Math.sin(t + phase) + 3 * Math.sin(t * 1.7 + phase);
+          const dy = y - centerY + 10 * Math.cos(t * 0.83 + phase * 1.4);
+          const cx = (centerX + dx * scale).toFixed(2);
+          const cy = (centerY + dy * scale).toFixed(2);
+          circle.setAttribute('cx', cx);
+          circle.setAttribute('cy', cy);
+          const radius = foreground ? 4 + 10 * depth : 1.2 + 1.8 * depth;
+          const opacity = foreground ? 0.06 + 0.10 * depth : 0.16 + 0.38 * depth;
+          circle.setAttribute('r', radius.toFixed(2));
+          circle.setAttribute('opacity', opacity.toFixed(3));
+          return { cx, cy, depth };
+        });
+        for (const { line, from, to } of paths) {
+          const a = positions[from];
+          const b = positions[to];
+          line.setAttribute('x1', a.cx);
+          line.setAttribute('y1', a.cy);
+          line.setAttribute('x2', b.cx);
+          line.setAttribute('y2', b.cy);
+          const depth = (a.depth + b.depth) / 2;
+          const opacity = foreground ? 0.03 + 0.066 * depth : 0.075 + 0.21 * depth;
+          line.setAttribute('opacity', opacity.toFixed(3));
+          if (foreground) line.setAttribute('stroke-width', (1.8 + 4 * depth).toFixed(2));
+        }
+      }
+    }
+
+    function draw(now: number) {
+      if (last) elapsed += (now - last) / 1000;
+      last = now;
+      render();
+      frame = requestAnimationFrame(draw);
+    }
+
+    function updatePlayback() {
+      cancelAnimationFrame(frame);
+      last = 0;
+      if (visible && !document.hidden && !reduced.matches) frame = requestAnimationFrame(draw);
+    }
+    render();
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      updatePlayback();
+    }).observe(mesh);
+    reduced.addEventListener('change', updatePlayback);
+    document.addEventListener('visibilitychange', updatePlayback);
+  }
+</script>
+
+<style>
+  .mesh-layer {
+    --bleed: 112px;
+    --mesh-hover-color: #b07250;
+    --mesh-hover-glow: drop-shadow(0 0 2.5px rgb(212 113 58 / 0.85));
+    position: absolute;
+    inset: calc(-1 * var(--bleed)) 0;
+    z-index: -1;
+    overflow: clip;
+    pointer-events: none;
+    mask-image: linear-gradient(to bottom, transparent, black var(--bleed), black calc(100% - var(--bleed)), transparent);
+  }
+  .polygon-mesh {
+    position: absolute;
+    inset: var(--bleed) 0;
+    width: 100%;
+    height: calc(100% - 2 * var(--bleed));
+    overflow: visible;
+    color: var(--mesh-color, #796e64);
+    filter: var(--mesh-glow, none);
+    transition: color 350ms ease, filter 350ms ease;
+  }
+  .polygon-mesh [data-foreground] { filter: blur(2.4px); }
+  @media (max-width: 900px) {
+    .polygon-mesh { width: 145%; max-width: none; left: -45%; opacity: .75; }
+  }
+  @media (max-width: 640px) {
+    .polygon-mesh { width: 1200px; left: auto; right: -95px; }
+  }
+  /* tmavá varianta (kontakt) – v tmavém režimu je kontakt světlý, takže síť dostane světlé barvy */
+  :global(:root[data-theme='dark'] .invert) .mesh-layer.dark {
+    --mesh-color: #796e64;
+    --mesh-hover-color: #b07250;
+    --mesh-hover-glow: drop-shadow(0 0 2.5px rgb(212 113 58 / 0.85));
+  }
+  .mesh-layer.dark {
+    --bleed: 0px;
+    --mesh-color: #b5aaa0;
+    --mesh-hover-color: #d79872;
+    --mesh-hover-glow: drop-shadow(0 0 3px rgb(255 158 103 / 0.9));
+    mask-image: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    :global(section:has(.cta:hover, button:hover, a[href^="mailto:"]:hover)) > .mesh-layer,
+    :global(body:has(.site-header .cta:hover)) .mesh-layer,
+    :global(.faq:has(a[href^="mailto:"]:hover) + .contact-wrap > .contact) > .mesh-layer {
+      --mesh-color: var(--mesh-hover-color);
+      --mesh-glow: var(--mesh-hover-glow);
+    }
+  }
+</style>

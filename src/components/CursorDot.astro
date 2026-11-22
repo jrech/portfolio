@@ -1,0 +1,26 @@
+---
+interface Props { startAt?: string }
+const { startAt } = Astro.props;
+---
+
+<div class="cursor-dot" aria-hidden="true" data-cursor-dot data-start-at={startAt}></div>
+
+<style>
+  .cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 240ms var(--ease);
+  }
+  .cursor-dot.is-on { opacity: .9; }
+  @media (hover: none), (pointer: coarse) {
+    .cursor-dot { display: none; }
+  }
+</style>

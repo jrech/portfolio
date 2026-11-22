@@ -1,0 +1,355 @@
+---
+import { getLocale, localeLinks, translator } from '../i18n';
+const t = translator(Astro.currentLocale);
+import { Image, Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Contact from '../components/Contact.astro';
+import CursorDot from '../components/CursorDot.astro';
+import Icon from '../components/Icon.astro';
+import notebook from '../assets/pradelna/notebook.webp';
+import heroVisual from '../assets/img/pradelna-hero.webp';
+import homepage from '../assets/pradelna/homepage.webp';
+import telefon from '../assets/pradelna/telefon.webp';
+import tablet from '../assets/pradelna/tablet.webp';
+
+const meta = [
+  { k: t('Klient', 'Client'), v: 'Prádelna Krkonoše' },
+  { k: t('Rozsah', 'Scope'), v: t('Vizuální identita, webdesign, texty, vývoj', 'Visual identity, web design, copy, development') },
+  { k: t('Rok', 'Year'), v: '2026' },
+];
+
+/* Co na webu je – podle hotové hlavní stránky (homepage.webp). */
+const parts = [
+  { t: t('Služby', 'Services'), d: t('Svoz a rozvoz, praní a mandlování, prádlo připravené k použití.', 'Collection, delivery, washing and pressing, with linen returned ready to use.') },
+  { t: t('Nabídka podle provozu', 'Services by business type'), d: t('Zvlášť pro hotely a wellness, chaty a chalupy i gastro.', 'Separate options for hotels and spas, holiday cottages, and food service businesses.') },
+  { t: t('Svozová oblast', 'Collection area'), d: t('Mapa Krkonoš a pole, kde si provozovatel ověří svou adresu.', 'A map of the Krkonoše region and a tool businesses can use to check their address.') },
+  { t: t('Jak to funguje', 'How it works'), d: t('Spolupráce ve třech krocích, od poptávky po první svoz.', 'Three steps from the initial enquiry to the first collection.') },
+  { t: t('Časté otázky', 'Frequently asked questions'), d: t('Odpovědi na to, co řeší provozovatel před prvním svozem.', 'Answers to common questions before the first collection.') },
+  { t: t('Nezávazná poptávka', 'Enquiry with no obligation'), d: t('Formulář dostupný z úvodu i z konce stránky.', 'The enquiry form is accessible from both the top and bottom of the page.') },
+];
+
+const quote =
+  t('„Jonas rychle pochopil, co potřebujeme, a všechno s námi průběžně konzultoval. Výsledný web vypadá skvěle a hlavně dává smysl našim zákazníkům.“', '“Jonas quickly understood what we needed and kept checking in with us throughout. The new website looks great and, most importantly, makes sense to our customers.”');
+---
+
+<Base
+  title={t('Prádelna Krkonoše – vizuální identita a web | Jonáš Rech', 'Prádelna Krkonoše – visual identity and website | Jonáš Rech')}
+  description={t('Jak jsem pro novou prádelnu v Krkonoších vytvořil vizuální identitu a web, na kterém hotely a penziony najdou služby, informace o svozu i poptávkový formulář.', 'How I created a visual identity and website for a new laundry in the Krkonoše mountains, where hotels and guesthouses can find services, collection details and an enquiry form.')}
+>
+  <CursorDot />
+  <Header hasContact />
+  <main id="obsah">
+    <section class="s-hero container" aria-labelledby="s-title" data-study-hero>
+      <h1 class="s-title" id="s-title" aria-label="Prádelna Krkonoše.">
+        <span class="wm" aria-hidden="true"><span class="wi">Prádelna</span></span>
+        <span class="wm" aria-hidden="true"><span class="wi hl">Krkonoše.</span></span>
+      </h1>
+      <div class="s-sub" data-study-sub>
+        <p class="s-lede">
+          {t('Vizuální identita a web pro novou prádelnu, která sváží prádlo z hotelů a penzionů v Krkonoších. Na webu hotely hned zjistí, co si můžou objednat.', 'Visual identity and website for a new laundry that collects linen from hotels and guesthouses in the Krkonoše mountains. Hotels can quickly see which services they can book.')}
+        </p>
+        <dl class="s-meta">
+          {
+            meta.map((m) => (
+              <div>
+                <dt class="mono">{m.k}</dt>
+                <dd>{m.v}</dd>
+              </div>
+            ))
+          }
+          <div>
+            <dt class="mono">{t('Web', 'Website')}</dt>
+            <dd><a href="https://www.pradelnakrkonose.cz/" rel="noopener">pradelnakrkonose.cz</a></dd>
+          </div>
+        </dl>
+      </div>
+      <div class="s-cover" data-study-cover>
+        <Picture
+          src={heroVisual}
+          formats={['avif', 'webp']}
+          quality={90}
+          alt={t('Web Prádelny Krkonoše na notebooku na skále v Krkonoších při západu slunce', 'Prádelna Krkonoše website on a laptop on a rock in the Krkonoše mountains at sunset')}
+          widths={[640, 960, 1440, 1920, 2624]}
+          sizes="(max-width: 1440px) 92vw, 1280px"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+    </section>
+
+    <section class="chapter container" aria-labelledby="ch-start">
+      <p class="ch-label mono">{t('Výchozí stav', 'Starting point')}</p>
+      <div class="ch-body">
+        <h2 class="h2" id="ch-start" data-reveal>{t('Jezdíte i k našemu penzionu?', 'Do you collect from our guesthouse?')}</h2>
+        <p data-reveal>
+          {t('Když prádelna začínala, neměla web ani vlastní vizuální identitu. Při návrhu jsem vyšel z otázek člověka, který má v hotelu na starosti prádlo. Co si může objednat? Jak praní probíhá? A kam až prádelna jezdí pro svoz?', 'The laundry was starting out with no website or visual identity. I began with the questions a hotel’s laundry manager would ask. What can I book? How does the service work? How far do you travel for collection?')}
+        </p>
+      </div>
+    </section>
+
+    <section class="chapter container" aria-labelledby="ch-work">
+      <p class="ch-label mono">{t('Co jsem udělal', 'What I did')}</p>
+      <div class="ch-body">
+        <h2 class="h2" id="ch-work" data-reveal>{t('Hlavní stránka podle otázek z provozu', 'A homepage built around customers’ questions')}</h2>
+        <p data-reveal>
+          {t('Podle těchto otázek jsem sestavil hlavní stránku. Provozovatel na ní najde nabídku služeb, informace o svozu i formulář, přes který se může zeptat na spolupráci.', 'I built the homepage around those questions. Hotel operators can see the available services, check collection details and use the form to enquire.')}
+        </p>
+      </div>
+      <figure class="ch-wide">
+        <div class="clip" data-clip-reveal>
+          <Image
+            src={homepage}
+            alt={t('Přehled hlavní stránky od úvodní fotografie dodávky přes nabídku služeb až po kontakt', 'Homepage overview, from the photo of the van through the service options to the contact section')}
+            widths={[640, 960, 1440]}
+            sizes="(max-width: 1440px) 92vw, 1280px"
+          />
+        </div>
+        <figcaption>{t('Hlavní stránka a její struktura', 'Homepage and its structure')}</figcaption>
+      </figure>
+      <div class="ch-body">
+        <h3 class="h3" data-reveal>{t('Co na stránce je', 'What’s on the page')}</h3>
+        <ul class="parts">
+          {
+            parts.map((p) => (
+              <li data-reveal-item>
+                <b>{p.t}</b>
+                <span>{p.d}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <section class="chapter container" aria-labelledby="ch-id">
+      <p class="ch-label mono">{t('Identita', 'Visual identity')}</p>
+      <div class="ch-body">
+        <h2 class="h2" id="ch-id" data-reveal>{t('Jedna identita od mobilu po počítač', 'One visual identity across mobile and desktop')}</h2>
+        <p data-reveal>
+          {t('Pro prádelnu jsem vybral písmo, barvy a grafické prvky a použil je napříč webem. Nabídku jsem rozdělil podle typu ubytování, aby si majitel penzionu i provozní většího hotelu snadno našli svou část.', 'I chose type, colours and graphic elements for the laundry and used them throughout the website. I grouped services by accommodation type so guesthouse owners and hotel managers could find the right section quickly.')}
+        </p>
+        <p data-reveal>
+          {t('Web jsem navrhl a postavil i pro mobil. Stejně jako na počítači si na něm může zákazník projít služby a rovnou poslat poptávku.', 'I designed and built the site for mobile as well. Customers can browse services and send an enquiry from their phone or computer.')}
+        </p>
+      </div>
+      <figure class="ch-wide">
+        <div class="clip" data-clip-reveal>
+          <Image
+            src={notebook}
+            alt={t('Úvodní stránka Prádelny Krkonoše na notebooku na tmavém stolku', 'Prádelna Krkonoše’s homepage on a laptop on a dark table')}
+            widths={[640, 960, 1440]}
+            sizes="(max-width: 1440px) 92vw, 1280px"
+          />
+        </div>
+        <figcaption>{t('Úvodní stránka na notebooku', 'Homepage on a laptop')}</figcaption>
+      </figure>
+      <div class="gallery ch-wide">
+        <figure data-reveal-item>
+          <Image
+            src={telefon}
+            alt={t('Mobil s úvodní stránkou prádelny položený na dřevěné lavičce', 'The laundry’s homepage on a phone resting on a wooden bench')}
+            widths={[480, 800, 1200]}
+            sizes="(max-width: 640px) 92vw, 40vw"
+          />
+          <figcaption>{t('Úvodní stránka na mobilu', 'Homepage on mobile')}</figcaption>
+        </figure>
+        <figure data-reveal-item>
+          <Image
+            src={tablet}
+            alt={t('Nabídka pro hotely a penziony na obrazovce tabletu', 'Services for hotels and guesthouses on a tablet')}
+            widths={[480, 800, 1200]}
+            sizes="(max-width: 640px) 92vw, 52vw"
+          />
+          <figcaption>{t('Nabídka podle typu ubytování', 'Services by accommodation type')}</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="chapter container" aria-labelledby="ch-result">
+      <p class="ch-label mono">{t('Výsledek', 'Results')}</p>
+      <div class="ch-body">
+        <h2 class="h2" id="ch-result" data-reveal>{t('První výsledky po spuštění', 'Early results after launch')}</h2>
+        <p data-reveal>
+          {t('Od září do', 'From September to')} <time datetime="2026-11-20">{t('20. listopadu 2026', '20 November 2026')}</time> {t('zaznamenal web podle Google Search Console', 'Google Search Console recorded')}
+          <strong>{t('390 zobrazení ve vyhledávání a 68 prokliků na web', '390 search impressions and 68 clicks to the website')}</strong>. {t('Z toho 8 prokliků přinesl dotaz „prádelna Vrchlabí“.', 'The search term “prádelna Vrchlabí” accounted for eight of those clicks.')}
+        </p>
+      </div>
+    </section>
+
+    <div class="ref-wrap">
+      <figure class="ref on-dark invert">
+        <blockquote data-quote>
+          <p>{quote.split(' ').map((w) => <span class="w">{w} </span>)}</p>
+        </blockquote>
+        <figcaption>Markéta Bláhová · Prádelna Krkonoše</figcaption>
+      </figure>
+    </div>
+
+    <nav class="next container" aria-label={t('Další kroky', 'Next steps')}>
+      <a class="next-link" href={localeLinks('/')[getLocale(Astro.currentLocale)] + '#prace'}>
+        <Icon name="arrow-up-right" size={20} class="back" />
+        {t('Zpět na vybrané práce', 'Back to selected work')}
+      </a>
+      <a class="next-link" href="https://www.pradelnakrkonose.cz/" rel="noopener">
+        {t('Prohlédnout živý web', 'Visit the live website')}
+        <Icon name="arrow-up-right" size={20} />
+      </a>
+    </nav>
+
+    <Contact />
+  </main>
+  <script>
+    import '../scripts/main';
+  </script>
+</Base>
+
+<style>
+  main { position: relative; z-index: 1; }
+
+  /* ---------- Hero ---------- */
+  .s-hero { padding-top: clamp(56px, 8.33vw, 120px); }
+  .s-title {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: clamp(48px, 8.9vw, 128px);
+    line-height: 1;
+    letter-spacing: -0.045em;
+    font-weight: 500;
+  }
+  /* maska pro vyjetí slov – stejný princip jako hero na úvodní stránce */
+  .wm { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.06em 0.02em 0.1em; margin: -0.06em 0.22em -0.1em -0.02em; }
+  .wm:last-child { margin-right: -0.02em; }
+  .wi { display: inline-block; }
+  .hl { color: var(--accent-text); }
+  :global(.anim) .wi { transform: translateY(115%) rotate(4deg); }
+  :global(.anim) [data-study-sub] { opacity: 0; }
+  :global(.anim) [data-study-cover] { clip-path: inset(18% 6% 0% 6% round var(--radius-card)); }
+
+  .s-sub {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 32px 24px;
+    padding-block: 32px 48px;
+  }
+  .s-lede {
+    grid-column: 1 / span 6;
+    color: var(--muted);
+    font-size: clamp(18px, 1.5vw, 21px);
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+  .s-meta {
+    grid-column: 8 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-content: start;
+  }
+  .s-meta dt { color: var(--muted); font-size: 13px; line-height: 20px; margin-bottom: 4px; }
+  .s-meta dd { font-weight: 500; line-height: 1.4; }
+  .s-meta a { color: var(--accent-text); text-underline-offset: 4px; }
+
+  .s-cover { border-radius: var(--radius-card); overflow: hidden; background: var(--surface); }
+  .s-cover :global(img) { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; }
+
+  /* ---------- Kapitoly ---------- */
+  .chapter {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: 64px;
+    padding-top: clamp(96px, 8.9vw, 128px);
+  }
+  .ch-label {
+    grid-column: 1 / span 3;
+    align-self: start;
+    padding-top: 12px;
+    border-top: 1px solid var(--text);
+    font-size: 14px;
+    line-height: 22px;
+  }
+  .ch-body { grid-column: 5 / span 7; display: flex; flex-direction: column; gap: 24px; }
+  .ch-body > p { max-width: 62ch; color: var(--muted); font-size: clamp(18px, 1.39vw, 20px); line-height: 1.6; text-wrap: pretty; }
+  .ch-body > .h2 { margin-bottom: 8px; }
+  .ch-wide { grid-column: 1 / -1; }
+  .ch-wide + .ch-body { margin-top: 16px; }
+
+  figure :global(img) { width: 100%; border-radius: var(--radius-card); }
+  figcaption { margin-top: 12px; color: var(--muted); font-size: 14px; }
+  .clip { border-radius: var(--radius-card); overflow: hidden; }
+  .clip :global(img) { border-radius: 0; }
+
+  .h3 { font-size: 22px; line-height: 1.3; font-weight: 500; letter-spacing: -0.02em; }
+  .parts { display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px; }
+  .parts li { display: flex; flex-direction: column; gap: 4px; padding-block: 16px; border-top: 1px solid var(--line); }
+  .parts b { font-weight: 500; }
+  .parts span { color: var(--muted); }
+
+  .gallery { display: grid; grid-template-columns: 4fr 5.6fr; align-items: start; gap: clamp(16px, 3vw, 48px); }
+
+  /* ---------- Reference (tmavá karta jako Problems / Contact) ---------- */
+  .ref-wrap { max-width: var(--max); margin-inline: auto; padding: clamp(64px, 6.67vw, 96px) var(--wrap-x) 0; }
+  .ref {
+    padding: clamp(96px, 11.1vw, 160px) var(--pad-x);
+    border-radius: clamp(24px, 2.2vw, 32px);
+    background: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--dark-edge);
+    color: var(--on-dark);
+  }
+  .ref blockquote p {
+    max-width: 1000px;
+    font-size: clamp(28px, 3.6vw, 52px);
+    line-height: 1.14;
+    letter-spacing: -0.036em;
+    font-weight: 500;
+    text-wrap: pretty;
+  }
+  .ref figcaption { margin-top: 32px; color: var(--on-dark-muted); font-family: var(--mono); font-size: 14px; }
+
+  /* ---------- Další kroky ---------- */
+  .next {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px 32px;
+    padding-block: 48px clamp(64px, 6.67vw, 96px);
+  }
+  .next-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    font-size: clamp(20px, 1.67vw, 24px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    transition: color 0.2s var(--ease);
+  }
+  .next-link :global(svg) { transition: transform 0.25s var(--ease); }
+  .next-link :global(.back) { transform: rotate(-135deg); }
+  @media (hover: hover) and (pointer: fine) {
+    .next-link:hover { color: var(--accent-text); }
+    .next-link:hover :global(svg:not(.back)) { transform: translate(2px, -2px); }
+    .next-link:hover :global(.back) { transform: translateX(-3px) rotate(-135deg); }
+  }
+
+  @media (max-width: 960px) {
+    .s-lede, .s-meta { grid-column: 1 / -1; }
+    .chapter { grid-template-columns: minmax(0, 1fr); row-gap: 32px; }
+    .ch-label, .ch-body, .ch-wide { grid-column: 1; }
+    .ch-label { justify-self: start; padding-top: 8px; }
+    .ch-wide + .ch-body { margin-top: 0; }
+  }
+  @media (max-width: 640px) {
+    .s-cover :global(img) { aspect-ratio: 4 / 3; }
+    .s-meta { gap: 16px; }
+    .parts, .gallery { grid-template-columns: minmax(0, 1fr); }
+    .chapter { padding-top: 80px; }
+    .ref figcaption { margin-top: 24px; }
+    .next { flex-direction: column; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .next-link, .next-link :global(svg) { transition: none; }
+  }
+</style>

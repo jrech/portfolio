@@ -1,0 +1,25 @@
+---
+import Icon from './Icon.astro';
+interface Props { size?: number }
+const { size = 18 } = Astro.props;
+---
+
+<Icon name="arrow-up-right" size={size} class="arrow-out" />
+<Icon name="arrow-up-right" size={size} class="arrow-in" />
+
+<style is:global>
+  :is(.cta-arrow, .card-arrow) > :is(.arrow-out, .arrow-in) {
+    grid-area: 1 / 1;
+  }
+  .arrow-in { display: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    .arrow-in { display: block; transform: translate(-160%, 160%); }
+    :is(.arrow-out, .arrow-in) { transition: transform 0.18s var(--ease); }
+    a.card:focus-visible .arrow-out { transform: translate(160%, -160%); }
+    a.card:focus-visible .arrow-in { transform: translate(0, 0); transition-delay: 0.02s; }
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    :is(.cta, a.card):hover .arrow-out { transform: translate(160%, -160%); }
+    :is(.cta, a.card):hover .arrow-in { transform: translate(0, 0); transition-delay: 0.02s; }
+  }
+</style>

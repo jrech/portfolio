@@ -1,0 +1,44 @@
+---
+import { translator } from '../i18n';
+const t = translator(Astro.currentLocale);
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Work from '../components/Work.astro';
+import Problems from '../components/Problems.astro';
+import Deliverables from '../components/Deliverables.astro';
+import Audience from '../components/Audience.astro';
+import Quote from '../components/Quote.astro';
+import Process from '../components/Process.astro';
+import About from '../components/About.astro';
+import Faq from '../components/Faq.astro';
+import Contact from '../components/Contact.astro';
+import CursorDot from '../components/CursorDot.astro';
+---
+
+<Base
+  title={t('Tvorba webů na míru pro malé firmy | Jonáš Rech', 'Custom websites for small businesses | Jonáš Rech')}
+  description={t('Weby na míru pro řemeslníky, ordinace, advokáty a malé firmy. Napíšu texty, zajistím fotky a web spustím. Spolupráce na dálku po celém světě.', 'Custom websites for tradespeople, clinics, law firms and small businesses. I handle the copy, photography and launch. Available for remote projects worldwide.')}
+>
+  <CursorDot startAt="#co-nefunguje" />
+  <Header />
+  <main id="obsah">
+    <Hero />
+    <Work />
+    <Problems />
+    <Deliverables />
+    <Audience />
+    <Quote />
+    <Process />
+    <About />
+    <Faq />
+    <Contact />
+  </main>
+  <script>
+    import '../scripts/main';
+  </script>
+</Base>
+
+<style>
+  main { position: relative; z-index: 1; }
+</style>

@@ -1,0 +1,184 @@
+---
+import { getLocale, isHome, localeLinks, translator } from '../i18n';
+const t = translator(Astro.currentLocale);
+import CtaButton from './CtaButton.astro';
+import PolygonMesh from './PolygonMesh.astro';
+import Icon from './Icon.astro';
+
+/* Formulář posílá na Vercel funkci /api/contact (api/contact.ts: Notion lead + potvrzení přes Resend).
+   Když odeslání selže, chybová hláška nabídne e-mail s předvyplněnou zprávou. */
+const endpoint = '/api/contact';
+const year = new Date().getFullYear();
+// na podstránkách vedou odkazy v patičce na sekce úvodní stránky
+const home = isHome(Astro.url.pathname) ? '' : localeLinks('/')[getLocale(Astro.currentLocale)];
+---
+
+<div class="contact-wrap" id="kontakt">
+  <section class="contact on-dark invert" aria-labelledby="contact-h">
+    <PolygonMesh dark />
+    <div class="cta-block">
+      <h2 class="title" id="contact-h" data-reveal>{t('Pojďme probrat váš web.', 'Let’s talk about your website.')}</h2>
+      <p class="lede" data-reveal>
+        {t('Napište mi, co děláte a co od webu potřebujete. Domluvíme si úvodní hovor zdarma a bez závazků. Vlastní web mít nemusíte.', 'Tell me what you do and what you need from your website. We’ll arrange a free introductory call with no obligation. You don’t need an existing site.')}
+      </p>
+      <span class="open-btn" data-form-open hidden>
+        <CtaButton href="#formular" />
+      </span>
+
+      <form class="form" id="formular" data-form data-endpoint={endpoint} novalidate>
+        <div class="field" data-field="name">
+          <label for="f-name">{t('Jméno', 'Name')}</label>
+          <input id="f-name" name="name" autocomplete="name" placeholder={t('Např. Petr Novák', 'e.g. Peter')} required aria-describedby="f-name-err" />
+          <p class="err" id="f-name-err">{t('Vyplňte prosím jméno, ať vím, komu odpovídám.', 'Please enter your name so I know who I’m replying to.')}</p>
+        </div>
+        <div class="field" data-field="contact">
+          <label for="f-contact">{t('Telefon nebo e-mail', 'Phone or email')}</label>
+          <input id="f-contact" name="contact" autocomplete="email" placeholder={t('Kam vám mám odpovědět', 'How can I reach you?')} required aria-describedby="f-contact-err" />
+          <p class="err" id="f-contact-err">{t('Bez telefonu nebo e-mailu se vám nemám jak ozvat.', 'Please enter a phone number or email address so I can get back to you.')}</p>
+        </div>
+        <div class="field">
+          <label for="f-url">{t('Odkaz na současný web', 'Current website')} <span>{t('(nepovinné)', '(optional)')}</span></label>
+          <input id="f-url" name="url" inputmode="url" autocomplete="url" placeholder={t('www.vasefirma.cz', 'www.yourbusiness.com')} />
+          <label class="check"><input type="checkbox" name="noweb" data-noweb /> {t('Zatím web nemám', 'I don’t have a website yet')}</label>
+        </div>
+        <div class="field">
+          <label for="f-what">{t('Co od webu potřebujete?', 'What you do and where')} <span>{t('(nepovinné)', '(optional)')}</span></label>
+          <textarea id="f-what" name="what" rows="3" placeholder={t('Máme starší web a chceme, aby z něj šlo snadno poptat zakázku.', 'e.g. I fit flooring in and around Brno')}></textarea>
+        </div>
+        <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <div class="submit-row">
+          <CtaButton type="submit" label={t('Odeslat zprávu', 'Send message')} />
+          <p class="note">{t('Údaje použiju jen k tomu, abych se vám ozval. Nikomu je nepředám a na požádání je smažu.', 'I’ll only use your details to get back to you. I won’t share them and will delete them if you ask.')}</p>
+        </div>
+        <p class="form-error" role="alert" data-form-error hidden>
+          {t('Zprávu se nepodařilo odeslat. Zkuste to prosím znovu, nebo mi napište na', 'Your message couldn’t be sent. Please try again or email me at')}{' '}
+          <a href="mailto:hello@jonasrech.com" data-form-mailto>hello@jonasrech.com</a>.
+        </p>
+      </form>
+
+      <div class="success" role="status" tabindex="-1" data-form-success hidden>
+        <b>{t('Díky, mám to.', 'Thanks, I’ve got it.')}</b>
+        <span data-success-text>{t('Ozvu se vám do 2 pracovních dnů. Kdyby něco spěchalo, napište mi na hello@jonasrech.com.', 'I’ll get back to you within two business days. If it’s urgent, email me at hello@jonasrech.com.')}</span>
+      </div>
+    </div>
+
+    <div class="direct" data-reveal>
+      <p class="label mono">{t('PŘÍMÝ KONTAKT', 'DIRECT CONTACT')}</p>
+      <a class="email" href="mailto:hello@jonasrech.com">hello@jonasrech.com</a>
+    </div>
+
+    <footer class="footer">
+      <div class="f-links">
+        <nav aria-label={t('Patička', 'Footer')}>
+          <a href={home + '#prace'}>{t('Vybrané práce', 'Selected work')}</a>
+          <a href={home + '#pro-koho'}>{t('Pro koho', 'Who it’s for')}</a>
+          <a href={home + '#spoluprace'}>{t('Jak spolupráce probíhá', 'How it works')}</a>
+          <a href={home + '#o-mne'}>{t('O mně', 'About')}</a>
+        </nav>
+        <div class="social">
+          <a href="https://www.instagram.com/jonasrech.design/" rel="me">Instagram</a>
+          <a href="https://www.linkedin.com/in/jonasrech/" rel="me">LinkedIn</a>
+        </div>
+      </div>
+      <div class="f-meta mono">
+        <span>© {year} Jonáš Rech</span>
+        <a href="#obsah">{t('Zpět nahoru', 'Back to top')} <Icon name="arrow-up-right" size={13} class="up" /></a>
+      </div>
+    </footer>
+  </section>
+</div>
+
+<style>
+  .contact-wrap {
+    max-width: var(--max);
+    margin-inline: auto;
+    padding: 0 var(--wrap-x) max(calc(var(--wrap-x) * 2), calc(44px + env(safe-area-inset-bottom)));
+  }
+  .contact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(64px, 6.67vw, 96px);
+    padding: clamp(64px, 8.9vw, 128px) clamp(16px, 3.33vw, 48px) 32px;
+    border-radius: clamp(24px, 2.2vw, 32px);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--dark-edge);
+    color: var(--on-dark);
+  }
+  .cta-block { display: flex; flex-direction: column; align-items: center; gap: 24px; width: 100%; max-width: 843px; text-align: center; }
+  .title { font-size: clamp(36px, 4.24vw, 61px); line-height: 1.08; letter-spacing: -0.039em; font-weight: 500; text-wrap: balance; }
+  .lede { color: var(--on-dark-muted); font-size: clamp(17px, 1.39vw, 20px); line-height: 1.55; text-wrap: pretty; }
+
+  /* formulář (rámec „Formulář – rozbor webu“ v Penu) */
+  .form { display: grid; gap: 24px; width: 100%; max-width: 640px; margin-top: 16px; text-align: left; }
+  :global(.js) .form:not(.is-open) { display: none; }
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field > label { font-size: 16px; font-weight: 500; }
+  .field > label span { color: var(--on-dark-muted); font-weight: 400; }
+  .field input:not([type='checkbox']),
+  .field textarea {
+    width: 100%;
+    min-height: 52px;
+    padding: 14px 16px;
+    border: 1px solid var(--field-border);
+    border-radius: 12px;
+    background: var(--field-bg);
+    color: var(--on-dark);
+    font: inherit;
+    font-size: 17px;
+  }
+  .field textarea { resize: vertical; min-height: 104px; }
+  .field ::placeholder { color: var(--field-placeholder); }
+  .field input:focus-visible,
+  .field textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+  .field input:disabled { opacity: 0.45; cursor: not-allowed; }
+  .err { display: none; color: var(--accent-on-dark); font-size: 15px; }
+  .field.invalid input { border-color: var(--accent-on-dark); }
+  .field.invalid .err { display: block; }
+  .check { display: inline-flex; align-items: center; gap: 12px; margin-top: 4px; color: var(--on-dark-muted); font-size: 16px; cursor: pointer; }
+  .check input { width: 20px; height: 20px; accent-color: var(--accent); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .submit-row { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
+  .note { color: var(--on-dark-muted); font-size: 14px; line-height: 1.5; }
+  .form-error { color: var(--accent-on-dark); font-size: 15px; }
+  .success { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 640px; padding: 24px; border-radius: 20px; background: var(--field-bg); box-shadow: inset 0 0 0 1px var(--field-border); text-align: left; color: var(--on-dark-muted); }
+  .success b { color: var(--on-dark); font-size: 22px; font-weight: 600; }
+
+  .direct { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .label { color: var(--accent-on-dark); font-size: 14px; line-height: 22px; }
+  .email {
+    color: var(--on-dark);
+    font-size: clamp(28px, 3.89vw, 56px);
+    line-height: 1.1;
+    letter-spacing: -0.036em;
+    font-weight: 500;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: color 0.3s var(--ease);
+  }
+  .email:hover,
+  .email:focus-visible { color: var(--accent-on-dark); }
+
+  .footer { display: flex; flex-direction: column; gap: 32px; width: 100%; max-width: 1280px; padding-top: 32px; border-top: 1px solid var(--divider); }
+  .f-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 32px; }
+  .f-links nav, .social { display: flex; flex-wrap: wrap; gap: 12px 32px; }
+  .f-links a { color: var(--on-dark); font-size: 16px; line-height: 25px; font-weight: 500; text-decoration: none; transition: color 0.3s var(--ease); }
+  .f-links a:hover { color: var(--accent-on-dark); }
+  .f-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; color: color-mix(in srgb, var(--on-dark) 85%, transparent); font-size: 13px; line-height: 20px; }
+  .f-meta a { display: inline-flex; align-items: center; gap: 4px; color: var(--on-dark); text-decoration: none; transition: color 0.3s var(--ease); }
+  .f-meta a:hover { color: var(--accent-on-dark); }
+  .f-meta :global(.up) { transform: rotate(-45deg); }
+  .contact :global(a:focus-visible), .contact :global(summary:focus-visible) { outline-color: var(--on-dark); }
+
+  @media (max-width: 640px) {
+    .cta-block { align-items: stretch; text-align: left; }
+    .open-btn :global(.cta),
+    .submit-row :global(.cta) { width: 100%; }
+    .submit-row { align-items: stretch; text-align: left; }
+    .direct { align-items: flex-start; width: 100%; }
+    .f-links { flex-direction: column; }
+  }
+</style>

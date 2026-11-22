@@ -1,0 +1,81 @@
+---
+import { translator } from '../i18n';
+const t = translator(Astro.currentLocale);
+import Icon from './Icon.astro';
+
+const yes = [
+  t('Chcete, aby vám web přinášel víc poptávek.', 'You want your website to bring in more enquiries.'),
+  t('Začínáte a potřebujete místo, kam lidi odkázat.', 'You’re starting out and need somewhere to send people.'),
+  t('Máte web, který už neodpovídá tomu, co děláte.', 'Your website no longer reflects what you do.'),
+  t('Chcete web, texty i fotky řešit s jedním člověkem.', 'You want one person to handle your website, copy and photos.'),
+];
+const no = [
+  t('Potřebujete velký e-shop nebo vlastní aplikaci.', 'You need a large online store or a custom app.'),
+  t('Hledáte jen rychlou šablonu bez práce na obsahu.', 'You just need a quick template and already have your content covered.'),
+  t('Hledáte levný web do pár dnů.', 'You need a low-cost website in a few days.'),
+  t('Teď nemáte čas probrat zadání a projít návrh.', 'You don’t have time right now to discuss the brief and review a design.'),
+];
+---
+
+<section class="aud container" id="pro-koho" aria-labelledby="aud-h">
+  <h2 class="h2" id="aud-h" data-reveal>{t('Weby pro firmy a malé praxe', 'Websites for small businesses and practices')}</h2>
+
+  <div class="cols">
+    <div class="col col--yes" data-reveal-item>
+      <h3 class="col-title">{t('Kdy to dává smysl', 'When it’s a good fit')}</h3>
+      <ul class="panel">
+        {
+          yes.map((t) => (
+            <li data-reveal-item>
+              <span class="badge"><Icon name="check" size={14} stroke={2.5} /></span>
+              {t}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="col col--no" data-reveal-item>
+      <h3 class="col-title">{t('Kdy to nedává smysl', 'When it’s unlikely to be a good fit')}</h3>
+      <ul class="panel">
+        {
+          no.map((t) => (
+            <li data-reveal-item>
+              <span class="badge"><Icon name="minus" size={14} stroke={2.5} /></span>
+              {t}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .aud { display: flex; flex-direction: column; gap: 64px; padding-block: var(--sec-y); }
+  @media (min-width: 701px) { .aud { padding-top: 0; } }
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 16px; }
+  .col { display: flex; flex-direction: column; padding: 8px; border-radius: var(--radius-panel); }
+  .col--yes { background: var(--surface); }
+  .col--no {
+    background-color: var(--tint-warm);
+    background-image: radial-gradient(ellipse 75% 60% at 92% 95%, rgb(255 77 24 / 0.22) 0%, rgb(255 77 24 / 0.06) 45%, transparent 100%);
+  }
+  .col-title { padding: 22px 24px 20px; font-size: 24px; line-height: 30px; font-weight: 600; }
+  .panel { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 4px 20px; border-radius: 14px; }
+  .col--yes .panel { background: var(--panel-bg); }
+  .col--no .panel { background: var(--glass); }
+  .panel li { display: flex; align-items: center; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .panel li:last-child { border-bottom: 0; }
+  .col--yes li { font-size: 18px; line-height: 25px; }
+  .col--no li { color: var(--muted); font-size: 16px; line-height: 22px; }
+  .badge { display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 14px; }
+  .col--yes .badge { background: var(--accent); color: var(--on-accent); }
+  .col--no .badge { background: var(--surface); color: var(--muted); }
+
+  @media (max-width: 900px) {
+    .aud { gap: 32px; }
+    .cols { grid-template-columns: 1fr; }
+    .col-title { padding: 18px 16px 14px; }
+    .panel { padding: 4px 16px; }
+  }
+</style>

@@ -1,0 +1,28 @@
+---
+import type { Locale } from '../i18n';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+---
+
+<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+  {locale === 'cs' ? (
+    <>
+      <path fill="#FFF" d="M0 0h24v24H0z" />
+      <path fill="#D7141A" d="M0 12h24v12H0z" />
+      <path fill="#11457E" d="M0 0v24l14-12z" />
+    </>
+  ) : (
+    <>
+      <path fill="#012169" d="M0 0h24v24H0z" />
+      <path stroke="#FFF" stroke-width="4" d="m-6 0 36 24M30 0-6 24" />
+      <path stroke="#C8102E" stroke-width="1.5" d="m-6 0 36 24M30 0-6 24" />
+      <path stroke="#FFF" stroke-width="7" d="M12 0v24M0 12h24" />
+      <path stroke="#C8102E" stroke-width="4" d="M12 0v24M0 12h24" />
+    </>
+  )}
+</svg>
+
+<style>
+  svg { display: block; flex: none; width: 23px; height: 23px; border-radius: 50%; }
+</style>

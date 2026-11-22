@@ -1,0 +1,181 @@
+---
+import { translator } from '../i18n';
+const t = translator(Astro.currentLocale);
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import dilna from '../assets/img/dilna-hoblik.png';
+
+const wave = [6, 12, 20, 14, 24, 10, 18, 26, 12, 8, 16, 22, 10, 6, 14, 20, 12, 8, 18, 10, 6, 12, 16, 8];
+---
+
+<section class="process container" id="spoluprace" aria-labelledby="process-h">
+  <h2 class="h2" id="process-h" data-reveal>{t('Jak spolupráce probíhá', 'How it works')}</h2>
+
+  <ol class="steps" data-steps>
+    <li class="step" data-step="call">
+      <div class="visual center" aria-hidden="true">
+        <div class="call-card">
+          <div class="call-top">
+            <span class="b-phone"><Icon name="phone" size={16} /></span>
+            <b>{t('Úvodní hovor', 'Introductory call')}</b>
+            <span class="b-mic"><Icon name="mic" size={13} /></span>
+          </div>
+          <div class="wave">
+            {wave.map((h, i) => <i class:list={[{ off: i >= 14 }]} style={`height:${h}px`} />)}
+          </div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="meta"><span class="num mono">01</span><span class="pill mono">{t('30–45 min · zdarma', '30–45 min · free')}</span></div>
+        <h3>{t('Zavoláme si', 'We’ll have a call')}</h3>
+        <p>{t('Probereme, kdo se vám má ozývat a co má na webu najít.', 'We’ll talk about who you want to hear from and what they need to find on your site.')}</p>
+      </div>
+    </li>
+
+    <li class="step" data-step="offer">
+      <div class="visual top" aria-hidden="true">
+        <div class="doc">
+          <span class="doc-no mono">{t('NABÍDKA Č. 024', 'QUOTE NO. 024')}</span>
+          <b class="doc-title">{t('Web na míru', 'Custom website')}</b>
+          {
+            [110, 86, 124].map((w) => (
+              <span class="doc-item">
+                <Icon name="check" size={12} stroke={2.5} class="doc-check" />
+                <i style={`width:${w}px`} />
+              </span>
+            ))
+          }
+          <span class="doc-div" />
+        </div>
+        <span class="b-send"><Icon name="send" size={15} /></span>
+      </div>
+      <div class="body">
+        <div class="meta"><span class="num mono">02</span><span class="pill mono">{t('do 3 dnů', 'within 3 days')}</span></div>
+        <h3>{t('Pošlu nabídku', 'I’ll send a quote')}</h3>
+        <p>{t('Dostanete cenu, rozsah i termín písemně. Víte, do čeho jdete.', 'You’ll get the price, scope and timeline in writing so you know what to expect.')}</p>
+      </div>
+    </li>
+
+    <li class="step" data-step="build">
+      <div class="visual abs" aria-hidden="true">
+        <Image class="photo" src={dilna} alt="" widths={[256, 400]} sizes="128px" />
+        <span class="b-cam"><Icon name="camera" size={14} /></span>
+        <div class="wire">
+          <span class="w-nav"><i class="dark" style="width:28px"></i><i style="width:40px"></i></span>
+          <Image class="w-img" src={dilna} alt="" widths={[240]} sizes="120px" />
+          <i class="dark" style="width:100px;height:6px"></i>
+          <i style="width:84px"></i>
+          <i style="width:92px"></i>
+          <i class="w-btn" style="width:46px"></i>
+        </div>
+      </div>
+      <div class="body">
+        <div class="meta"><span class="num mono">03</span><span class="pill mono">{t('zhruba 3–4 týdny', 'around 3–4 weeks')}</span></div>
+        <h3>{t('Připravím web', 'I’ll build your website')}</h3>
+        <p>{t('Napíšu texty, podle potřeby fotím a pošlu vám návrh ke kontrole.', 'I’ll write the copy, take photos if needed and send you the design for review.')}</p>
+      </div>
+    </li>
+
+    <li class="step" data-step="launch">
+      <div class="visual center" aria-hidden="true">
+        <div class="lb">
+          <div class="lb-bar">
+            <span class="lb-dots"><i></i><i></i><i></i></span>
+            <span class="lb-url"><Icon name="lock" size={9} /><span class="mono" data-typed="vasefirma.cz">vasefirma.cz</span></span>
+          </div>
+          <div class="lb-page">
+            <i class="dark" style="width:120px;height:8px"></i>
+            <i style="width:164px"></i>
+            <i style="width:130px"></i>
+            <span class="lb-btns"><i class="acc"></i><i class="sur"></i></span>
+          </div>
+        </div>
+        <span class="online mono"><span class="live"></span>ONLINE</span>
+      </div>
+      <div class="body">
+        <div class="meta"><span class="num mono">04</span></div>
+        <h3>{t('Spustíme', 'We’ll launch')}</h3>
+        <p>{t('Po spuštění máte měsíc drobných úprav v ceně. Když budete později něco potřebovat, můžeme se domluvit na dalších úpravách.', 'I’ll keep looking after the site after launch and refine it based on what works in practice.')}</p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<style>
+  .process { display: flex; flex-direction: column; gap: 64px; padding-block: var(--sec-y); }
+  .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .step { display: flex; flex-direction: column; min-height: 418px; padding: 8px; border-radius: var(--radius-panel); background: var(--surface); }
+
+  .visual {
+    position: relative;
+    height: 208px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--visual-bg);
+  }
+  .visual.center { display: flex; align-items: center; justify-content: center; }
+  .visual.top { display: flex; justify-content: center; padding-top: 30px; }
+  .shadow, .call-card, .doc, .b-send, .photo, .wire, .lb, .online { box-shadow: 0 8px 24px rgb(10 10 10 / 0.08); }
+
+  .body { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 22px 24px 24px; }
+  .meta { display: flex; justify-content: space-between; align-items: center; padding-bottom: 4px; }
+  .num { color: var(--accent-text); font-size: 13px; letter-spacing: 0.3px; }
+  .pill { padding: 4px 10px; border-radius: 99px; background: var(--white); color: var(--muted); font-size: 12px; line-height: 17px; }
+  .body h3 { font-size: 24px; line-height: 30px; font-weight: 600; }
+  .body p { color: var(--muted); font-size: 16px; line-height: 25px; }
+
+  /* 1 – hovor */
+  .call-card { display: flex; flex-direction: column; gap: 14px; width: 224px; padding: 14px; border-radius: 12px; background: var(--white); }
+  .call-top { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .call-top b { flex: 1; font-weight: 600; }
+  .b-phone { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; background: var(--accent); color: var(--on-accent); }
+  .b-mic { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 14px; background: var(--surface); }
+  .wave { display: flex; align-items: center; gap: 4px; height: 28px; }
+  .wave i { width: 3px; border-radius: 2px; background: var(--accent); transform-origin: 50% 50%; }
+  .wave i.off { background: var(--line); }
+
+  /* 2 – nabídka */
+  .doc { position: relative; display: flex; flex-direction: column; gap: 10px; width: 200px; height: max-content; padding: 16px; border-radius: 10px; background: var(--white); }
+  .doc-no { color: var(--muted); font-size: 10px; letter-spacing: 0.3px; }
+  .doc-title { font-size: 14px; font-weight: 600; }
+  .doc-item { display: flex; align-items: center; gap: 8px; }
+  .doc-item :global(.doc-check) { color: var(--accent-text); }
+  .doc-item i { height: 6px; border-radius: 3px; background: var(--line); transform-origin: 0 50%; }
+  .doc-div { height: 1px; background: var(--line); }
+  .b-send { position: absolute; left: calc(50% + 78px); top: 16px; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 17px; background: var(--ink); color: var(--on-dark); }
+
+  /* 3 – návrh */
+  .visual.abs :global(.photo) { position: absolute; left: 30px; top: 30px; width: 128px; height: 150px; border-radius: 10px; object-fit: cover; }
+  .b-cam { position: absolute; left: 18px; top: 18px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 15px; background: var(--accent); color: var(--on-accent); z-index: 1; }
+  .wire { position: absolute; left: 132px; top: 50px; z-index: 2; display: flex; flex-direction: column; gap: 7px; width: 140px; padding: 10px; border-radius: 10px; background: var(--white); }
+  .wire i { display: block; height: 5px; border-radius: 3px; background: var(--line); transform-origin: 0 50%; }
+  .wire i.dark { background: var(--text); }
+  .w-nav { display: flex; justify-content: space-between; padding-bottom: 2px; }
+  .wire :global(.w-img) { width: 100%; height: 44px; border-radius: 6px; object-fit: cover; }
+  .wire .w-btn { height: 14px; border-radius: 7px; background: var(--accent); }
+
+  /* 4 – spuštění */
+  .lb { width: 224px; border-radius: 10px; background: var(--white); overflow: hidden; }
+  .lb-bar { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  .lb-dots { display: flex; gap: 4px; }
+  .lb-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+  .lb-url { flex: 1; display: flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 99px; background: var(--surface); color: var(--muted); font-size: 10px; letter-spacing: 0.3px; }
+  .lb-page { display: flex; flex-direction: column; gap: 8px; padding: 14px; }
+  .lb-page i { display: block; height: 6px; border-radius: 3px; background: var(--line); transform-origin: 0 50%; }
+  .lb-page i.dark { background: var(--text); }
+  .lb-btns { display: flex; gap: 6px; padding-top: 4px; }
+  .lb-btns i { height: 18px; border-radius: 9px; }
+  .lb-btns .acc { width: 56px; background: var(--accent); }
+  .lb-btns .sur { width: 48px; background: var(--surface); }
+  .online { position: absolute; left: calc(50% + 40px); top: 26px; display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 99px; background: var(--white); font-size: 10px; letter-spacing: 0.3px; }
+  .live { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; }
+
+  @media (max-width: 1200px) {
+    .steps { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    .process { gap: 32px; }
+    .steps { grid-template-columns: 1fr; }
+    .step { min-height: 0; }
+  }
+</style>

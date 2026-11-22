@@ -15,7 +15,7 @@
  *   409 same submission still in progress · 413/415 bad body · 429 rate limited
  *   502 nothing could be stored · 503 not configured
  */
-import { getInquiry, validateInquiry, type InquiryLocale } from '../src/data/inquiry.js';
+import { getInquiry, validateInquiry, validateShortForm, type InquiryLocale } from '../src/data/inquiry.js';
 import {
   buildLead,
   confirmationEmail,
@@ -26,6 +26,7 @@ import {
   notificationEmail,
   readConfig,
   sendEmail,
+  type FormKind,
   type NotionPage,
 } from './_lib/lead.js';
 
@@ -86,7 +87,9 @@ export async function POST(request: Request): Promise<Response> {
   const id = typeof data.submissionId === 'string' ? data.submissionId : '';
   if (!SUBMISSION_ID.test(id)) return json(400, { ok: false, error: 'invalid' });
   const locale: InquiryLocale = data.locale === 'en' ? 'en' : 'cs';
-  const result = validateInquiry(data, getInquiry(locale).steps);
+  // `form: 'short'` = the contact card on the website; anything else = the questionnaire.
+  const form: FormKind = data.form === 'short' ? 'short' : 'inquiry';
+  const result = form === 'short' ? validateShortForm(data, locale) : validateInquiry(data, getInquiry(locale).steps);
   if (!result.ok) return json(400, { ok: false, error: 'invalid' });
 
   const config = readConfig(process.env);
@@ -99,7 +102,7 @@ export async function POST(request: Request): Promise<Response> {
   if (inFlight.has(id)) return json(409, { ok: false, error: 'in_progress' });
   inFlight.add(id);
   try {
-    const lead = buildLead(id, result.answers, locale);
+    const lead = buildLead(id, result.answers, locale, form);
 
     // 1. Notion: reuse the lead a retried submission already created.
     let page: NotionPage | null = null;
@@ -128,7 +131,8 @@ export async function POST(request: Request): Promise<Response> {
     let confirmation: Status = 'skipped';
     let notification: Status = 'skipped';
     if (emailReady(config)) {
-      confirmation = (await sendEmail(config, confirmationEmail(config, lead), `${id}-confirmation`)) ? 'sent' : 'failed';
+      // A phone-only short form has nowhere to send the confirmation to.
+      if (lead.email) confirmation = (await sendEmail(config, confirmationEmail(config, lead), `${id}-confirmation`)) ? 'sent' : 'failed';
       const notify = notificationEmail(config, lead, { notionUrl: page.url, confirmationSent: confirmation === 'sent' });
       notification = (await sendEmail(config, notify, `${id}-notification`)) ? 'sent' : 'failed';
     }

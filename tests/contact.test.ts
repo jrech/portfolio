@@ -354,3 +354,86 @@ test('greeting: first name only, plain fallback when the name is unusable; visit
   assert.doesNotMatch(xss.html, /<b>/);
   assert.match((await greet('Jana Nováková', 'cs')).text, /^Zdravíčko!\n\nDíky, že/);
 });
+
+/* ---------- Short form (contact card on the 2026 redesign) ---------- */
+
+const shortForm = (extra: Record<string, unknown> = {}) => ({
+  form: 'short',
+  name: 'Petr Novák',
+  contact: 'delivered@resend.dev',
+  currentUrl: 'www.podlahy-novak.cz',
+  note: 'Pokládám podlahy, Brno a okolí.',
+  website: '',
+  locale: 'cs',
+  submissionId: `short-${Math.random().toString(36).slice(2, 10)}`,
+  elapsedMs: 30_000,
+  ...extra,
+});
+
+test('short form with email: lead without questionnaire answers, both emails sent', async () => {
+  const res = await post(shortForm({ submissionId: 'short-email-1' }));
+  assert.equal(res.status, 200);
+  assert.deepEqual(await res.json(), {
+    ok: true,
+    id: 'short-email-1',
+    duplicate: false,
+    stored: true,
+    confirmation: 'sent',
+    notification: 'sent',
+  });
+  const p = pages[0].properties;
+  assert.equal(text(p[PROP.company]), 'Petr Novák');
+  assert.equal(p[PROP.email].email, 'delivered@resend.dev');
+  assert.equal(p[PROP.projectType].select, null, 'no made-up project type');
+  assert.equal(p[PROP.budget].select, null, 'no made-up budget');
+  assert.equal(p[PROP.web].url, 'https://www.podlahy-novak.cz/');
+  const brief = text(p[PROP.brief]);
+  assert.match(brief, /Krátký formulář na webu\./);
+  assert.match(brief, /Web: www\.podlahy-novak\.cz/);
+  assert.match(brief, /Co dělá a kde:\nPokládám podlahy, Brno a okolí\./);
+  assert.deepEqual(emails[0].body.to, ['delivered@resend.dev']);
+  assert.match(emails[1].body.text, /Telefon nebo e-mail: delivered@resend\.dev/);
+  assert.equal(emails[1].body.reply_to, 'delivered@resend.dev');
+});
+
+test('short form with phone: lead saved, no client confirmation, Jonas notified with the number', async () => {
+  const res = await post(shortForm({ submissionId: 'short-phone-1', contact: '+420 777 123 456', currentUrl: '', noWebsite: 'Ano' }));
+  assert.equal(res.status, 200);
+  assert.deepEqual(await res.json(), {
+    ok: true,
+    id: 'short-phone-1',
+    duplicate: false,
+    stored: true,
+    confirmation: 'skipped',
+    notification: 'sent',
+  });
+  const p = pages[0].properties;
+  assert.equal(p[PROP.email].email, null);
+  assert.equal(PROP.web in p, false);
+  assert.match(text(p[PROP.brief]), /Telefon: \+420 777 123 456\nWeb: zatím nemá/);
+  assert.equal(emails.length, 1, 'only the notification');
+  assert.deepEqual(emails[0].body.to, ['studio@example.test']);
+  assert.match(emails[0].body.text, /Telefon: \+420 777 123 456/);
+  assert.equal(emails[0].body.reply_to, undefined);
+});
+
+test('short form: missing name, invalid contact or too fast is rejected; questionnaire fields are not required', async () => {
+  for (const bad of [{ name: '' }, { contact: 'nevim' }, { contact: '123' }, { elapsedMs: 1000 }]) {
+    const res = await post(shortForm(bad));
+    assert.equal(res.status, 400, JSON.stringify(bad));
+  }
+  assert.equal(pages.length, 0);
+  assert.equal(emails.length, 0);
+  // Without `form: 'short'` the same payload is a broken questionnaire.
+  const res = await post(shortForm({ form: undefined }));
+  assert.equal(res.status, 400);
+});
+
+test('short form in English is stored with Czech row labels and an EN note', async () => {
+  const res = await post(shortForm({ submissionId: 'short-en-1', locale: 'en', note: 'I lay floors around Brno.' }));
+  assert.equal(res.status, 200);
+  const brief = text(pages[0].properties[PROP.brief]);
+  assert.match(brief, /Co dělá a kde:\nI lay floors around Brno\./);
+  assert.match(brief, /Jazyk formuláře: EN/);
+  assert.equal(emails[0].body.subject.includes('Thanks') || emails[0].body.subject.length > 0, true);
+});

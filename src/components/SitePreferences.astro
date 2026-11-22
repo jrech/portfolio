@@ -1,0 +1,127 @@
+---
+import Icon from './Icon.astro';
+import LanguageFlag from './LanguageFlag.astro';
+import { translator, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  links: Record<Locale, string>;
+}
+
+const { locale, links } = Astro.props;
+const t = translator(locale);
+const other: Locale = locale === 'cs' ? 'en' : 'cs';
+const languageLabel = t('Změnit jazyk (aktuálně čeština)', 'Change language (currently English)');
+const toDark = t('Přepnout na tmavý režim', 'Switch to dark mode');
+const toLight = t('Přepnout na světlý režim', 'Switch to light mode');
+---
+
+<div class="preferences">
+  <nav aria-label={t('Jazyk webu', 'Website language')}>
+    <details data-language-picker>
+      <summary class="control" aria-label={languageLabel} title={languageLabel}>
+        <LanguageFlag locale={locale} />
+        <Icon name="chevron-right" size={12} class="chevron" />
+      </summary>
+      <a class="language-option" href={links[other]} lang={other} hreflang={other}>
+        <LanguageFlag locale={other} />
+        {other === 'cs' ? 'Čeština' : 'English'}
+      </a>
+    </details>
+  </nav>
+  <button
+    class="control theme"
+    type="button"
+    aria-pressed="false"
+    aria-label={toDark}
+    title={toDark}
+    data-theme-toggle
+    data-label-dark={toDark}
+    data-label-light={toLight}
+  >
+    <Icon name="moon" size={17} class="i-moon" />
+    <Icon name="sun" size={17} class="i-sun" />
+  </button>
+</div>
+
+<script>
+  import { initTheme } from '../scripts/theme';
+  initTheme();
+
+  for (const picker of document.querySelectorAll<HTMLDetailsElement>('[data-language-picker]')) {
+    const summary = picker.querySelector('summary');
+    const link = picker.querySelector<HTMLAnchorElement>('a[hreflang]');
+
+    link?.addEventListener('click', () => {
+      // stejná cookie jako geo přesměrování v middleware.ts (Vercel)
+      document.cookie = `lang=${link.hreflang}; Path=/; Max-Age=31536000; SameSite=Lax`;
+    });
+    document.addEventListener('click', (event) => {
+      if (event.target instanceof Node && !picker.contains(event.target)) picker.open = false;
+    });
+    picker.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !picker.open) return;
+      picker.open = false;
+      summary?.focus();
+    });
+  }
+</script>
+
+<style>
+  .preferences, .language-option {
+    border: 1px solid rgb(255 255 255 / 0.2);
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--on-dark);
+    box-shadow: 0 5px 20px rgb(10 10 10 / 0.2);
+  }
+  .preferences {
+    position: fixed;
+    z-index: 55;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    padding: 4px;
+  }
+  .control {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+  }
+  summary.control { display: flex; justify-content: center; gap: 4px; width: 52px; cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary :global(.chevron) { transform: rotate(-90deg); }
+  details[open] summary { background: rgb(255 255 255 / 0.17); }
+  details[open] summary :global(.chevron) { transform: rotate(90deg); }
+  .language-option {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 44px;
+    padding: 4px 14px 4px 10px;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  @media (hover: hover) {
+    summary:hover { background: rgb(255 255 255 / 0.17); }
+    .language-option:hover { background: #282828; }
+  }
+  :is(a, summary):focus-visible { outline-color: var(--on-dark); outline-offset: -3px; border-radius: 999px; }
+  .theme { color: var(--on-dark); cursor: pointer; }
+  .theme :global(svg) { grid-area: 1 / 1; }
+  .theme :global(.i-sun) { display: none; }
+  :global(html[data-theme='dark']) .theme :global(.i-sun) { display: block; }
+  :global(html[data-theme='dark']) .theme :global(.i-moon) { display: none; }
+  @media (hover: hover) {
+    .theme:hover { background: rgb(255 255 255 / 0.23); }
+  }
+  .theme:focus-visible { outline-color: var(--on-dark); outline-offset: -2px; border-radius: 50%; }
+</style>

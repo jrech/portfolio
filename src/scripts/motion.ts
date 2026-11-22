@@ -1,893 +1,275 @@
-/**
- * Shared editorial motion: 700 ms content, 1.3 s rules, word-by-word headings (1.1 s per word),
- * 60 ms stagger, one soft easing curve. Scroll-scrubbed statement with word-by-word focus.
- * Content remains available without JS and with reduced motion.
- */
+/* Pohyb (GSAP + ScrollTrigger). Zásady:
+   - jen transform / opacity / color, žádné layout vlastnosti
+   - každá animace jednou (bez smyček), kromě „dopisování“ citátu, které jde se scrollem
+   - prefers-reduced-motion: nic se neanimuje, obsah je rovnou ve finálním stavu
+   - bez JS je vše vidět (výchozí stav je finální, GSAP animuje „from“) */
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
-import { CustomEase } from 'gsap/CustomEase';
 
-gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase);
+gsap.registerPlugin(ScrollTrigger);
 
-// Curves: fast start, long soft landing, so movement settles like a real object.
-const EASE = CustomEase.create('site-out', '0.22, 1, 0.36, 1'); // same as --ease-out in tokens.css
-const EASE_REVEAL = EASE; // expo-like out, headings
-const EASE_MENU = CustomEase.create('site-menu', '0.76, 0, 0.24, 1'); // shutter: eases in and out
-const root = document.documentElement;
+const EASE = 'power3.out';
 
+export function initMotion() {
+  (window as unknown as { __motionReady?: boolean }).__motionReady = true;
+  const mm = gsap.matchMedia();
 
-// Kept short and triggered early: content should already be moving as it enters view.
-const MOTION = { duration: 0.7, heading: 0.85, stagger: 0.06, distance: 20 };
-const START = 'top 92%';
-// Headings wait a little longer than body content, so the word reveal is seen in full (Jonas, 2026-10-30).
-const HEADING_START = 'top 82%';
-// Separator lines draw slower and on an even in-out curve, so the whole stroke is seen
-// travelling across instead of jumping to ~70% in the first frames (Jonas, 2026-10-29).
-// power1 keeps the travel visible but leaves the start less sluggish, so lines no longer
-// look like they wait for the content (Jonas, 2026-10-30).
-const RULE = { duration: 1.3, ease: 'power1.inOut' };
-const visible = (el: HTMLElement) => el.getClientRects().length > 0;
-const passed = (el: HTMLElement) => el.getBoundingClientRect().bottom <= 0;
-// Blur only where a mouse is used: animated blur flickered purple on phones (Jonas, 2026-10-29).
-const BLUR = matchMedia('(hover: hover) and (pointer: fine)').matches;
-
-// H2 reveal experiment (Jonas, 2026-10-30): 'words' slides each word up inside its
-// line mask; 'lines' is the previous line-by-line reveal. Switch back here.
-const HEADING_SPLIT: 'words' | 'lines' = 'words';
-
-function splitHeading(heading: HTMLElement) {
-  const byWord = HEADING_SPLIT === 'words';
-  // Words start fully blurred, so they float in without line masks that would clip the blur.
-  const split = SplitText.create(heading, {
-    type: byWord ? 'lines,words' : 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
-    ...(!byWord && { mask: 'lines' as const }),
-  });
-  const targets = (byWord ? split.words : split.lines) as HTMLElement[];
-  const from = byWord ? { y: '0.35em', opacity: 0 } : { yPercent: 104, opacity: 0 };
-  gsap.set(targets, { ...from, ...(BLUR && { filter: `blur(${byWord ? 12 : 6}px)` }) });
-  const vars: gsap.TweenVars = {
-    ...(byWord ? { y: 0 } : { yPercent: 0 }), opacity: 1, ...(BLUR && { filter: 'blur(0px)' }),
-    // Slow, overlapping words on a softer curve: the site ease front-loads the move,
-    // so words would still read as fast. A long heading takes about 1.7 s (Jonas, 2026-10-30).
-    ease: byWord ? 'power2.out' : EASE,
-    duration: byWord ? 1.1 : MOTION.heading,
-    stagger: byWord ? Math.min(0.08, 0.6 / Math.max(1, targets.length - 1)) : MOTION.stagger,
-    onComplete: () => {
-      split.revert();
-      gsap.set(heading, { opacity: 1 });
-    },
-  };
-  return { targets, vars };
-}
-
-// First visit per tab, "From the dark" (Jonas, 2026-11-04): the hero stays black, the
-// portrait itself (the real DOM image, no loader screen) is lit up out of the dark with a
-// soft light passing over it, then the headline rises line by line and the label, intro,
-// scroll cue and navigation fade in. Every other load shows the finished hero at once.
-// Waits for the photo to decode (capped), and any scroll, tap or key skips to the end.
-const INTRO = {
-  wait: 1000, // longest wait for the photo before starting anyway
-  dark: 0.2, // black before the light comes up
-  photo: 1.1, // portrait opacity 0 → 1
-  settle: 1.7, // portrait scale 1.06 → 1
-  light: 1.0, // light sweep across the portrait
-  content: 1.15, // headline starts, photo mostly visible
-  line: 0.8, // each headline line
-  stagger: 0.11,
-};
-
-function introHero() {
-  if (!root.classList.contains('intro')) return;
-  const hero = document.querySelector<HTMLElement>('.hero');
-  const media = hero?.querySelector<HTMLElement>('.hero__media');
-  if (!hero || !media || passed(media)) {
-    root.classList.remove('intro');
-    return;
-  }
-  try { sessionStorage.setItem('jr-intro-seen', '1'); } catch {}
-  const image = media.querySelector<HTMLImageElement>('img');
-  const lines = [...hero.querySelectorAll<HTMLElement>('.hero__line')];
-  const fades = [...hero.querySelectorAll<HTMLElement>('[data-reveal="fade"]')];
-  const nav = gsap.utils.toArray<HTMLElement>('.site-header--overlay .site-header__inner > *');
-
-  // Each headline line slides up inside its own box. The clip reaches above the box,
-  // so accents (HEZKÝ) are never cut, and closes at its bottom edge.
-  const inners = lines.map(line => {
-    const inner = document.createElement('span');
-    inner.className = 'hero__line-inner';
-    inner.append(...line.childNodes);
-    line.append(inner);
-    line.style.clipPath = 'inset(-0.5em -0.3em 0 -0.3em)';
-    return inner;
-  });
-  const unwrap = () => lines.forEach((line, i) => {
-    const inner = inners[i];
-    if (inner.parentNode !== line) return;
-    line.append(...inner.childNodes);
-    inner.remove();
-    line.style.removeProperty('clip-path');
+  mm.add('(prefers-reduced-motion: reduce)', () => {
+    document.documentElement.classList.remove('anim');
   });
 
-  // A soft light that passes over the portrait while it comes up. It blends with the
-  // photo only, so the black around it stays black.
-  const light = document.createElement('div');
-  light.className = 'hero__light';
-  media.append(light);
-
-  // Start states before the class that hid them goes, so nothing flashes.
-  gsap.set(media, { opacity: 0 });
-  gsap.set(inners, { yPercent: 120 });
-  gsap.set(fades, { opacity: 0, y: MOTION.distance });
-  gsap.set(nav, { opacity: 0, y: -10 });
-  root.classList.remove('intro');
-
-  const events = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
-  let timeline: gsap.core.Timeline | null = null;
-  let skipped = false;
-  const skip = () => {
-    skipped = true;
-    timeline?.progress(1, false);
-  };
-  events.forEach(type => addEventListener(type, skip, { once: true, passive: true }));
-  const removeListeners = () => events.forEach(type => removeEventListener(type, skip));
-
-  // Start once the photo can paint in one go: decoded, failed, or the wait ran out.
-  const ready = !image ? Promise.resolve() : Promise.race([
-    (image.complete ? Promise.resolve() : new Promise(resolve => {
-      image.addEventListener('load', resolve, { once: true });
-      image.addEventListener('error', resolve, { once: true });
-    })).then(() => image.decode?.()).catch(() => {}),
-    new Promise(resolve => setTimeout(resolve, INTRO.wait)),
-  ]);
-
-  ready.then(() => document.fonts.ready).then(() => {
-    const finish = () => {
-      removeListeners();
-      unwrap();
-      light.remove();
-      // Opacity only on the photo wrapper: its transform belongs to the scroll parallax.
-      gsap.set(media, { clearProps: 'opacity' });
-      gsap.set([...fades, ...nav], { clearProps: 'opacity,transform' });
-      if (image) gsap.set(image, { clearProps: 'transform' });
-    };
-    timeline = gsap.timeline({ onComplete: finish });
-    const t = INTRO;
-    // Phase 1–2: the portrait comes up out of the dark and settles.
-    timeline.to(media, { opacity: 1, duration: t.photo, ease: 'power2.out' }, t.dark);
-    if (image) timeline.fromTo(image, { scale: 1.06 }, { scale: 1, duration: t.settle, ease: 'power2.out' }, 0);
-    timeline.fromTo(light, { xPercent: -30 }, { xPercent: 30, duration: t.light, ease: 'power1.inOut' }, t.dark + 0.2)
-      .to(light, { opacity: 1, duration: t.light * 0.4, ease: 'sine.out' }, t.dark + 0.2)
-      .to(light, { opacity: 0, duration: t.light * 0.5, ease: 'sine.in' }, t.dark + 0.2 + t.light * 0.5);
-    // Phase 3: label, headline line by line (accent line last), intro, cue, navigation.
-    const c = t.content;
-    timeline.to(fades[0] ?? [], { opacity: 1, y: 0, duration: 0.8, ease: EASE }, c - 0.1)
-      .to(inners, { yPercent: 0, duration: t.line, ease: 'power3.out', stagger: t.stagger }, c)
-      .to(fades.slice(1), { opacity: 1, y: 0, duration: 0.8, ease: EASE, stagger: 0.1 }, c + 0.35)
-      .to(nav, { opacity: 1, y: 0, duration: 0.8, ease: EASE, stagger: 0.05 }, c + 0.4);
-    if (skipped) timeline.progress(1, false);
-  });
-}
-
-// Split only at entry: off-screen headings keep natural wrapping until needed.
-function revealHeadings() {
-  document.querySelectorAll<HTMLElement>('[data-reveal="heading"]').forEach((heading) => {
-    if (heading.closest('.hero, .footer, .services, .about') || (heading.closest('.faq') && matchMedia('(min-width: 1024px)').matches)) return;
-    if (passed(heading)) return;
-    gsap.set(heading, { opacity: 0 });
-    const play = async () => {
-      await document.fonts.ready;
-      if (!root.classList.contains('js-motion')) return;
-      // Hide the lines before showing their parent to avoid a one-frame flash.
-      const reveal = splitHeading(heading);
-      gsap.set(heading, { opacity: 1 });
-      gsap.to(reveal.targets, reveal.vars);
-    };
-    ScrollTrigger.create({ trigger: heading, start: HEADING_START, once: true, onEnter: play });
-  });
-}
-
-function scrubStatement() {
-  document.querySelectorAll<HTMLElement>('[data-reveal="scrub"]').forEach(text => {
-    const section = text.closest('section') ?? text;
-    const split = SplitText.create(text, { type: 'words', aria: 'auto', reduceWhiteSpace: false });
-    const words = split.words as HTMLElement[];
-    gsap.set(text, { opacity: 1 });
-    // Each word sharpens over WORD of the scroll, starting STEP after the previous one.
-    // Styles are written per word, and a finished word drops its filter entirely:
-    // Chrome sometimes kept painting a stale blur on words tweened to blur(0px).
-    const STEP = 0.1;
-    const WORD = 1;
-    const span = STEP * (words.length - 1) + WORD;
-    // Touch screens get opacity only: a per-word blur animated on every scroll frame
-    // left flickering purple lines under words on phones (Jonas, 2026-10-29).
-    const paint = (progress: number) => {
-      words.forEach((word, i) => {
-        const p = gsap.utils.clamp(0, 1, (progress * span - i * STEP) / WORD);
-        word.style.opacity = String(0.15 + 0.85 * p);
-        if (BLUR) word.style.filter = p >= 1 ? 'none' : `blur(${(4 * (1 - p)).toFixed(2)}px)`;
-      });
-    };
-    const state = { progress: 0 };
-    paint(0);
-    gsap.to(state, {
-      progress: 1, ease: 'none',
-      onUpdate: () => paint(state.progress),
-      scrollTrigger: {
-        trigger: section, start: 'top top', end: 'bottom bottom', scrub: 0.6,
-      },
-    });
-  });
-}
-
-function revealContent() {
-  const selector = '[data-reveal="fade"], .footer__lead, .footer__email, .footer__legal, .footer__invite .cta';
-  const candidates = gsap.utils.toArray<HTMLElement>(selector).filter(el =>
-    !el.closest('.hero, #site-menu, .footer, .services, .about, .testimonial') && visible(el) &&
-    !(matchMedia('(min-width: 1024px)').matches && el.matches('.step, .faq__item')));
-  // Animate the owning block once; never stack parent and child translations.
-  const items = candidates.filter(el => !passed(el) && !candidates.some(parent => parent !== el && parent.contains(el)));
-  if (!items.length) return;
-  gsap.set(items, { opacity: 0, y: MOTION.distance });
-  ScrollTrigger.batch(items, {
-    start: START, once: true, batchMax: 4, interval: 0.06,
-    onEnter: batch => gsap.to(batch, {
-      opacity: 1, y: 0, duration: MOTION.duration,
-      stagger: MOTION.stagger, ease: EASE, clearProps: 'transform,opacity',
-    }),
-  });
-}
-
-// Keep borders in layout; the pseudo element supplies only the visual stroke.
-function revealRules() {
-  const rules: HTMLElement[] = [];
-  document.querySelectorAll<HTMLElement>('.service, .testimonial__attribution, .faq__item, .footer__nav, .footer__legal').forEach(el => {
-    if (!visible(el) || el.matches('img, svg, path, button, a')) return;
-    const style = getComputedStyle(el);
-    if (parseFloat(style.borderTopWidth) !== 1 || style.borderTopStyle !== 'solid') return;
-    el.style.setProperty('--motion-rule-color', style.borderTopColor);
-    el.classList.add('motion-rule-top');
-    rules.push(el);
-  });
-  const pending = rules.filter(el => !passed(el));
-  const generic = pending.filter(el => !el.matches('.service, .testimonial__attribution') &&
-    !(el.matches('.faq__item') && matchMedia('(min-width: 1024px)').matches));
-  gsap.set(pending, { '--rule-progress': 0 });
-  if (!generic.length) return;
-  ScrollTrigger.batch(generic, {
-    // Same trigger as the content, so the line draws alongside it instead of after it.
-    start: START, once: true, batchMax: 4, interval: 0.06,
-    onEnter: batch => gsap.to(batch, {
-      '--rule-progress': 1, duration: RULE.duration, delay: 0.1,
-      stagger: MOTION.stagger, ease: RULE.ease,
-    }),
-  });
-}
-
-
-function revealServices() {
-  const section = document.querySelector<HTMLElement>('.services');
-  if (!section || passed(section)) return;
-  const intro = section.querySelector<HTMLElement>('.services__intro');
-  const heading = section.querySelector<HTMLElement>('[data-reveal="heading"]');
-  if (!intro || !heading) return;
-  const lead = [...intro.querySelectorAll<HTMLElement>('.services__lead')].filter(visible);
-  const rows = [...section.querySelectorAll<HTMLElement>('.service')].filter(visible);
-
-  let previous: Promise<void> = Promise.resolve();
-  if (!passed(intro)) {
-    gsap.set(lead, { opacity: 0, y: MOTION.distance });
-    gsap.set(heading, { opacity: 0 });
-    previous = new Promise<void>(resolve => {
-      ScrollTrigger.create({
-        trigger: intro, start: HEADING_START, once: true,
-        onEnter: async () => {
-          await document.fonts.ready;
-          if (!root.classList.contains('js-motion') || passed(intro)) {
-            gsap.set([heading, ...lead], { clearProps: 'opacity,transform' });
-            resolve();
-            return;
-          }
-          const reveal = splitHeading(heading);
-          const timeline = gsap.timeline();
-          gsap.delayedCall(0.35, resolve);
-          timeline.set(heading, { opacity: 1 });
-          timeline.to(reveal.targets, reveal.vars, 0);
-          if (lead.length) timeline.to(lead, {
-            opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
-            clearProps: 'transform,opacity',
-          }, '-=0.55');
-        },
-      });
-    });
-  }
-
-  rows.forEach(row => {
-    if (passed(row)) return;
-    gsap.set(row, { opacity: 0, y: MOTION.distance });
-    const waitForPrevious = previous;
-    previous = new Promise<void>(resolve => {
-      ScrollTrigger.create({
-        trigger: row, start: START, once: true,
-        onEnter: async () => {
-          await waitForPrevious;
-          if (!root.classList.contains('js-motion') || passed(row)) {
-            gsap.set(row, { clearProps: 'opacity,transform', '--rule-progress': 1 });
-            resolve();
-            return;
-          }
-          gsap.timeline()
-            .to(row, {
-              opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
-              clearProps: 'transform,opacity',
-            })
-            .to(row, { '--rule-progress': 1, duration: RULE.duration, ease: RULE.ease }, '<')
-            .call(resolve, [], 0.07); // next row follows a beat later, overlapping
-        },
-      });
-    });
-  });
-}
-
-function revealSequences() {
-  if (!matchMedia('(min-width: 1024px)').matches) return;
-  const steps = gsap.utils.toArray<HTMLElement>('.process__steps .step');
-  if (steps.length && !passed(steps[steps.length - 1])) {
-    gsap.set(steps, { opacity: 0, y: MOTION.distance });
-    gsap.to(steps, {
-      opacity: 1, y: 0, duration: MOTION.duration, stagger: 0.1,
-      ease: EASE, clearProps: 'transform,opacity',
-      scrollTrigger: { trigger: '.process__steps', start: START, once: true },
-    });
-  }
-  const heading = document.querySelector<HTMLElement>('.faq [data-reveal="heading"]');
-  const questions = gsap.utils.toArray<HTMLElement>('.faq__item');
-  if (!heading || !questions.length || passed(heading)) return;
-  gsap.set(heading, { opacity: 0 });
-  gsap.set(questions, { opacity: 0, y: MOTION.distance });
-  ScrollTrigger.create({
-    trigger: heading, start: HEADING_START, once: true,
-    onEnter: async () => {
-      await document.fonts.ready;
-      if (!root.classList.contains('js-motion')) return;
-      const reveal = splitHeading(heading);
-      const timeline = gsap.timeline();
-      timeline.set(heading, { opacity: 1 });
-      timeline.to(reveal.targets, reveal.vars,
-      );
-      timeline.to(questions, {
-        opacity: 1, y: 0, duration: MOTION.duration, stagger: 0.07,
-        ease: EASE, clearProps: 'transform,opacity',
-      }, '-=0.55');
-      timeline.to(questions.filter(el => el.classList.contains('motion-rule-top')), {
-        '--rule-progress': 1, duration: RULE.duration, stagger: 0.07, ease: RULE.ease,
-      }, '<0.22');
-    },
-  });
-}
-
-// Project images come into focus as they enter: blurred and a little dim, then sharp.
-// The filter only exists during the tween and is cleared after (Jonas, 2026-10-29).
-function revealWorkMedia() {
-  // The image is filtered, not its frame, so the frame edge stays crisp.
-  gsap.utils.toArray<HTMLElement>('.work .project__media').filter(el => visible(el) && !passed(el)).forEach(media => {
-    const image = media.querySelector('img');
-    if (!image) return;
-    // Same rule as headings and the statement: no animated blur on touch screens.
-    gsap.set(image, { filter: BLUR ? 'blur(12px) brightness(0.8)' : 'brightness(0.8)', scale: 1.04 });
-    ScrollTrigger.create({
-      trigger: media, start: START, once: true,
-      onEnter: () => gsap.to(image, {
-        filter: BLUR ? 'blur(0px) brightness(1)' : 'brightness(1)', scale: 1, duration: 1.4, ease: EASE, clearProps: 'filter,transform',
-      }),
-    });
-  });
-}
-
-// Testimonial in reading order: quote mark, quote, the rule drawing in, then the person
-// (Jonas, 2026-10-29). The rule lives on the attribution, so its children fade instead.
-function revealTestimonial() {
-  const section = document.querySelector<HTMLElement>('.testimonial');
-  if (!section) return;
-  const mark = section.querySelector<HTMLElement>('.testimonial__mark');
-  const quote = section.querySelector<HTMLElement>('.testimonial__quote');
-  const attribution = section.querySelector<HTMLElement>('.testimonial__attribution');
-  if (!mark || !quote || !attribution || passed(attribution)) return;
-  const person = [...attribution.children].filter((el): el is HTMLElement => el instanceof HTMLElement && visible(el));
-  gsap.set(mark, { opacity: 0, scale: 0.6, transformOrigin: '50% 60%' });
-  gsap.set(quote, { opacity: 0 });
-  gsap.set(person, { opacity: 0, y: MOTION.distance });
-  ScrollTrigger.create({
-    trigger: section.querySelector('.testimonial__content') ?? section, start: START, once: true,
-    onEnter: async () => {
-      await document.fonts.ready;
-      if (!root.classList.contains('js-motion')) return;
-      // The quote rises line by line inside line masks (Jonas, 2026-10-30).
-      const split = SplitText.create(quote.querySelector('p') ?? quote, {
-        type: 'lines', mask: 'lines', linesClass: 'split-line', aria: 'auto', reduceWhiteSpace: false,
-      });
-      gsap.set(split.lines, { yPercent: 104, opacity: 0, ...(BLUR && { filter: 'blur(6px)' }) });
-      const timeline = gsap.timeline({ defaults: { ease: EASE, clearProps: 'transform,opacity' } });
-      timeline.to(mark, { opacity: 1, scale: 1, duration: 0.6 });
-      timeline.set(quote, { opacity: 1 }, '-=0.35');
-      timeline.to(split.lines, {
-        yPercent: 0, opacity: 1, ...(BLUR && { filter: 'blur(0px)' }), duration: MOTION.heading,
-        stagger: 0.08, clearProps: '', onComplete: () => split.revert(),
-      }, '<');
-      if (attribution.classList.contains('motion-rule-top')) {
-        timeline.to(attribution, { '--rule-progress': 1, duration: RULE.duration, ease: RULE.ease, clearProps: '' }, '<0.45');
-      }
-      timeline.to(person, { opacity: 1, y: 0, duration: MOTION.duration, stagger: MOTION.stagger }, '-=0.9');
-    },
-  });
-}
-
-// About plays in reading order instead of all at once: the H2, then the
-// portrait, then the text column beside it (Jonas, 2026-10-29). Each block still
-// waits for its own entry, so on stacked layouts nothing finishes off screen.
-function revealAbout() {
-  const section = document.querySelector<HTMLElement>('.about');
-  const heading = section?.querySelector<HTMLElement>('[data-reveal="heading"]');
-  if (!section || !heading || passed(heading)) return;
-  const blocks = gsap.utils.toArray<HTMLElement>('.about__portrait, .about__intro').filter(visible);
-  // The text column itself stays put; its heading, paragraphs and action come in one
-  // after another (Jonas, 2026-10-29). `.about__links` is display: contents on mobile,
-  // so its children are the items there.
-  const itemsOf = (block: HTMLElement) => block.matches('.about__intro')
-    ? [...block.children].flatMap(el => (el.matches('.about__links') ? [...el.children] : [el]))
-      .filter((el): el is HTMLElement => el instanceof HTMLElement && visible(el))
-    : [block];
-  gsap.set(heading, { opacity: 0 });
-  gsap.set(blocks.flatMap(itemsOf), { opacity: 0, y: MOTION.distance });
-
-  let previous = new Promise<void>(resolve => {
-    ScrollTrigger.create({
-      trigger: heading, start: HEADING_START, once: true,
-      onEnter: async () => {
-        await document.fonts.ready;
-        if (!root.classList.contains('js-motion')) return resolve();
-        const reveal = splitHeading(heading);
-        const timeline = gsap.timeline({ defaults: { ease: EASE } });
-        timeline.set(heading, { opacity: 1 });
-        timeline.to(reveal.targets, reveal.vars, 0);
-        // The next block may start once the heading is well under way.
-        timeline.call(resolve, [], '-=0.45');
-      },
-    });
-  });
-
-  blocks.forEach(block => {
-    const after = previous;
-    previous = new Promise<void>(resolve => {
-      ScrollTrigger.create({
-        trigger: block, start: START, once: true,
-        onEnter: async () => {
-          await after;
-          gsap.to(itemsOf(block), {
-            opacity: 1, y: 0, duration: 0.9, stagger: 0.12, ease: EASE, clearProps: 'transform,opacity',
-          });
-          gsap.delayedCall(0.22, resolve);
-        },
-      });
-    });
-  });
-}
-
-function revealFooter() {
-  const footer = document.querySelector<HTMLElement>('.footer');
-  if (!footer) return;
-  const heading = footer.querySelector<HTMLElement>('.footer__title');
-  const invite = footer.querySelector<HTMLElement>('.footer__invite');
-  if (!heading || !invite) return;
-
-  const action = invite.querySelector<HTMLElement>('.cta');
-  const lead = invite.querySelector<HTMLElement>('.footer__lead');
-  const support = [lead, action]
-    .filter((el): el is HTMLElement => !!el && visible(el));
-
-  // Each scroll entry waits for the section above it. On a fast jump, elements
-  // that are already behind the viewport are shown immediately instead of
-  // leaving a long trail of invisible content.
-  let previous: Promise<void> = Promise.resolve();
-  if (!passed(invite)) {
-    gsap.set(support, { opacity: 0, y: MOTION.distance });
-    gsap.set(heading, { opacity: 0 });
-    previous = new Promise<void>(resolve => {
-      ScrollTrigger.create({
-        trigger: invite, start: HEADING_START, once: true,
-        onEnter: async () => {
-          await document.fonts.ready;
-          if (!root.classList.contains('js-motion') || passed(invite)) {
-            gsap.set([heading, ...support], { clearProps: 'opacity,transform' });
-            resolve();
-            return;
-          }
-          const reveal = splitHeading(heading);
-          const timeline = gsap.timeline();
-          gsap.delayedCall(0.35, resolve);
-          timeline.set(heading, { opacity: 1 });
-          timeline.to(reveal.targets, reveal.vars, 0);
-          support.forEach(el => timeline.to(el, {
-            opacity: 1, y: 0, duration: MOTION.duration, ease: EASE,
-            clearProps: 'transform,opacity',
-          }, '-=0.55'));
-        },
-      });
-    });
-  }
-
-  const groups: [string, string, number][] = [
-    ['.footer__contact', '.footer__contact > *', 0.16],
-    ['.footer__nav', '.footer__nav li', 0.08],
-    ['.footer__legal', '.footer__legal > *', 0.1],
-  ];
-  groups.forEach(([containerSelector, itemSelector, stagger]) => {
-    const container = footer.querySelector<HTMLElement>(containerSelector);
-    if (!container || passed(container)) return;
-    const items = [...container.querySelectorAll<HTMLElement>(itemSelector)].filter(visible);
-    if (!items.length) return;
-    gsap.set(items, { opacity: 0, y: MOTION.distance });
-    const waitForPrevious = previous;
-    previous = new Promise<void>(resolve => {
-      ScrollTrigger.create({
-        // The legal row sits at the very bottom: at max scroll it never reaches
-        // START (92%) on tall viewports, so footer groups start once visible.
-        trigger: container, start: 'top bottom', once: true,
-        onEnter: async () => {
-          await waitForPrevious;
-          if (!root.classList.contains('js-motion') || passed(container)) {
-            gsap.set(items, { clearProps: 'opacity,transform' });
-            resolve();
-            return;
-          }
-          gsap.to(items, {
-            opacity: 1, y: 0, duration: MOTION.duration, stagger,
-            ease: EASE, clearProps: 'transform,opacity',
-          });
-          gsap.delayedCall(0.15, resolve);
-        },
-      });
-    });
-  });
-}
-
-function cursor() {
-  if (!matchMedia('(pointer: fine)').matches) return;
-  const dot = document.createElement('div');
-  dot.className = 'cursor';
-  dot.setAttribute('aria-hidden', 'true');
-  dot.innerHTML =
-    '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>';
-  document.body.append(dot);
-
-  const x = gsap.quickTo(dot, 'x', { duration: 0.35, ease: EASE });
-  const y = gsap.quickTo(dot, 'y', { duration: 0.35, ease: EASE });
-  let shown = false;
-
-  window.addEventListener('pointermove', (e) => {
-    if (e.pointerType !== 'mouse') return;
-    if (!shown) {
-      gsap.set(dot, { x: e.clientX, y: e.clientY });
-      dot.classList.add('is-visible');
-      shown = true;
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    // Pokud se už zobrazil obsah z pojistky v Base.astro, úvod znovu neschovávat.
+    if (document.documentElement.classList.contains('anim')) {
+      workIntro(hero());
+      studyHero();
     }
-    x(e.clientX);
-    y(e.clientY);
-  });
-  document.addEventListener('pointerleave', () => {
-    dot.classList.remove('is-visible');
-    shown = false;
-  });
-  document.addEventListener('pointerover', (e) => {
-    const target = e.target as Element;
-    // Big arrow circle only over the project image, so it never covers the title or copy.
-    const project = target.closest('[data-cursor="project"] .media');
-    // The logo keeps only its magnetic pull, no cursor disc (Jonas, 2026-11-03).
-    const link = !project && !target.closest('.wordmark') && !!target.closest('a, button, summary, [role="button"]');
-    dot.classList.toggle('is-project', !!project);
-    dot.classList.toggle('is-link', link);
-    // Over the hero headline the dot grows 3× and inverts what's under it (Jonas, 2026-11-03).
-    dot.classList.toggle('is-headline', !project && !link && !!target.closest('.hero__title'));
+    clipReveals();
+    reveals();
+    quote();
+    const cleanUpProcess = process();
+    deliverables();
+    return cleanUpProcess;
   });
 }
 
-const MENU_HIDDEN = 'inset(0% 0% 100% 0%)';
-const MENU_SHOWN = 'inset(0% 0% 0% 0%)';
+// Obsah, který už mohl být vidět při startu skriptu, nevracet do skrytého stavu.
+function isBelowViewport(element: HTMLElement) {
+  return element.getBoundingClientRect().top >= window.innerHeight;
+}
 
-// Magnetic hover on CTAs and the logo (not inside the menu): the element leans
-// toward the pointer and springs back. The pull works in a zone a bit larger than
-// the element and fades to zero at the zone's edge, so it eases in and out instead
-// of jumping several pixels the moment the pointer crosses the element's border
-// (the logo "stutter", Jonas 2026-11-04). One rAF-throttled listener for all.
-function magnet() {
-  if (!matchMedia('(pointer: fine)').matches) return;
-  const STRENGTH = 0.16;
-  const ZONE = 36; // px around the element where the pull fades in
-  const items = gsap.utils.toArray<HTMLElement>('.cta, .wordmark')
-    .filter((el) => !el.closest('#site-menu'))
-    .map((el) => {
-      el.classList.add('magnet');
-      // quickTo can't add a unit to a custom property, so tween a proxy and write px.
-      const pos = { x: 0, y: 0 };
-      const write = () => {
-        el.style.setProperty('--mx', `${pos.x}px`);
-        el.style.setProperty('--my', `${pos.y}px`);
-      };
-      return {
+/* Hero: slova vyjedou zpod masky, fotka se rozevře od středu a zvýrazněná slova se dobarví. */
+function hero() {
+  const words = gsap.utils.toArray<HTMLElement>('.hero-title .wi');
+  const hl = gsap.utils.toArray<HTMLElement>('.hero-title .wi.hl');
+  const pill = document.querySelector('[data-hero-pill]');
+  const pillImg = pill?.querySelector('img');
+  const sub = document.querySelector('[data-hero-sub]');
+  if (!words.length) return null; // jiná stránka než úvod
+
+  return gsap.timeline({ defaults: { ease: 'power4.out' }, delay: 0.15 }).fromTo(
+    words,
+    { y: 0, yPercent: 115, rotate: 4, transformOrigin: '0% 100%' },
+    { yPercent: 0, rotate: 0, duration: 1.1, stagger: 0.065 },
+    0,
+  )
+    .fromTo(
+      pill,
+      { clipPath: 'inset(0% 50% 0% 50% round 999px)' },
+      { clipPath: 'inset(0% 0% 0% 0% round 999px)', duration: 1.0, ease: 'expo.out' },
+      0.5,
+    )
+    .from(pillImg ?? [], { scale: 1.5, duration: 1.4, ease: 'expo.out' }, 0.5)
+    .from(hl, { color: 'var(--text)', duration: 0.6, ease: 'power2.out', stagger: 0.08 }, 0.95)
+    .fromTo(sub, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: EASE }, 0.85);
+}
+
+/* Vybrané práce hned pod hero: když jsou při načtení vidět, vyjedou v úvodní sekvenci
+   (nadpis, pak karty po jedné) zhruba s podtitulkem hera. Co je pod okrajem obrazovky (mobil),
+   nechá se běžnému odhalení při scrollu. Skrytý výchozí stav drží CSS (.anim [data-reveal-load]). */
+function workIntro(tl: gsap.core.Timeline | null) {
+  if (!tl) return;
+  const els = gsap.utils.toArray<HTMLElement>('[data-reveal-load]').filter((el) => !isBelowViewport(el));
+  if (!els.length) return;
+  els.forEach((el) => (el.dataset.revealed = ''));
+  const [heading, ...cards] = els[0].matches('h2, h3') ? els : [null, ...els];
+  gsap.set(els, { y: 32, opacity: 0 });
+  const to = { y: 0, opacity: 1, duration: 0.8, ease: EASE, clearProps: 'transform,opacity' };
+  if (heading) tl.to(heading, to, 0.9);
+  if (cards.length) tl.to(cards, { ...to, stagger: 0.12 }, 1.0);
+}
+
+/* Případová studie: stejné vyjetí slov jako hero na úvodu, pak text a fotka, která se rozevře zespodu. */
+function studyHero() {
+  const root = document.querySelector('[data-study-hero]');
+  if (!root) return;
+  const words = root.querySelectorAll('.wi');
+  const hl = root.querySelectorAll('.wi.hl');
+  const sub = root.querySelector('[data-study-sub]');
+  const cover = root.querySelector('[data-study-cover]');
+
+  const tl = gsap.timeline({ defaults: { ease: 'power4.out' }, delay: 0.15 })
+    .fromTo(
+      words,
+      { y: 0, yPercent: 115, rotate: 4, transformOrigin: '0% 100%' },
+      { yPercent: 0, rotate: 0, duration: 1.1, stagger: 0.08 },
+      0,
+    )
+    .from(hl, { color: 'var(--text)', duration: 0.6, ease: 'power2.out' }, 0.7)
+    .fromTo(sub, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: EASE }, 0.45);
+  // 404 fotku nemá
+  if (cover)
+    tl.fromTo(
+      cover,
+      { clipPath: 'inset(18% 6% 0% 6% round 24px)' },
+      { clipPath: 'inset(0% 0% 0% 0% round 24px)', duration: 1.3, ease: 'expo.out' },
+      0.55,
+    );
+}
+
+/* Velké obrázky (data-clip-reveal) se při scrollu rozevřou zespodu, fotka uvnitř se lehce zmenší. */
+function clipReveals() {
+  gsap.utils.toArray<HTMLElement>('[data-clip-reveal]').filter(isBelowViewport).forEach((el) => {
+    const img = el.querySelector('img');
+    gsap
+      .timeline({ scrollTrigger: { trigger: el, start: 'top 85%', once: true } })
+      .fromTo(
         el,
-        x: gsap.quickTo(pos, 'x', { duration: 0.6, ease: EASE, onUpdate: write }),
-        y: gsap.quickTo(pos, 'y', { duration: 0.6, ease: EASE, onUpdate: write }),
-        mx: 0,
-        my: 0,
-        active: false,
-      };
+        { clipPath: 'inset(14% 4% 0% 4% round 24px)' },
+        { clipPath: 'inset(0% 0% 0% 0% round 24px)', duration: 1.2, ease: 'expo.out', clearProps: 'clipPath' },
+      )
+      .from(img ?? [], { scale: 1.1, duration: 1.4, ease: 'expo.out' }, 0);
+  });
+}
+
+function reveals() {
+  const fresh = (el: HTMLElement) => !('revealed' in el.dataset) && isBelowViewport(el);
+  // [data-reveal-load] drží CSS skryté, dokud nedostane data-revealed – odemknout ještě před animací
+  const unlock = (el: HTMLElement) => (el.dataset.revealed = '');
+  gsap.utils.toArray<HTMLElement>('[data-reveal]').filter(fresh).forEach((el) => {
+    unlock(el);
+    gsap.from(el, {
+      y: 12,
+      opacity: 0,
+      duration: 0.3,
+      ease: EASE,
+      clearProps: 'transform,opacity',
+      scrollTrigger: { trigger: el, start: 'top 88%', once: true },
     });
+  });
+  // výchozí stav nastavit hned, jinak by položky před vstupem do viewportu probliknuly (viditelné → 0 → animace)
+  const items = gsap.utils.toArray<HTMLElement>('[data-reveal-item]').filter(fresh);
+  items.forEach(unlock);
   if (!items.length) return;
-
-  let px = 0;
-  let py = 0;
-  let queued = false;
-  const update = () => {
-    queued = false;
-    for (const item of items) {
-      // Measure without the current offset, so the pull doesn't feed back into itself.
-      const r = item.el.getBoundingClientRect();
-      const cx = r.left - item.mx + r.width / 2;
-      const cy = r.top - item.my + r.height / 2;
-      const dx = px - cx;
-      const dy = py - cy;
-      const t = Math.max(Math.abs(dx) / (r.width / 2 + ZONE), Math.abs(dy) / (r.height / 2 + ZONE));
-      const pull = t < 1 ? 1 - t * t : 0;
-      if (!pull && !item.active) continue;
-      item.active = pull > 0;
-      item.mx = dx * STRENGTH * pull;
-      item.my = dy * STRENGTH * pull;
-      item.x(item.mx);
-      item.y(item.my);
-    }
-  };
-  addEventListener('pointermove', (e) => {
-    if (e.pointerType !== 'mouse') return;
-    px = e.clientX;
-    py = e.clientY;
-    if (!queued) {
-      queued = true;
-      requestAnimationFrame(update);
-    }
-  }, { passive: true });
-  // Leaving the window: everything settles back.
-  document.documentElement.addEventListener('pointerleave', () => {
-    px = py = -1e4;
-    if (!queued) {
-      queued = true;
-      requestAnimationFrame(update);
-    }
+  gsap.set(items, { y: 12, opacity: 0 });
+  ScrollTrigger.batch(items, {
+    start: 'top 90%',
+    once: true,
+    onEnter: (batch) =>
+      gsap.to(batch, { y: 0, opacity: 1, duration: 0.3, ease: EASE, stagger: 0.05, clearProps: 'transform,opacity' }),
   });
 }
 
-// FAQ accordion: one open at a time, handled here because the native `name` grouping
-// would close the previous item without animation. Only the padding-free `.faq__panel`
-// height is tweened (between measured pixel values), so nothing snaps at either end.
-function faq() {
-  const items = gsap.utils.toArray<HTMLDetailsElement>('.faq__item');
-  const panel = (item: HTMLDetailsElement) => item.querySelector<HTMLElement>('.faq__panel')!;
-  const DURATION = 0.5;
+/* Citát: slova přechází z tlumené do plné bílé podle scrollu. */
+function quote() {
+  const q = document.querySelector<HTMLElement>('[data-quote]');
+  if (!q || !isBelowViewport(q)) return;
+  // barvy řeší CSS ([data-quote] .w v global.css) podle motivu, tady se posouvá jen --p (0 → 1)
+  const words = q.querySelectorAll('.w');
+  gsap.fromTo(words, { '--p': 0 }, {
+    '--p': 1,
+    stagger: 0.1,
+    ease: 'none',
+    scrollTrigger: { trigger: q, start: 'top 80%', end: 'bottom 45%', scrub: 0.6 },
+  });
+}
 
-  const collapse = (item: HTMLDetailsElement) => {
-    const el = panel(item);
-    gsap.killTweensOf(el);
-    gsap.fromTo(
-      el,
-      { height: el.offsetHeight, overflow: 'hidden' },
-      {
-        height: 0,
-        opacity: 0,
-        duration: DURATION,
-        ease: EASE_MENU,
-        onComplete: () => {
-          item.open = false;
-          gsap.set(el, { clearProps: 'height,opacity,overflow' });
-        },
-      },
-    );
-  };
+/* Proces: každá karta má malou scénu, která ukazuje, co se v kroku děje.
+   Scéna se přehraje při vstupu karty do záběru a znovu při najetí myší. */
+function process() {
+  const steps = document.querySelector('[data-steps]');
+  if (!steps) return;
+  const cards = gsap.utils.toArray<HTMLElement>('.step', steps).filter(isBelowViewport);
 
-  const expand = (item: HTMLDetailsElement) => {
-    const el = panel(item);
-    gsap.killTweensOf(el);
-    item.open = true;
-    const target = el.scrollHeight;
-    gsap.fromTo(
-      el,
-      { height: 0, opacity: 0, overflow: 'hidden' },
-      {
-        height: target,
-        opacity: 1,
-        duration: DURATION,
-        ease: EASE_MENU,
-        onComplete: () => gsap.set(el, { clearProps: 'height,opacity,overflow' }),
-      },
-    );
-    gsap.fromTo(item.querySelector('.faq__icon--minus'), { rotate: -90 }, { rotate: 0, duration: 0.45, ease: EASE });
+  const scenes: Record<string, (c: HTMLElement) => gsap.core.Timeline> = {
+    // 1 – hovor: rozvlnění zvuku
+    call: (c) =>
+      gsap
+        .timeline({ paused: true, defaults: { ease: EASE } })
+        .from(c.querySelector('.call-card'), { y: 12, opacity: 0, duration: 0.5 })
+        .from(c.querySelectorAll('.wave i'), { scaleY: 0.15, duration: 0.5, stagger: 0.025, ease: 'back.out(2)' }, 0.2),
+
+    // 2 – nabídka: položky se zaškrtnou, nabídka „odletí“
+    offer: (c) =>
+      gsap
+        .timeline({ paused: true, defaults: { ease: EASE } })
+        .from(c.querySelector('.doc'), { y: 12, opacity: 0, duration: 0.5 })
+        .from(c.querySelectorAll('.doc-check'), { scale: 0, duration: 0.3, stagger: 0.15, ease: 'back.out(2.5)' }, 0.3)
+        .from(c.querySelectorAll('.doc-item i'), { scaleX: 0, duration: 0.4, stagger: 0.15 }, 0.35)
+        .from(c.querySelector('.b-send'), { scale: 0, duration: 0.35, ease: 'back.out(2)' }, 0.75)
+        .to(c.querySelector('.b-send'), { x: 6, y: -6, duration: 0.18, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 1.1),
+
+    // 3 – návrh: fotka a šablona se naplní
+    build: (c) =>
+      gsap
+        .timeline({ paused: true, defaults: { ease: EASE } })
+        .from(c.querySelector('.photo'), { x: -16, opacity: 0, duration: 0.6 })
+        .from(c.querySelector('.b-cam'), { scale: 0, duration: 0.35, ease: 'back.out(2)' }, 0.2)
+        .from(c.querySelector('.wire'), { y: 16, opacity: 0, duration: 0.5 }, 0.25)
+        .from(c.querySelector('.w-img'), { clipPath: 'inset(0 100% 0 0)', duration: 0.6, ease: 'power2.inOut' }, 0.45)
+        .from(c.querySelectorAll('.wire > i'), { scaleX: 0, duration: 0.4, stagger: 0.08 }, 0.55),
+
+    // 4 – spuštění: adresa se „napíše“, stránka se načte, ONLINE
+    launch: (c) => {
+      const tl = gsap.timeline({ paused: true, defaults: { ease: EASE } });
+      tl.from(c.querySelector('.lb'), { y: 12, opacity: 0, duration: 0.5 });
+      const typed = c.querySelector<HTMLElement>('[data-typed]');
+      if (typed) {
+        const full = typed.dataset.typed ?? '';
+        const state = { n: 0 };
+        tl.fromTo(
+          state,
+          { n: 0 },
+          {
+            n: full.length,
+            duration: 0.6,
+            ease: `steps(${full.length})`,
+            onUpdate: () => (typed.textContent = full.slice(0, Math.round(state.n))),
+          },
+          0.25,
+        );
+      }
+      tl.from(c.querySelectorAll('.lb-page > i, .lb-btns i'), { scaleX: 0, opacity: 0, duration: 0.35, stagger: 0.07 }, 0.8)
+        .from(c.querySelector('.online'), { scale: 0.6, opacity: 0, duration: 0.4, ease: 'back.out(2)' }, 1.15)
+        .fromTo(c.querySelector('.live'), { scale: 1 }, { scale: 1.8, duration: 0.25, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 1.4);
+      return tl;
+    },
   };
 
-  items.forEach((item) => {
-    item.removeAttribute('name');
-    item.querySelector('summary')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (item.open && !gsap.isTweening(panel(item))) return collapse(item);
-      if (item.open) return; // mid-animation click: let the current tween finish
-      items.filter((other) => other !== item && other.open).forEach(collapse);
-      expand(item);
-    });
+  const listeners = new AbortController();
+  const entrances = new Map<Element, gsap.core.Tween>();
+  cards.forEach((card) => {
+    const tl = scenes[card.dataset.step ?? '']?.(card);
+    entrances.set(card, gsap.from(card, {
+      paused: true,
+      y: 12,
+      opacity: 0,
+      duration: 0.3,
+      ease: EASE,
+      clearProps: 'transform,opacity',
+      onStart: () => { tl?.play(0); },
+    }));
+
+    card.addEventListener('pointerenter', (e) => {
+      if (e.pointerType !== 'mouse' || !tl || tl.isActive() || tl.progress() === 0) return;
+      tl.restart();
+    }, { signal: listeners.signal });
+  });
+  ScrollTrigger.batch(cards, {
+    start: 'top 85%',
+    once: true,
+    onEnter: (batch) => {
+      const sequence = gsap.timeline();
+      batch.forEach((card, index) => {
+        const entrance = entrances.get(card);
+        if (entrance) sequence.add(entrance.play(), index * 0.08);
+      });
+    },
+  });
+  return () => listeners.abort();
+}
+
+/* Nabídka: anotace v náhledu webu „naskočí“. */
+function deliverables() {
+  const annots = gsap.utils.toArray<HTMLElement>('[data-annot]').filter(isBelowViewport);
+  if (!annots.length) return;
+  gsap.from(annots, {
+    scale: 0.8,
+    opacity: 0,
+    duration: 0.5,
+    ease: 'back.out(2)',
+    stagger: 0.2,
+    clearProps: 'transform,opacity',
+    scrollTrigger: { trigger: annots[0], start: 'top 80%', once: true },
   });
 }
-
-function menu() {
-  const dialog = document.getElementById('site-menu') as HTMLDialogElement | null;
-  if (!dialog) return;
-  const links = dialog.querySelectorAll('.menu__link');
-  let closing = false;
-
-  // Open: rolls down from the top edge, then the links rise in.
-  new MutationObserver(() => {
-    if (!dialog.open) return;
-    closing = false;
-    gsap.killTweensOf([dialog, links]);
-    gsap.fromTo(
-      dialog,
-      { clipPath: MENU_HIDDEN },
-      { clipPath: MENU_SHOWN, duration: 0.8, ease: EASE_MENU, clearProps: 'clipPath' },
-    );
-    gsap.fromTo(
-      links,
-      { yPercent: 60, opacity: 0 },
-      { yPercent: 0, opacity: 1, duration: 0.8, stagger: 0.05, delay: 0.4, ease: EASE_REVEAL, clearProps: 'all' },
-    );
-  }).observe(dialog, { attributes: true, attributeFilter: ['open'] });
-
-  // Close (button, link, Esc): rolls back up, then MenuOverlay closes the dialog.
-  dialog.addEventListener('menu:close', (e) => {
-    e.preventDefault();
-    if (closing) return;
-    closing = true;
-    const { done } = (e as CustomEvent<{ done: () => void }>).detail;
-    gsap.killTweensOf([dialog, links]);
-    gsap.set(links, { clearProps: 'all' });
-    gsap.fromTo(
-      dialog,
-      { clipPath: MENU_SHOWN },
-      {
-        clipPath: MENU_HIDDEN,
-        duration: 0.65,
-        ease: EASE_MENU,
-        onComplete: () => {
-          done();
-          gsap.set(dialog, { clearProps: 'clipPath' });
-          closing = false;
-        },
-      },
-    );
-  });
-}
-
-// Between pages: a cover rolls down from the top like the menu, the next page loads under
-// it and it rolls back up (Jonas, 2026-10-30). In-page anchors, new tabs, downloads and
-// other sites are left alone; a link inside the open menu navigates straight away,
-// since the menu already covers the page.
-function pageTransitions() {
-  const cover = document.querySelector<HTMLElement>('.page-cover');
-  if (!cover) return;
-  const menuDialog = document.getElementById('site-menu') as HTMLDialogElement | null;
-
-  if (root.classList.contains('page-enter')) {
-    gsap.set(cover, { clipPath: MENU_SHOWN });
-    root.classList.remove('page-enter');
-    gsap.to(cover, {
-      clipPath: MENU_HIDDEN, duration: 0.7, delay: 0.1, ease: EASE_MENU,
-      onComplete: () => gsap.set(cover, { clearProps: 'clipPath' }),
-    });
-  }
-
-  const target = (e: MouseEvent) => {
-    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return null;
-    const link = (e.target as Element | null)?.closest<HTMLAnchorElement>('a[href]');
-    if (!link || (link.target && link.target !== '_self') || link.hasAttribute('download')) return null;
-    const url = new URL(link.href, location.href);
-    if (url.origin !== location.origin || (url.pathname === location.pathname && url.search === location.search)) return null;
-    return { link, url };
-  };
-  const leave = (url: URL) => {
-    try { sessionStorage.setItem('jr-page-enter', '1'); } catch {}
-    location.assign(url.href);
-  };
-
-  document.addEventListener('click', e => {
-    const hit = target(e);
-    if (!hit || !menuDialog?.open || !menuDialog.contains(hit.link)) return;
-    e.preventDefault();
-    e.stopPropagation();
-    leave(hit.url);
-  }, true);
-
-  document.addEventListener('click', e => {
-    const hit = target(e);
-    if (!hit || e.defaultPrevented) return;
-    e.preventDefault();
-    gsap.fromTo(cover, { clipPath: MENU_HIDDEN }, {
-      clipPath: MENU_SHOWN, duration: 0.6, ease: EASE_MENU, onComplete: () => leave(hit.url),
-    });
-  });
-
-  // Back/forward can restore this page from memory with the cover still down.
-  addEventListener('pageshow', e => {
-    if (!e.persisted) return;
-    gsap.killTweensOf(cover);
-    gsap.set(cover, { clearProps: 'clipPath' });
-    try { sessionStorage.removeItem('jr-page-enter'); } catch {}
-  });
-}
-
-// Scrolling out of the hero (Jonas, 2026-11-03): the portrait drifts down slower than
-// the page while the headline lifts away faster and fades, the intro follows a little.
-// Wrappers only, so it never fights the reveal tweens on the elements inside.
-function heroParallax() {
-  const hero = document.querySelector<HTMLElement>('.hero');
-  if (!hero) return;
-  const media = hero.querySelector('.hero__media');
-  const center = hero.querySelector('.hero__center');
-  const base = hero.querySelector('.hero__base');
-  const timeline = gsap.timeline({
-    defaults: { ease: 'none' },
-    scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
-  });
-  if (media) timeline.to(media, { yPercent: 30 }, 0);
-  if (center) timeline.to(center, { y: () => -hero.offsetHeight * 0.22, opacity: 0, ease: 'power1.in' }, 0);
-  if (base) timeline.to(base, { y: () => -hero.offsetHeight * 0.08 }, 0);
-}
-
-// Stop every reveal and show the page as it is. Elements that were still waiting for
-// their scroll trigger carry an inline hidden state (opacity 0, offset, blur, clip),
-// which removing `js-motion` alone does not undo, so it is cleared here as well.
-function stopMotion() {
-  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-  gsap.globalTimeline.getChildren().forEach(animation => animation.totalProgress(1));
-  gsap.set(document.querySelectorAll('body [style]'), { clearProps: 'opacity,transform,filter,clipPath' });
-  root.classList.remove('js-motion', 'intro', 'page-enter');
-}
-
-function initializeMotion() {
-  // The head timeout deliberately wins: never hide content again after a slow load.
-  if (!root.classList.contains('js-motion')) return;
-  try {
-    introHero();
-    pageTransitions();
-    scrubStatement();
-    revealHeadings();
-    heroParallax();
-    revealContent();
-    revealRules();
-    revealServices();
-    revealSequences();
-    revealWorkMedia();
-    revealTestimonial();
-    revealAbout();
-    revealFooter();
-    root.classList.add('motion-ready');
-    cursor();
-    magnet();
-    faq();
-    menu();
-    ScrollTrigger.sort();
-    ScrollTrigger.refresh();
-  } catch (error) {
-    stopMotion();
-    console.warn('Motion disabled; content remains accessible.', error);
-  }
-}
-
-initializeMotion();
-
-matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', event => {
-  if (event.matches) stopMotion();
-});

@@ -1,0 +1,52 @@
+---
+import { translator } from '../i18n';
+const t = translator(Astro.currentLocale);
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import portret from '../assets/img/jonas-portret-full.png';
+---
+
+<section class="about" id="o-mne" aria-labelledby="about-h">
+  <div class="card" data-reveal-item>
+    <div class="text">
+      <h2 class="hello" id="about-h">{t('Ahoj, jsem', 'Hi, I’m')}<br />Jonáš Rech.</h2>
+      <div class="mid">
+        <p class="lead">{t('Od prvního hovoru až po spuštění webu pracujete přímo se mnou.', 'You’ll work directly with me from the first call through launch.')}</p>
+        <p class="sub">{t('Chci, aby lidé na vašem webu hned poznali, co děláte, proč si vybrat právě vás a jak se vám ozvat.', 'I want people to see straight away what you do, why they should choose you and how to get in touch.')}</p>
+      </div>
+      <p class="where">
+        <Icon name="map-pin" size={19} />
+        <b>{t('Webdesignér z Brna', 'Web designer based in Brno')}</b>
+        <span aria-hidden="true">/</span>
+        <span>{t('Spolupráce odkudkoli', 'Available for remote projects')}</span>
+      </p>
+    </div>
+    <div class="photo">
+      <Image src={portret} alt={t('Jonáš Rech na horách', 'Jonáš Rech in the mountains')} widths={[400, 551]} sizes="(max-width: 900px) 100vw, 528px" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .about { max-width: var(--max); margin-inline: auto; padding: var(--sec-y) var(--wrap-x); }
+  .card { display: flex; min-height: 660px; border-radius: var(--radius-card); background: var(--surface); overflow: hidden; }
+  .text { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 32px; padding: 56px 64px 40px 48px; }
+  .hello { font-size: clamp(44px, 6.1vw, 88px); line-height: 0.99; letter-spacing: -0.039em; font-weight: 500; }
+  .mid { display: flex; flex-direction: column; gap: 18px; }
+  .lead { max-width: 550px; font-size: clamp(22px, 2vw, 29px); line-height: 1.2; letter-spacing: -0.028em; font-weight: 500; }
+  .sub { max-width: 535px; color: var(--muted); font-size: clamp(17px, 1.39vw, 20px); line-height: 1.45; }
+  .where { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 16px; }
+  .where b { color: var(--text); font-weight: 500; }
+  .where :global(svg) { color: var(--text); }
+  .photo { position: relative; width: 528px; flex: none; }
+  .photo :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+
+  @media (max-width: 1100px) {
+    .photo { width: 42%; }
+  }
+  @media (max-width: 800px) {
+    .card { flex-direction: column-reverse; min-height: 0; }
+    .photo { width: 100%; aspect-ratio: 4 / 5; max-height: 560px; }
+    .text { padding: 32px 24px 28px; }
+  }
+</style>

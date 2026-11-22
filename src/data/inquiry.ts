@@ -357,6 +357,55 @@ export function validateInquiry(
   return { ok: true, answers };
 }
 
+/* ---------- Short form (contact card on the 2026 redesign) ----------
+   Posted to the same /api/contact with `form: 'short'`: contact details and a few words
+   about the business, no questionnaire answers (budget, timing…), so the CRM never gets
+   made-up choices. The contact field takes an email or a phone number. */
+
+const shortSteps = (cs: boolean): InquiryStep[] => [
+  {
+    id: 'contact',
+    title: cs ? 'Kontakt' : 'Contact',
+    blocks: [
+      { kind: 'field', field: { name: 'name', label: 'Jméno', type: 'text', required: true, autocomplete: 'name', maxLength: 120 } },
+      { kind: 'field', field: { name: 'contact', label: 'Telefon nebo e-mail', type: 'text', required: true, maxLength: 200 } },
+    ],
+  },
+  {
+    id: 'business',
+    title: cs ? 'O firmě' : 'About the business',
+    blocks: [
+      { kind: 'field', field: { name: 'currentUrl', label: 'Současný web', type: 'url', maxLength: 200 } },
+      { kind: 'single', name: 'noWebsite', label: 'Zatím nemá web', options: ['Ano'], required: false, error: '' },
+      { kind: 'field', field: { name: 'note', label: 'Co dělá a kde', type: 'textarea', maxLength: 2000 } },
+    ],
+  },
+];
+
+/** Row labels stay Czech in both languages: they only end up in the CRM and Jonas's email. */
+export function getShortForm(locale: InquiryLocale) {
+  return { steps: shortSteps(locale === 'cs') };
+}
+
+const PHONE_PATTERN = /^\+?[\d\s()./-]+$/;
+
+/** Email, phone number (at least 9 digits), or neither. */
+export function contactKind(value: string): 'email' | 'phone' | null {
+  const v = value.trim();
+  if (EMAIL_PATTERN.test(v)) return 'email';
+  if (PHONE_PATTERN.test(v) && v.replace(/\D/g, '').length >= 9) return 'phone';
+  return null;
+}
+
+export function validateShortForm(
+  input: unknown,
+  locale: InquiryLocale,
+): { ok: true; answers: InquiryAnswers } | { ok: false } {
+  const result = validateInquiry(input, getShortForm(locale).steps);
+  if (!result.ok || !contactKind(String(result.answers.contact))) return { ok: false };
+  return result;
+}
+
 /** Answers as (question label, value) pairs: contact first, then the project in question order. */
 export function inquiryRows(answers: InquiryAnswers, inquirySteps: InquiryStep[]): [string, string][] {
   const value = (key: string) => {

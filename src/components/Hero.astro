@@ -1,0 +1,120 @@
+---
+import { translator } from '../i18n';
+const t = translator(Astro.currentLocale);
+import { Image } from 'astro:assets';
+import CtaButton from './CtaButton.astro';
+import heroVisual from '../assets/img/hero-notebook-coffee.png';
+import PolygonMesh from './PolygonMesh.astro';
+
+const lines: { text: string; photo?: boolean; highlight?: boolean; accent?: string }[] =
+  Astro.currentLocale === 'en'
+    ? [
+        { text: 'Websites for' },
+        { text: 'small businesses.', photo: true },
+        { text: 'Get', accent: 'more enquiries.' },
+      ]
+    : [
+        { text: 'Weby na míru', photo: true },
+        { text: 'pro malé firmy', highlight: true },
+      ];
+const title = lines.map(({ text, accent }) => accent ? `${text} ${accent}` : text).join(' ');
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <PolygonMesh />
+  <h1 id="hero-title" class="hero-title" aria-label={title}>
+    {lines.map(({ text, photo, highlight, accent }) => (
+      <span class="line" aria-hidden="true">
+        {text.split(' ').map((word) => <span class="wm"><span class:list={['wi', { hl: highlight }]}>{word}</span></span>)}
+        {photo && (
+          <span class="pill" data-hero-pill>
+            <Image
+              src={heroVisual}
+              alt=""
+              width={168}
+              height={90}
+              position="center"
+              densities={[1, 2]}
+              loading="eager"
+              fetchpriority="high"
+            />
+          </span>
+        )}
+        {accent?.split(' ').map((word) => <span class="wm"><span class="wi hl">{word}</span></span>)}
+      </span>
+    ))}
+  </h1>
+
+  <div class="hero-sub" data-hero-sub>
+    <p class="hero-text">
+      {t('Napíšu texty, podle potřeby zajistím fotky a spustím web. Celou dobu jednáte přímo se mnou.', 'I build custom websites for tradespeople, clinics, law firms and other small businesses. I write the copy, arrange the photography and get your site live.')}
+    </p>
+    <CtaButton />
+    <p class="micro">{t('První hovor je zdarma a nezávazný.', 'The first call is free, with no obligation.')}</p>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(56px, 8.33vw, 120px) var(--pad-x) clamp(64px, 8.9vw, 128px);
+    text-align: center;
+  }
+  .hero-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: clamp(40px, 6.67vw, 96px);
+    line-height: 1.0625;
+    letter-spacing: -0.04em;
+    font-weight: 500;
+  }
+  .line { display: block; text-wrap: balance; }
+  /* maska pro „vyjetí“ slov při načtení – spodní rezerva kvůli diakritice a dotažnicím */
+  .wm { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.06em 0.02em 0.1em; margin: -0.06em 0.22em -0.1em -0.02em; }
+  .wm:last-child { margin-right: -0.02em; }
+  .wi { display: inline-block; }
+  /* výchozí stav úvodní animace (jen když běží JS animace; viz Base.astro a motion.ts) */
+  :global(.anim) .wi { transform: translateY(115%) rotate(4deg); }
+  :global(.anim) .pill { clip-path: inset(0% 50% 0% 50% round 999px); }
+  :global(.anim) .hero-sub { opacity: 0; }
+  .hl { color: var(--accent-text); }
+  .pill {
+    display: inline-block;
+    vertical-align: -0.06em;
+    width: 1.75em;
+    height: 0.833em;
+    border-radius: 999px;
+    overflow: hidden;
+    flex: none;
+    background: var(--surface);
+  }
+  .pill :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; } /* notebook uprostřed vizuálu */
+
+  .hero-sub {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding-top: 36px;
+  }
+  .hero-text {
+    max-width: 711px;
+    color: var(--muted);
+    font-size: clamp(17px, 1.39vw, 20px);
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+  .micro { color: var(--muted); font-size: 16px; }
+
+  @media (max-width: 640px) {
+    .hero { align-items: flex-start; text-align: left; }
+    .hero-title { align-items: flex-start; }
+    .hero-sub { align-items: stretch; gap: 16px; padding-top: 24px; }
+    .hero-sub :global(.cta) { width: 100%; }
+  }
+</style>

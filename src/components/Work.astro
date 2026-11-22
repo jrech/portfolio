@@ -1,0 +1,156 @@
+---
+import { getLocale, localeLinks, translator } from '../i18n';
+const t = translator(Astro.currentLocale);
+import { Picture } from 'astro:assets';
+import AnimatedArrow from './AnimatedArrow.astro';
+import pradelna from '../assets/img/pradelna-hero.webp';
+import senk from '../assets/img/senk-card.webp';
+import kidsgarden from '../assets/img/kidsgarden-card.webp';
+
+/* href jen tam, kde existuje case study. Ostatní karty jsou bez odkazu (div) se štítkem „Připravujeme“, dokud stránky nevzniknou.
+   pos = object-position pro výřez 4 : 3, aby byl notebook vidět celý (zdroje mají různý poměr stran). */
+const items = [
+  {
+    title: t('Hotely si ověří svoz a poptají praní.', 'Hotels check collection areas and request a quote.'),
+    meta: t('Prádelna Krkonoše · identita, web, texty', 'Prádelna Krkonoše · branding, website, copy'),
+    img: pradelna,
+    alt: t('Web Prádelny Krkonoše na notebooku na skále v Krkonoších při západu slunce', 'Prádelna Krkonoše website on a laptop on a rock in the Krkonoše mountains at sunset'),
+    tone: '#2f3a36',
+    pos: '60% 50%',
+    href: localeLinks('/work/pradelna-krkonose')[getLocale(Astro.currentLocale)],
+  },
+  {
+    title: t('Úpravy webu Starobrněnského šenku', 'Website updates for Starobrněnský šenk'), // [OVĚŘIT] stav zakázky
+    meta: t('Starobrněnský šenk · strategie, web, texty', 'Starobrněnský šenk · strategy, website, copy'),
+    img: senk,
+    alt: t('Web Starobrněnského šenku na notebooku na dřevěném stole na zahrádce', 'Starobrněnský šenk website on a laptop on a wooden garden table'),
+    tone: '#5a3a2a',
+    pos: '80% 50%',
+    href: null,
+  },
+  {
+    // texty podle webu projektu (kidsgarden/web: úvod, program, přihláška); koncept, ne zakázka (Jonáš, 22. 11. 2026)
+    title: t('Rodiče poznají běžný den ve školce a rovnou podají přihlášku.', 'Parents see what a typical nursery day looks like and apply straight away.'),
+    meta: t('Kids Garden · koncept redesignu', 'Kids Garden · redesign concept'),
+    img: kidsgarden,
+    alt: t('Web anglické školky Kids Garden na notebooku na stole ve třídě', 'Kids Garden English nursery website on a laptop on a classroom table'),
+    tone: '#3c4637',
+    pos: '50% 50%',
+    href: null,
+  },
+];
+---
+
+<section class="work container" id="prace" aria-labelledby="prace-h">
+  <h2 class="h2" id="prace-h" data-reveal data-reveal-load>{t('Vybrané práce', 'Selected work')}</h2>
+  <ul class="cards">
+    {
+      items.map((it) => {
+        const Tag = it.href ? 'a' : 'div';
+        return (
+          <li data-reveal-item data-reveal-load>
+            <Tag class="card" href={it.href ?? undefined} style={`--tone:${it.tone}`}>
+              <span class="card-media">
+                <Picture
+                  class="card-img"
+                  src={it.img}
+                  alt={it.alt}
+                  formats={['avif', 'webp']}
+                  widths={[400, 640, 820, 1080, 1200]}
+                  sizes="(max-width: 700px) calc(100vw - 32px), (max-width: 1440px) 30vw, 405px"
+                  quality={90}
+                  style={`object-position:${it.pos}`}
+                />
+              </span>
+              <span class="card-bottom">
+                <span class="card-text">
+                  <span class="card-title">{it.title}</span>
+                  <span class="card-meta">{it.meta}</span>
+                </span>
+                {it.href && (
+                  <span class="study-link">
+                    {t('Případová studie', 'Case study')}
+                    <span class="card-arrow" aria-hidden="true"><AnimatedArrow /></span>
+                  </span>
+                )}
+                {!it.href && (
+                  <span class="study-link is-soon">
+                    {t('Připravujeme', 'Coming soon')}
+                    <span class="card-arrow" aria-hidden="true"><AnimatedArrow /></span>
+                  </span>
+                )}
+              </span>
+            </Tag>
+          </li>
+        );
+      })
+    }
+  </ul>
+</section>
+
+<style>
+  .work { display: flex; flex-direction: column; gap: 48px; padding-block: var(--sec-y); }
+  /* skryté do úvodní animace (motion.ts → workIntro / reveals); bez JS a s reduced-motion chybí .anim, takže je vše vidět */
+  :global(.anim) [data-reveal-load]:not([data-revealed]) { opacity: 0; }
+  .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    background: var(--tone);
+    color: var(--on-dark);
+    text-decoration: none;
+    isolation: isolate;
+  }
+  /* obrázek nahoře ve společném poměru 4 : 3 (celý notebook vidět), text pod ním na barvě karty */
+  .card-media { display: block; aspect-ratio: 4 / 3; overflow: hidden; background: color-mix(in srgb, var(--tone) 80%, #000); }
+  .card-media :global(picture) { display: contents; }
+  .card :global(.card-img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s var(--ease);
+  }
+  .card-bottom { flex: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 22px 24px 24px; }
+  /* karta bez case study: stejný štítek, ale tlumený a bez interakce */
+  .is-soon { color: rgb(238 233 223 / 0.8); }
+  .is-soon .card-arrow { opacity: 0.45; }
+  .study-link { display: inline-flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; }
+  .study-link .card-arrow { width: 32px; height: 32px; }
+  .card-text { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .card-title { font-size: 24px; line-height: 29px; font-weight: 600; text-wrap: balance; }
+  .card-meta { font-size: 15px; line-height: 23px; color: rgb(238 233 223 / 0.8); }
+  .card-arrow {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 999px;
+    background: var(--on-dark);
+    color: var(--on-accent);
+    overflow: hidden;
+    transition: background-color 0.2s var(--ease);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    a.card:hover .card-arrow { background: var(--accent); }
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    a.card:hover :global(.card-img) { transform: scale(1.04); }
+  }
+  a.card:focus-visible { outline: 2px solid var(--text); outline-offset: 4px; border-radius: var(--radius-card); }
+
+  @media (min-width: 701px) {
+    .work { padding-top: 24px; }
+    .cards { gap: clamp(14px, 2vw, 32px); }
+  }
+  @media (max-width: 700px) {
+    .work { gap: 32px; padding-top: 0; }
+    .cards { grid-template-columns: 1fr; gap: 16px; }
+    .card-bottom { padding: 18px 20px 20px; }
+  }
+</style>

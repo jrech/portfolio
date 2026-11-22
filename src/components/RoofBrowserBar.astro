@@ -1,0 +1,31 @@
+---
+/* Lišta prohlížeče pro makety. `alt` = druhý obsah adresního řádku (např. hledaný výraz),
+   zobrazí se, když má nadřazený náhled data-pv-state="3" (Deliverables). */
+interface Props {
+  alt?: string;
+}
+const { alt } = Astro.props;
+---
+
+<div class="bar">
+  <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+  <span class="url mono">
+    <span class="u-main">strechy-novak.example</span>
+    {alt && <span class="u-alt">{alt}</span>}
+  </span>
+</div>
+
+<style>
+  .bar { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; height: 49px; padding: 10px 14px; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .dots { display: flex; gap: 5px; }
+  .dots i { width: 8px; height: 8px; border-radius: 50%; background: #c7c7c1; }
+  .url { flex: 1; display: grid; padding: 4px 12px; border-radius: 999px; background: var(--white); color: var(--muted); text-align: center; font-size: 12px; overflow: hidden; }
+  .url > span { grid-area: 1 / 1; transition: opacity 0.4s var(--ease), transform 0.4s var(--ease); }
+  .u-alt { opacity: 0; transform: translateY(8px); }
+  :global([data-pv-state='3']) .u-main { opacity: 0; transform: translateY(-8px); }
+  :global([data-pv-state='3']) .u-alt { opacity: 1; transform: none; }
+  :global(.pv-snap) .url > span { transition: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .url > span { transition: none; }
+  }
+</style>

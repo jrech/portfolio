@@ -5,7 +5,16 @@
  *
  * Plain fetch against the official REST APIs, no SDKs: two small calls each.
  */
-import { getInquiry, inquiryRows, type InquiryAnswers, type InquiryLocale } from '../../src/data/inquiry.js';
+import {
+  contactKind,
+  getInquiry,
+  getShortForm,
+  inquiryRows,
+  type InquiryAnswers,
+  type InquiryLocale,
+} from '../../src/data/inquiry.js';
+
+export type FormKind = 'inquiry' | 'short';
 
 export const NOTION_VERSION = '2025-09-03'; // first version with data sources
 const NOTION_API = 'https://api.notion.com/v1';
@@ -134,12 +143,15 @@ export interface Lead {
   budget: string;
   timing: string;
   web: string | null;
+  /** Short form only: a phone number given instead of an email. */
+  phone?: string;
   /** Every answer in question order, Czech labels: [question, answer]. */
   rows: [string, string][];
   brief: string;
 }
 
-export function buildLead(id: string, answers: InquiryAnswers, locale: InquiryLocale): Lead {
+export function buildLead(id: string, answers: InquiryAnswers, locale: InquiryLocale, form: FormKind = 'inquiry'): Lead {
+  if (form === 'short') return buildShortLead(id, answers, locale);
   const cz = toCzechAnswers(answers, locale);
   const steps = getInquiry('cs').steps;
   const rows = inquiryRows(cz, steps);
@@ -167,11 +179,41 @@ export function buildLead(id: string, answers: InquiryAnswers, locale: InquiryLo
   };
 }
 
+/** Short contact form: name + email or phone, current website, a few words about the business. */
+export function buildShortLead(id: string, answers: InquiryAnswers, locale: InquiryLocale): Lead {
+  const name = str(answers, 'name');
+  const contact = str(answers, 'contact');
+  const isEmail = contactKind(contact) === 'email';
+  const url = str(answers, 'currentUrl');
+  const note = str(answers, 'note');
+  const brief = [
+    'Krátký formulář na webu.',
+    ...(isEmail ? [] : [`Telefon: ${contact}`]),
+    str(answers, 'noWebsite') ? 'Web: zatím nemá' : url ? `Web: ${url}` : 'Web: neuvedeno',
+    ...(note ? ['', 'Co dělá a kde:', note] : []),
+    ...(locale === 'en' ? ['', 'Jazyk formuláře: EN'] : []),
+  ].join('\n');
+  return {
+    id,
+    locale,
+    company: name,
+    name,
+    email: isEmail ? contact : '',
+    phone: isEmail ? undefined : contact,
+    projectType: '',
+    budget: '',
+    timing: '',
+    web: normalizeUrl(url),
+    rows: inquiryRows(answers, getShortForm('cs').steps),
+    brief,
+  };
+}
+
 export function notionProperties(lead: Lead, now = new Date()) {
   return {
     [PROP.company]: { title: richText(lead.company) },
     [PROP.contact]: { rich_text: richText(lead.name) },
-    [PROP.email]: { email: lead.email },
+    [PROP.email]: { email: lead.email || null },
     [PROP.status]: select(LEAD_DEFAULTS.status),
     [PROP.source]: select(LEAD_DEFAULTS.source),
     [PROP.projectType]: select(lead.projectType),
@@ -478,7 +520,8 @@ export function notificationEmail(
   const summary: [string, string][] = [
     ['Firma', lead.company],
     ['Kontakt', lead.name],
-    ['E-mail', lead.email],
+    ['E-mail', lead.email || '—'],
+    ...(lead.phone ? ([['Telefon', lead.phone]] as [string, string][]) : []),
     ['Typ projektu', lead.projectType || '—'],
     ['Notion', status.notionUrl ?? 'neuloženo'],
     ['ID poptávky', lead.id],
@@ -500,7 +543,7 @@ export function notificationEmail(
   const prefix = status.notionUrl === null ? '[NEULOŽENO] ' : '';
   return {
     to: config.notifyTo!,
-    replyTo: lead.email,
+    replyTo: lead.email || undefined,
     subject: `${prefix}Nová poptávka: ${oneLine(lead.company)}${lead.projectType ? ` — ${lead.projectType}` : ''}`,
     text,
     html,

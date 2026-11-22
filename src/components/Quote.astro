@@ -1,0 +1,47 @@
+---
+import { translator } from '../i18n';
+const t = translator(Astro.currentLocale);
+/* Věta se při scrollu „dopisuje“ (slova přechází z tlumené do plné bílé). Bez JS a s reduced-motion je celá bílá. */
+const lines = [t('„Když vás někdo doporučí,', '“When someone recommends you,'), t('lidi si vás často ještě vygooglí.', 'people often look you up.'), t('Dobrý web jim ukáže,', 'A good website gives them'), t('proč se ozvat právě vám.“', 'a reason to get in touch.”')];
+---
+
+<section class="quote on-dark invert" aria-labelledby="quote-h">
+  <h2 class="sr-only" id="quote-h">{t('Jak přemýšlím o webu', 'How I think about websites')}</h2>
+  <blockquote class="q" data-quote>
+    <p>
+      {
+        lines.map((l) => (
+          <span class="q-line">
+            {l.split(' ').map((w) => (
+              <span class="w">{w} </span>
+            ))}
+          </span>
+        ))
+      }
+    </p>
+  </blockquote>
+</section>
+
+<style>
+  .quote {
+    display: flex;
+    justify-content: center;
+    padding: clamp(128px, 19.44vw, 280px) var(--pad-x); /* desktop 280, mobil 128 */
+    background: var(--ink);
+    color: var(--on-dark);
+  }
+  .q p {
+    max-width: 1100px;
+    text-align: center;
+    font-size: clamp(30px, 4.44vw, 64px);
+    line-height: 1.14;
+    letter-spacing: -0.036em;
+    font-weight: 500;
+  }
+  .q-line { display: block; }
+
+  @media (max-width: 760px) {
+    .q-line { display: inline; }
+    .q p { text-align: left; text-wrap: pretty; }
+  }
+</style>
