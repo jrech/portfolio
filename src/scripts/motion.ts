@@ -155,12 +155,28 @@ function quote() {
   const q = document.querySelector<HTMLElement>('[data-quote]');
   if (!q || !isBelowViewport(q)) return;
   // barvy řeší CSS ([data-quote] .w v global.css) podle motivu, tady se posouvá jen --p (0 → 1)
-  const words = q.querySelectorAll('.w');
-  gsap.fromTo(words, { '--p': 0 }, {
-    '--p': 1,
-    stagger: 0.1,
-    ease: 'none',
-    scrollTrigger: { trigger: q, start: 'top 80%', end: 'bottom 45%', scrub: 0.6 },
+  const words = gsap.utils.toArray<HTMLElement>('.w', q);
+  const STEP = 0.1; // rozestup slov na časové ose (stejný jako dřív stagger)
+  const tl = gsap.timeline({ scrollTrigger: { trigger: q, start: 'top 80%', end: 'bottom 45%', scrub: 0.6 } });
+  words.forEach((w, i) => tl.fromTo(w, { '--p': 0 }, { '--p': 1, duration: 0.5, ease: 'none' }, i * STEP));
+
+  // ručně kreslená zvýraznění (Quote.astro): nakreslí se, když se rozsvítí poslední slovo skupiny
+  gsap.utils.toArray<HTMLElement>('[data-mark]', q).forEach((mark) => {
+    const last = gsap.utils.toArray<HTMLElement>('.w', mark).at(-1);
+    const at = (last ? words.indexOf(last) : 0) * STEP + 0.35;
+    const swash = mark.querySelector('[data-swash]');
+    const strokes = gsap.utils.toArray<SVGPathElement>('svg:not([data-doodle]) [data-draw]', mark);
+    const doodles = gsap.utils.toArray<SVGSVGElement>('[data-doodle]', mark);
+    if (swash) tl.fromTo(swash, { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: 0.35, ease: 'power2.out' }, at);
+    // nenakreslené tahy skrýt úplně (kulaté konce čar by jinak byly vidět jako tečky)
+    if (strokes.length) {
+      tl.fromTo(strokes, { opacity: 0 }, { opacity: 1, duration: 0.01, stagger: 0.12 }, at + 0.1);
+      tl.fromTo(strokes, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.4, ease: 'power1.inOut', stagger: 0.12 }, at + 0.1);
+    }
+    doodles.forEach((d, i) => {
+      tl.fromTo(d, { scale: 0, rotate: -30, transformOrigin: '50% 50%' }, { scale: 1, rotate: 0, duration: 0.25, ease: 'back.out(2.2)' }, at + 0.3 + i * 0.05);
+      tl.fromTo(d.querySelectorAll('[data-draw]'), { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.3, ease: 'power1.out', stagger: 0.06 }, at + 0.3 + i * 0.05);
+    });
   });
 }
 

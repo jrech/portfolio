@@ -1,8 +1,30 @@
 ---
 import { translator } from '../i18n';
 const t = translator(Astro.currentLocale);
-/* Věta se při scrollu „dopisuje“ (slova přechází z tlumené do plné bílé). Bez JS a s reduced-motion je celá bílá. */
-const lines = [t('„Když vás někdo doporučí,', '“When someone recommends you,'), t('lidi si vás často ještě vygooglí.', 'people often look you up.'), t('Dobrý web jim ukáže,', 'A good website gives them'), t('proč se ozvat právě vám.“', 'a reason to get in touch.”')];
+const en = Astro.currentLocale === 'en';
+
+/* Věta se při scrollu „dopisuje“ (slova přechází z tlumené do plné barvy) a klíčová slova dostanou
+   ručně kreslená zvýraznění: fix za slovem, elipsu, vlnovku, dvojité podtržení a drobné kresbičky.
+   Tahy jsou inline SVG uvnitř skupiny slov, takže se při zalamování posouvají se slovem.
+   Bez JS a s reduced-motion je všechno nakreslené rovnou. Kresby jsou aria-hidden, text zůstává čistý. */
+type Mark = 'swash-blue' | 'swash-mustard' | 'swash-mauve' | 'ellipse' | 'wavy' | 'double' | 'gear' | 'magnifier' | 'stars';
+type Token = string | { text: string; marks: Mark[] };
+
+const lines: Token[][] = en
+  ? [
+      ['“When someone', { text: 'recommends', marks: ['swash-blue'] }, 'you,'],
+      ['people often', { text: 'look you up.', marks: ['ellipse', 'magnifier'] }],
+      ['A', { text: 'good website', marks: ['gear', 'swash-mustard', 'wavy'] }, 'gives them'],
+      ['a reason to', { text: 'get in touch.”', marks: ['swash-mauve', 'double', 'stars'] }],
+    ]
+  : [
+      ['„Když vás někdo', { text: 'doporučí,', marks: ['swash-blue'] }],
+      ['lidi si vás často ještě', { text: 'vygooglí.', marks: ['ellipse', 'magnifier'] }],
+      [{ text: 'Dobrý web', marks: ['gear', 'swash-mustard', 'wavy'] }, 'jim ukáže,'],
+      ['proč se ozvat', { text: 'právě vám.“', marks: ['swash-mauve', 'double', 'stars'] }],
+    ];
+
+const words = (text: string) => text.split(' ');
 ---
 
 <section class="quote on-dark invert" aria-labelledby="quote-h">
@@ -10,12 +32,74 @@ const lines = [t('„Když vás někdo doporučí,', '“When someone recommends
   <blockquote class="q" data-quote>
     <p>
       {
-        lines.map((l) => (
+        lines.map((line, li) => (
+          <>
+          {li > 0 && ' '}
           <span class="q-line">
-            {l.split(' ').map((w) => (
-              <span class="w">{w} </span>
+            {line.map((token, ti) => (
+              <>
+                {ti > 0 && ' '}
+                {typeof token === 'string' ? (
+                  words(token).map((w, wi) => (
+                    <>
+                      {wi > 0 && ' '}
+                      <span class="w">{w}</span>
+                    </>
+                  ))
+                ) : (
+                  <span class:list={['mk', token.marks.map((m) => `mk--${m}`)]} data-mark>
+                    {token.marks.some((m) => m.startsWith('swash')) && (
+                      <svg class="sw" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true" focusable="false" data-swash>
+                        <path d="M7 13C40 6 92 10 141 7s51 2 55 9c3 8-2 17-16 18-50 3-110-1-160 2C8 37 1 30 3 22c1-4 1-6 4-9Z" />
+                        <path class="sw-dry" d="M14 30c40-3 92 1 140-2 14-1 30-1 38-4" />
+                      </svg>
+                    )}
+                    {words(token.text).map((w, wi) => (
+                      <>
+                        {wi > 0 && ' '}
+                        <span class="w">{w}</span>
+                      </>
+                    ))}
+                    {token.marks.includes('ellipse') && (
+                      <svg class="el" viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                        <path data-draw pathLength="1" d="M22 50C9 26 58 7 110 8c50 1 88 13 84 37-4 22-62 31-108 28C42 71 6 61 12 40 15 29 34 19 58 15" />
+                      </svg>
+                    )}
+                    {token.marks.includes('wavy') && (
+                      <svg class="ul ul--wavy" viewBox="0 0 200 20" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                        <path data-draw pathLength="1" d="M3 11c8-7 15-7 21 0s14 7 21 0 15-7 22 0 14 7 21 0 15-7 22 0 14 7 21 0 15-7 22 0 14 6 20 0 14-6 21 1" />
+                      </svg>
+                    )}
+                    {token.marks.includes('double') && (
+                      <svg class="ul ul--double" viewBox="0 0 200 20" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                        <path data-draw pathLength="1" d="M4 6c48-4 107-4 192-1" />
+                        <path data-draw pathLength="1" d="M16 15c50-3 103-2 172 1" />
+                      </svg>
+                    )}
+                    {token.marks.includes('magnifier') && (
+                      <svg class="dd dd--magnifier" viewBox="0 0 40 40" aria-hidden="true" focusable="false" data-doodle>
+                        <path data-draw pathLength="1" d="M17 7c7-1 12 5 11 12-1 6-6 10-12 9-6 0-10-6-9-12 1-5 5-9 10-9Z" />
+                        <path data-draw pathLength="1" d="M26 25l9 9" />
+                      </svg>
+                    )}
+                    {token.marks.includes('gear') && (
+                      <svg class="dd dd--gear" viewBox="0 0 40 40" aria-hidden="true" focusable="false" data-doodle>
+                        <path data-draw pathLength="1" d="M18 4h5l1 5 4 2 4-3 3 4-3 4 1 4 5 1v5l-5 1-1 4 3 4-3 4-4-3-4 2-1 5h-5l-1-5-4-2-4 3-3-4 3-4-2-4-5-1v-5l5-1 2-4-3-4 3-4 4 3 4-2Z" />
+                        <path data-draw pathLength="1" d="M20 15c3 0 6 2 6 5s-3 6-6 6-6-3-6-6 3-5 6-5Z" />
+                      </svg>
+                    )}
+                    {token.marks.includes('stars') && (
+                      <svg class="dd dd--stars" viewBox="0 0 60 40" aria-hidden="true" focusable="false" data-doodle>
+                        <path class="st-acc" data-draw pathLength="1" d="M16 6v20M7 11l18 10M25 11 7 21" />
+                        <path class="st-blue" data-draw pathLength="1" d="M44 20c1 6 3 8 9 9-6 1-8 3-9 9-1-6-3-8-9-9 6-1 8-3 9-9Z" />
+                      </svg>
+                    )}
+                  </span>
+                )}
+              </>
             ))}
           </span>
+          </>
         ))
       }
     </p>
@@ -24,24 +108,69 @@ const lines = [t('„Když vás někdo doporučí,', '“When someone recommends
 
 <style>
   .quote {
+    /* barvy fixů: tmavé tlumené tóny na tmavé kartě (bílý text na nich ≥ 6,5 : 1) */
+    --sw-blue: #3c4e6b;
+    --sw-mustard: #6a5a24;
+    --sw-mauve: #654257;
+    --doodle-blue: #7aa5f7;
+    --stroke: var(--accent);
     display: flex;
     justify-content: center;
     padding: clamp(128px, 19.44vw, 280px) var(--pad-x); /* desktop 280, mobil 128 */
     background: var(--ink);
     color: var(--on-dark);
   }
+  /* v tmavém režimu je karta světlá: pastelové fixy, černý text na nich ≥ 13 : 1 */
+  :global(:root[data-theme='dark']) .quote {
+    --sw-blue: #cdd9ec;
+    --sw-mustard: #efdd94;
+    --sw-mauve: #ebcfdc;
+    --doodle-blue: #2f5fc4;
+  }
   .q p {
     max-width: 1100px;
     text-align: center;
     font-size: clamp(30px, 4.44vw, 64px);
-    line-height: 1.14;
+    line-height: 1.24;
     letter-spacing: -0.036em;
-    font-weight: 500;
+    font-weight: 600;
   }
   .q-line { display: block; }
+
+  /* skupina zvýrazněných slov: tahy se drží slova i při zalamování */
+  .mk { position: relative; display: inline-block; isolation: isolate; white-space: nowrap; }
+  .mk svg { position: absolute; overflow: visible; pointer-events: none; }
+
+  /* fix za slovem: spodní dvě třetiny písma, lehce přesahuje do stran */
+  .sw { left: -0.12em; top: 0.3em; width: calc(100% + 0.24em); height: calc(100% - 0.3em); z-index: -1; }
+  .sw path { fill: var(--sw); }
+  .sw .sw-dry { fill: none; stroke: var(--sw); stroke-width: 3; stroke-linecap: round; opacity: 0.6; }
+  .mk--swash-blue { --sw: var(--sw-blue); }
+  .mk--swash-mustard { --sw: var(--sw-mustard); }
+  .mk--swash-mauve { --sw: var(--sw-mauve); }
+
+  /* tahy perem: elipsa, podtržení, kresbičky */
+  .mk [data-draw] { fill: none; stroke: var(--stroke); stroke-linecap: round; stroke-linejoin: round; }
+  .el { left: -0.32em; top: -0.12em; width: calc(100% + 0.64em); height: calc(100% + 0.28em); }
+  .el path { stroke-width: 3.2; }
+  .ul { left: -0.04em; width: calc(100% + 0.08em); }
+  .ul path { stroke-width: 2.6; }
+  .ul--wavy { bottom: -0.2em; height: 0.24em; }
+  .ul--double { bottom: -0.26em; height: 0.3em; }
+  .dd { width: 0.62em; height: 0.62em; }
+  .dd path { stroke-width: 2.4; }
+  .dd--magnifier { right: -0.78em; top: -0.42em; }
+  .dd--gear { left: -0.7em; top: 0.06em; }
+  .mk .dd--gear [data-draw] { stroke: var(--doodle-blue); }
+  .dd--stars { right: -1.06em; top: -0.12em; width: 0.9em; }
+  .mk .dd--stars .st-blue { stroke: var(--doodle-blue); }
 
   @media (max-width: 760px) {
     .q-line { display: inline; }
     .q p { text-align: left; text-wrap: pretty; }
+    /* na mobilu kresbičky menší, ať nepřetékají přes okraj */
+    .dd { width: 0.5em; height: 0.5em; }
+    .dd--stars { right: -0.74em; top: -0.1em; width: 0.72em; }
+    .dd--gear { display: none; } /* na úzkém displeji by zasahovala do předchozího řádku */
   }
 </style>
