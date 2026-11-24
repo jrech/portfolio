@@ -9,7 +9,7 @@ import CursorDot from '../components/CursorDot.astro';
 import Icon from '../components/Icon.astro';
 import notebook from '../assets/pradelna/notebook.webp';
 import heroVisual from '../assets/img/pradelna-hero.webp';
-import homepage from '../assets/pradelna/homepage.webp';
+import landingScreens from '../assets/pradelna/landing-page-screens.webp';
 import telefon from '../assets/pradelna/telefon.webp';
 import tablet from '../assets/pradelna/tablet.webp';
 
@@ -19,7 +19,7 @@ const meta = [
   { k: t('Rok', 'Year'), v: '2026' },
 ];
 
-/* Co na webu je – podle hotové hlavní stránky (homepage.webp). */
+/* Co na webu je – podle hotové hlavní stránky (landing-page-screens.webp). */
 const parts = [
   { t: t('Služby', 'Services'), d: t('Svoz a rozvoz, praní a mandlování, prádlo připravené k použití.', 'Collection, delivery, washing and pressing, with linen returned ready to use.') },
   { t: t('Nabídka podle provozu', 'Services by business type'), d: t('Zvlášť pro hotely a wellness, chaty a chalupy i gastro.', 'Separate options for hotels and spas, holiday cottages, and food service businesses.') },
@@ -98,10 +98,13 @@ const quote =
       </div>
       <figure class="ch-wide">
         <div class="clip" data-clip-reveal>
-          <Image
-            src={homepage}
-            alt={t('Přehled hlavní stránky od úvodní fotografie dodávky přes nabídku služeb až po kontakt', 'Homepage overview, from the photo of the van through the service options to the contact section')}
-            widths={[640, 960, 1440]}
+          <Picture
+            src={landingScreens}
+            formats={['avif', 'webp']}
+            fallbackFormat="webp"
+            quality={90}
+            alt={t('Hlavní stránka Prádelny Krkonoše rozložená do tří sloupců: úvod s dodávkou před budovou prádelny a službami, nabídka pro penziony, chaty a gastro s mapou svozu, a nakonec časté otázky a kontakt', 'Prádelna Krkonoše’s homepage laid out in three columns: the intro with the van outside the laundry and the services, offers for guesthouses, cottages and restaurants with the collection map, and finally the FAQ and contact section')}
+            widths={[640, 960, 1440, 1920, 2560]}
             sizes="(max-width: 1440px) 92vw, 1280px"
           />
         </div>

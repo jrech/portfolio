@@ -3,7 +3,7 @@ import { getLocale, localeLinks, translator } from '../i18n';
 const t = translator(Astro.currentLocale);
 import { Picture } from 'astro:assets';
 import AnimatedArrow from './AnimatedArrow.astro';
-import pradelna from '../assets/img/pradelna-macbook.webp';
+import pradelna from '../assets/img/pradelna-card-stolek.webp';
 import senk from '../assets/img/senk-iphone.webp';
 import etecsa from '../assets/img/etecsa-iphone.webp';
 
@@ -13,7 +13,7 @@ const items = [
     title: t('Hotely si ověří svoz a poptají praní.', 'Hotels check collection areas and request a quote.'),
     meta: t('Prádelna Krkonoše · identita, web, texty', 'Prádelna Krkonoše · branding, website, copy'),
     img: pradelna,
-    alt: t('Web Prádelny Krkonoše na MacBooku Pro', 'Prádelna Krkonoše website on a MacBook Pro'),
+    alt: t('Web Prádelny Krkonoše na notebooku na dřevěném stolku v pokoji', 'Prádelna Krkonoše website on a laptop on a wooden side table in a room'),
     href: localeLinks('/work/pradelna-krkonose')[getLocale(Astro.currentLocale)],
   },
   {
