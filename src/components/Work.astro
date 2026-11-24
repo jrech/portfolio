@@ -102,11 +102,11 @@ const items = [
      Jen na zařízeních s myší; s reduced-motion bez rozmazání a bez přechodu. */
   @media (hover: hover) and (pointer: fine) {
     .card { transition: filter 0.35s var(--ease); }
-    .cards:has(.card:hover, .card:focus-visible) .card:not(:hover, :focus-visible) { filter: blur(3px) brightness(0.6); }
+    .cards:has(.card:hover, .card:focus-visible) .card:not(:hover, :focus-visible) { filter: blur(1.5px) brightness(0.8); }
   }
   @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
     .card { transition: none; }
-    .cards:has(.card:hover, .card:focus-visible) .card:not(:hover, :focus-visible) { filter: brightness(0.6); }
+    .cards:has(.card:hover, .card:focus-visible) .card:not(:hover, :focus-visible) { filter: brightness(0.8); }
   }
   .card-media :global(picture) { display: contents; }
   .card :global(.card-img) {
