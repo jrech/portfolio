@@ -104,7 +104,8 @@ const jsonLd = {
   <body>
     <a class="skip-link" href="#obsah">{t('Přeskočit na obsah', 'Skip to content')}</a>
     <slot />
-    <SitePreferences locale={locale} links={localeLinks('/')} />
+    {/* přepínač vede na stejnou stránku v druhém jazyce; 404 nemá protějšek, tam vede na úvod */}
+    <SitePreferences locale={locale} links={noindex ? localeLinks('/') : links} />
     <!-- Simple Analytics: bez cookies, cookie lišta není potřeba. Povolené v CSP (vercel.json). -->
     <script is:inline async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
     <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" /></noscript>

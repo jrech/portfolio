@@ -1,6 +1,5 @@
 ---
 import Icon from './Icon.astro';
-import LanguageFlag from './LanguageFlag.astro';
 import { translator, type Locale } from '../i18n';
 
 interface Props {
@@ -10,25 +9,34 @@ interface Props {
 
 const { locale, links } = Astro.props;
 const t = translator(locale);
-const other: Locale = locale === 'cs' ? 'en' : 'cs';
-const languageLabel = t('Změnit jazyk (aktuálně čeština)', 'Change language (currently English)');
+const languages: { code: Locale; label: string; name: string }[] = [
+  { code: 'cs', label: 'CZ', name: 'Čeština' },
+  { code: 'en', label: 'EN', name: 'English' },
+];
 const toDark = t('Přepnout na tmavý režim', 'Switch to dark mode');
 const toLight = t('Přepnout na světlý režim', 'Switch to light mode');
 ---
 
 <div class="preferences">
-  <nav aria-label={t('Jazyk webu', 'Website language')}>
-    <details data-language-picker>
-      <summary class="control" aria-label={languageLabel} title={languageLabel}>
-        <LanguageFlag locale={locale} />
-        <Icon name="chevron-right" size={12} class="chevron" />
-      </summary>
-      <a class="language-option" href={links[other]} lang={other} hreflang={other}>
-        <LanguageFlag locale={other} />
-        {other === 'cs' ? 'Čeština' : 'English'}
-      </a>
-    </details>
+  {/* přímý přepínač CZ | EN: aktuální jazyk zvýrazněný, druhý je obyčejný odkaz na stejnou stránku */}
+  <nav class="lang" aria-label={t('Jazyk webu', 'Website language')}>
+    {
+      languages.map(({ code, label, name }) =>
+        code === locale ? (
+          <span class="seg is-current" aria-current="true" lang={code}>
+            <span aria-hidden="true">{label}</span>
+            <span class="sr-only">{name}</span>
+          </span>
+        ) : (
+          <a class="seg" href={links[code]} lang={code} hreflang={code} data-lang-link title={name}>
+            <span aria-hidden="true">{label}</span>
+            <span class="sr-only">{name}</span>
+          </a>
+        ),
+      )
+    }
   </nav>
+  <span class="divider" aria-hidden="true"></span>
   <button
     class="control theme"
     type="button"
@@ -48,33 +56,15 @@ const toLight = t('Přepnout na světlý režim', 'Switch to light mode');
   import { initTheme } from '../scripts/theme';
   initTheme();
 
-  for (const picker of document.querySelectorAll<HTMLDetailsElement>('[data-language-picker]')) {
-    const summary = picker.querySelector('summary');
-    const link = picker.querySelector<HTMLAnchorElement>('a[hreflang]');
-
-    link?.addEventListener('click', () => {
-      // stejná cookie jako geo přesměrování v middleware.ts (Vercel)
+  // stejná cookie jako geo přesměrování v middleware.ts (Vercel): volba jazyka má přednost před zemí
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-lang-link]')) {
+    link.addEventListener('click', () => {
       document.cookie = `lang=${link.hreflang}; Path=/; Max-Age=31536000; SameSite=Lax`;
-    });
-    document.addEventListener('click', (event) => {
-      if (event.target instanceof Node && !picker.contains(event.target)) picker.open = false;
-    });
-    picker.addEventListener('keydown', (event) => {
-      if (event.key !== 'Escape' || !picker.open) return;
-      picker.open = false;
-      summary?.focus();
     });
   }
 </script>
 
 <style>
-  .preferences, .language-option {
-    border: 1px solid rgb(255 255 255 / 0.2);
-    border-radius: 999px;
-    background: var(--ink);
-    color: var(--on-dark);
-    box-shadow: 0 5px 20px rgb(10 10 10 / 0.2);
-  }
   .preferences {
     position: fixed;
     z-index: 55;
@@ -82,8 +72,35 @@ const toLight = t('Přepnout na světlý režim', 'Switch to light mode');
     bottom: calc(12px + env(safe-area-inset-bottom));
     display: flex;
     align-items: center;
+    gap: 4px;
     padding: 4px;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--on-dark);
+    box-shadow: 0 5px 20px rgb(10 10 10 / 0.2);
   }
+  .lang { display: flex; align-items: center; gap: 2px; }
+  .seg {
+    display: grid;
+    place-items: center;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: rgb(238 233 223 / 0.62);
+    text-decoration: none;
+    transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+  }
+  .seg.is-current { background: rgb(255 255 255 / 0.17); color: var(--on-dark); }
+  @media (hover: hover) {
+    a.seg:hover { color: var(--on-dark); background: rgb(255 255 255 / 0.1); }
+  }
+  a.seg:focus-visible { outline: 2px solid var(--on-dark); outline-offset: -3px; }
+  .divider { width: 1px; height: 20px; background: rgb(255 255 255 / 0.2); }
   .control {
     display: grid;
     place-items: center;
@@ -93,28 +110,6 @@ const toLight = t('Přepnout na světlý režim', 'Switch to light mode');
     border-radius: 999px;
     background: transparent;
   }
-  summary.control { display: flex; justify-content: center; gap: 4px; width: 52px; cursor: pointer; list-style: none; }
-  summary::-webkit-details-marker { display: none; }
-  summary :global(.chevron) { transform: rotate(-90deg); }
-  details[open] summary { background: rgb(255 255 255 / 0.17); }
-  details[open] summary :global(.chevron) { transform: rotate(90deg); }
-  .language-option {
-    position: absolute;
-    right: 0;
-    bottom: calc(100% + 8px);
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    min-height: 44px;
-    padding: 4px 14px 4px 10px;
-    font-size: 14px;
-    text-decoration: none;
-  }
-  @media (hover: hover) {
-    summary:hover { background: rgb(255 255 255 / 0.17); }
-    .language-option:hover { background: #282828; }
-  }
-  :is(a, summary):focus-visible { outline-color: var(--on-dark); outline-offset: -3px; border-radius: 999px; }
   .theme { color: var(--on-dark); cursor: pointer; }
   .theme :global(svg) { grid-area: 1 / 1; }
   .theme :global(.i-sun) { display: none; }
