@@ -88,7 +88,10 @@ function studyHero() {
   const sub = root.querySelector('[data-study-sub]');
   const cover = root.querySelector('[data-study-cover]');
 
-  const tl = gsap.timeline({ defaults: { ease: 'power4.out' }, delay: 0.15 })
+  // Timeline startuje pozastavená a rozjede se, až je fotka dekódovaná a prohlížeč vykreslil první snímky.
+  // Jinak dekódování velké AVIF a fontů blokuje hlavní vlákno, GSAP mezitím počítá čas dál
+  // (lagSmoothing je kvůli Lenisu vypnutý) a fotka/nadpis v jednom snímku poskočí.
+  const tl = gsap.timeline({ defaults: { ease: 'power4.out' }, paused: true })
     .fromTo(
       words,
       { y: 0, yPercent: 115, rotate: 4, transformOrigin: '0% 100%' },
@@ -97,8 +100,7 @@ function studyHero() {
     )
     .from(hl, { color: 'var(--text)', duration: 0.6, ease: 'power2.out' }, 0.7)
     .fromTo(sub, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: EASE }, 0.3);
-  // 404 fotku nemá. Fotka startuje spolu s popisem a metadaty (ne až po nich), na načtení obrázku se nečeká:
-  // rozevírá se i podklad karty, takže fotka nepřiskočí.
+  // 404 fotku nemá. Fotka startuje spolu s popisem a metadaty (ne až po nich).
   if (cover)
     tl.fromTo(
       cover,
@@ -106,6 +108,19 @@ function studyHero() {
       { clipPath: 'inset(0% 0% 0% 0% round 24px)', duration: 1.3, ease: 'expo.out' },
       0.3,
     );
+
+  const img = cover?.querySelector('img');
+  const decoded = img?.decode ? img.decode().catch(() => {}) : Promise.resolve();
+  const timeout = new Promise((r) => setTimeout(r, 700)); // pomalá síť: nečekat donekonečna
+  // Během intra zapnout lagSmoothing: zaseknutý snímek (dekódování, fonty) animaci jen pozdrží, nepřeskočí ji.
+  // Po dokončení vrátit 0 – Lenis potřebuje ticker bez vyhlazování.
+  tl.eventCallback('onComplete', () => gsap.ticker.lagSmoothing(0));
+  Promise.race([decoded, timeout]).then(() =>
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      gsap.ticker.lagSmoothing(100, 16);
+      tl.play();
+    })),
+  );
 }
 
 /* Velké obrázky (data-clip-reveal) se při scrollu rozevřou zespodu, fotka uvnitř se lehce zmenší. */
