@@ -1,7 +1,7 @@
 ---
 import { getLocale, localeLinks, translator } from '../i18n';
 const t = translator(Astro.currentLocale);
-import { Image, Picture } from 'astro:assets';
+import { Image, Picture, getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Contact from '../components/Contact.astro';
@@ -31,12 +31,15 @@ const parts = [
 
 const quote =
   t('„Jonas rychle pochopil, co potřebujeme, a všechno s námi průběžně konzultoval. Výsledný web vypadá skvěle a hlavně dává smysl našim zákazníkům.“', '“Jonas quickly understood what we needed and kept checking in with us throughout. The new website looks great and, most importantly, makes sense to our customers.”');
+/* fotku pod nadpisem stáhnout hned s HTML (stejné varianty jako <Picture> níže), ať se rozevírá už načtená */
+const coverPreload = await getImage({ src: heroVisual, format: 'avif', quality: 90, widths: [640, 960, 1440, 1920, 2624] });
 ---
 
 <Base
   title={t('Prádelna Krkonoše – vizuální identita a web | Jonáš Rech', 'Prádelna Krkonoše – visual identity and website | Jonáš Rech')}
   description={t('Jak jsem pro novou prádelnu v Krkonoších vytvořil vizuální identitu a web, na kterém hotely a penziony najdou služby, informace o svozu i poptávkový formulář.', 'How I created a visual identity and website for a new laundry in the Krkonoše mountains, where hotels and guesthouses can find services, collection details and an enquiry form.')}
 >
+  <link slot="head" rel="preload" as="image" type="image/avif" imagesrcset={coverPreload.srcSet.attribute} imagesizes="(max-width: 1440px) 92vw, 1280px" fetchpriority="high" />
   <CursorDot />
   <Header hasContact />
   <main id="obsah">
