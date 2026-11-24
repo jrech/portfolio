@@ -47,8 +47,8 @@ const toLight = t('Přepnout na světlý režim', 'Switch to light mode');
     data-label-dark={toDark}
     data-label-light={toLight}
   >
-    <Icon name="moon" size={17} class="i-moon" />
-    <Icon name="sun" size={17} class="i-sun" />
+    <Icon name="moon" size={16} class="i-moon" />
+    <Icon name="sun" size={16} class="i-sun" />
   </button>
 </div>
 
@@ -65,6 +65,8 @@ const toLight = t('Přepnout na světlý režim', 'Switch to light mode');
 </script>
 
 <style>
+  /* kompaktní lišta (40 px); tlačítka 32 px, ale klikací plocha je neviditelně roztažená na 44 px (::after) */
+  .preferences { --pref-size: 32px; }
   .preferences {
     position: fixed;
     z-index: 55;
@@ -72,8 +74,8 @@ const toLight = t('Přepnout na světlý režim', 'Switch to light mode');
     bottom: calc(12px + env(safe-area-inset-bottom));
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 4px;
+    gap: 2px;
+    padding: 3px;
     border: 1px solid rgb(255 255 255 / 0.2);
     border-radius: 999px;
     background: var(--ink);
@@ -81,14 +83,16 @@ const toLight = t('Přepnout na světlý režim', 'Switch to light mode');
     box-shadow: 0 5px 20px rgb(10 10 10 / 0.2);
   }
   .lang { display: flex; align-items: center; gap: 2px; }
+  .seg, .control { position: relative; }
+  .seg::after, .control::after { content: ''; position: absolute; inset: -6px; }
   .seg {
     display: grid;
     place-items: center;
-    min-width: 44px;
-    height: 44px;
-    padding: 0 8px;
+    min-width: var(--pref-size);
+    height: var(--pref-size);
+    padding: 0 6px;
     border-radius: 999px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.04em;
     color: rgb(238 233 223 / 0.62);
@@ -100,12 +104,12 @@ const toLight = t('Přepnout na světlý režim', 'Switch to light mode');
     a.seg:hover { color: var(--on-dark); background: rgb(255 255 255 / 0.1); }
   }
   a.seg:focus-visible { outline: 2px solid var(--on-dark); outline-offset: -3px; }
-  .divider { width: 1px; height: 20px; background: rgb(255 255 255 / 0.2); }
+  .divider { width: 1px; height: 16px; margin: 0 2px; background: rgb(255 255 255 / 0.2); }
   .control {
     display: grid;
     place-items: center;
-    width: 44px;
-    height: 44px;
+    width: var(--pref-size);
+    height: var(--pref-size);
     border: 0;
     border-radius: 999px;
     background: transparent;
