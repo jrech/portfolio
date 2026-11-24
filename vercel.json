@@ -4,7 +4,7 @@
     { "source": "/cs", "destination": "/", "permanent": true },
     { "source": "/cs/:path*", "destination": "/:path*", "permanent": true },
     { "source": "/llm-info{/}?", "destination": "/", "permanent": true },
-    { "source": "/work/:slug(etecsa|grind|kids-garden|starobrnensky-senk){/}?", "destination": "/#prace", "permanent": false },
-    { "source": "/en/work/:slug(etecsa|grind|kids-garden|starobrnensky-senk){/}?", "destination": "/en/#prace", "permanent": false }
+    { "source": "/work/:slug(etecsa|grind|kids-garden|starobrnensky-senk){/}?", "destination": "/#prace", "permanent": true },
+    { "source": "/en/work/:slug(etecsa|grind|kids-garden|starobrnensky-senk){/}?", "destination": "/en/#prace", "permanent": true }
   ]
 }
