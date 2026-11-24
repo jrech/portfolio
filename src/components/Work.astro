@@ -4,7 +4,7 @@ const t = translator(Astro.currentLocale);
 import { Picture } from 'astro:assets';
 import AnimatedArrow from './AnimatedArrow.astro';
 import pradelna from '../assets/img/pradelna-card-stolek.webp';
-import senk from '../assets/img/senk-iphone.webp';
+import senk from '../assets/img/senk-card-stul.webp';
 import etecsa from '../assets/img/etecsa-iphone.webp';
 
 /* href jen tam, kde existuje case study. Ostatní karty jsou bez odkazu (div) se štítkem „Připravujeme“, dokud stránky nevzniknou. */
@@ -13,6 +13,7 @@ const items = [
     title: t('Hotely si ověří svoz a poptají praní.', 'Hotels check collection areas and request a quote.'),
     meta: t('Prádelna Krkonoše · identita, web, texty', 'Prádelna Krkonoše · branding, website, copy'),
     img: pradelna,
+    pos: '50% 46%', // 2:3 fotka: o kousek výš, ať obrazovka notebooku zůstane nad textem
     alt: t('Web Prádelny Krkonoše na notebooku na dřevěném stolku v pokoji', 'Prádelna Krkonoše website on a laptop on a wooden side table in a room'),
     href: localeLinks('/work/pradelna-krkonose')[getLocale(Astro.currentLocale)],
   },
@@ -20,13 +21,15 @@ const items = [
     title: t('Úpravy webu Starobrněnského šenku', 'Website updates for Starobrněnský šenk'), // [OVĚŘIT] stav zakázky
     meta: t('Starobrněnský šenk · strategie, web, texty', 'Starobrněnský šenk · strategy, website, copy'),
     img: senk,
-    alt: t('Web Starobrněnského šenku na iPhonu', 'Starobrněnský šenk website on an iPhone'),
+    pos: '50% 50%',
+    alt: t('Web Starobrněnského šenku na mobilu položeném na tmavém dřevěném stole: fotka interiéru hospody a nadpis „Po práci na jedno. A něco k tomu.“', 'Starobrněnský šenk website on a phone lying on a dark wooden table, showing the pub interior and the headline “Po práci na jedno. A něco k tomu.”'),
     href: null,
   },
   {
     title: t('Mobilní tarify a domácí internet na webu ETECSA', 'Mobile plans and home internet on the ETECSA website'),
     meta: t('ETECSA · koncept redesignu', 'ETECSA · redesign concept'),
     img: etecsa,
+    pos: '50% 50%',
     alt: t('Web ETECSA na iPhonu', 'ETECSA website on an iPhone'),
     href: null,
   },
@@ -42,7 +45,7 @@ const items = [
         return (
           <li data-reveal-item data-reveal-load>
             <Tag class="card" href={it.href ?? undefined}>
-              <span class="card-media">
+              <span class="card-media" style={`--pos: ${it.pos}`}>
                 <Picture
                   class="card-img"
                   src={it.img}
@@ -89,7 +92,8 @@ const items = [
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     align-items: end;
-    height: 100%;
+    /* všechny karty stejně vysoké bez ohledu na poměr stran fotky; fotka kartu vždy celou vyplní */
+    aspect-ratio: 5 / 6;
     border-radius: var(--radius-card);
     overflow: hidden;
     background: #161616;
@@ -97,22 +101,24 @@ const items = [
     text-decoration: none;
     isolation: isolate;
   }
-  .card-media, .card-bottom { grid-area: 1 / 1; }
-  /* najetí na kartu (nebo fokus klávesnicí): ostatní karty se jemně rozmažou a ztmaví.
-     Jen na zařízeních s myší; s reduced-motion bez rozmazání a bez přechodu. */
+  .card-bottom { grid-area: 1 / 1; }
+  .card-media { position: absolute; inset: 0; z-index: -1; }
+  /* najetí na kartu (nebo fokus klávesnicí): ostatní karty se jemně ztmaví.
+     Jen na zařízeních s myší; s reduced-motion bez přechodu. */
   @media (hover: hover) and (pointer: fine) {
     .card { transition: filter 0.35s var(--ease); }
-    .cards:has(.card:hover, .card:focus-visible) .card:not(:hover, :focus-visible) { filter: blur(1.5px) brightness(0.8); }
+    .cards:has(.card:hover, .card:focus-visible) .card:not(:hover, :focus-visible) { filter: brightness(0.75); }
   }
   @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
     .card { transition: none; }
-    .cards:has(.card:hover, .card:focus-visible) .card:not(:hover, :focus-visible) { filter: brightness(0.8); }
   }
   .card-media :global(picture) { display: contents; }
   .card :global(.card-img) {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--pos, 50% 50%);
   }
   .card-bottom {
     position: relative;
