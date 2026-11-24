@@ -75,7 +75,8 @@
   --field-border: #2a2a2a;
   --field-placeholder: #8a8a8a;
   --divider: rgb(255 255 255 / 0.15);
-  --quote-unrevealed: #393939;
+  /* nerozsvícená slova citátu: jen 14 % barvy písma, ať je odkrývání čitelné (platí v obou motivech) */
+  --quote-unrevealed: color-mix(in srgb, var(--on-dark) 14%, var(--ink));
 }
 :root[data-theme='dark'] .invert {
   color-scheme: light;
@@ -89,7 +90,6 @@
   --field-border: #d6d6d0;
   --field-placeholder: #767670;
   --divider: rgb(10 10 10 / 0.12);
-  --quote-unrevealed: #c9c9c2;
 }
 /* Citát se při scrollu „dopisuje“: motion.ts posouvá --p od 0 do 1; bez JS je --p = 1 (celý text plnou barvou). */
 [data-quote] .w { color: color-mix(in srgb, var(--on-dark) calc(var(--p, 1) * 100%), var(--quote-unrevealed)); }

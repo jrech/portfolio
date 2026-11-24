@@ -85,7 +85,11 @@ const words = (text: string) => text.split(' ');
     --sw-mauve: #654257;
     display: flex;
     justify-content: center;
-    padding: clamp(128px, 19.44vw, 280px) var(--pad-x); /* desktop 280, mobil 128 */
+    align-items: center;
+    /* celá výška obrazovky, text na střed; svh = bez skákání mobilních lišt prohlížeče */
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: clamp(96px, 10vw, 160px) var(--pad-x);
     background: var(--ink);
     color: var(--on-dark);
   }

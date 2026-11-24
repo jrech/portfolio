@@ -158,19 +158,21 @@ function quote() {
   const words = gsap.utils.toArray<HTMLElement>('.w', q);
   const STEP = 0.1; // rozestup slov na časové ose (stejný jako dřív stagger)
   const tl = gsap.timeline({ scrollTrigger: { trigger: q, start: 'top 80%', end: 'bottom 45%', scrub: 0.6 } });
-  words.forEach((w, i) => tl.fromTo(w, { '--p': 0 }, { '--p': 1, duration: 0.5, ease: 'none' }, i * STEP));
+  // krátký přechod slova (≈ jeden krok): v mezistavu je nanejvýš jedno dvě slova, odkrývání je ostré
+  words.forEach((w, i) => tl.fromTo(w, { '--p': 0 }, { '--p': 1, duration: 0.14, ease: 'power1.out' }, i * STEP));
 
   // ručně kreslené fixy a elipsa (Quote.astro): nakreslí se, když se rozsvítí poslední slovo skupiny
   gsap.utils.toArray<HTMLElement>('[data-mark]', q).forEach((mark) => {
     const last = gsap.utils.toArray<HTMLElement>('.w', mark).at(-1);
-    const at = (last ? words.indexOf(last) : 0) * STEP + 0.35;
+    const at = (last ? words.indexOf(last) : 0) * STEP + 0.08; // hned, jak se slovo rozsvítí
     const swash = mark.querySelector('[data-swash]');
     const strokes = gsap.utils.toArray<SVGPathElement>('[data-draw]', mark);
     if (swash) tl.fromTo(swash, { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: 0.35, ease: 'power2.out' }, at);
-    // nenakreslené tahy skrýt úplně (kulaté konce čar by jinak byly vidět jako tečky)
+    // nenakreslené tahy skrýt úplně; dash '1 2' (pathLength 1): při offsetu 1 nezůstane na konci cesty
+    // čárka nulové délky, kterou by kulaté zakončení čáry vykreslilo jako oranžovou tečku
     if (strokes.length) {
       tl.fromTo(strokes, { opacity: 0 }, { opacity: 1, duration: 0.01, stagger: 0.12 }, at + 0.1);
-      tl.fromTo(strokes, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.4, ease: 'power1.inOut', stagger: 0.12 }, at + 0.1);
+      tl.fromTo(strokes, { strokeDasharray: '1 2', strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.4, ease: 'power1.inOut', stagger: 0.12 }, at + 0.1);
     }
   });
 }
