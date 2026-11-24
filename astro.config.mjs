@@ -14,7 +14,13 @@ export default defineConfig({
     routing: { prefixDefaultLocale: false },
   },
   // 404 stránky do sitemapy nepatří.
-  integrations: [sitemap({ filter: (page) => !/\/404\/?$/.test(page) })],
+  integrations: [
+    sitemap({
+      filter: (page) => !/\/404\/?$/.test(page),
+      // cs/en varianty jako xhtml:link alternates (stejné páry jako hreflang v <head>)
+      i18n: { defaultLocale: 'cs', locales: { cs: 'cs', en: 'en' } },
+    }),
+  ],
   build: { inlineStylesheets: 'auto' },
   devToolbar: { enabled: false },
 });
