@@ -3,39 +3,31 @@ import { getLocale, localeLinks, translator } from '../i18n';
 const t = translator(Astro.currentLocale);
 import { Picture } from 'astro:assets';
 import AnimatedArrow from './AnimatedArrow.astro';
-import pradelna from '../assets/img/pradelna-hero.webp';
-import senk from '../assets/img/senk-card.webp';
-import kidsgarden from '../assets/img/kidsgarden-card.webp';
+import pradelna from '../assets/img/pradelna-macbook.webp';
+import senk from '../assets/img/senk-iphone.webp';
+import etecsa from '../assets/img/etecsa-iphone.webp';
 
-/* href jen tam, kde existuje case study. Ostatní karty jsou bez odkazu (div) se štítkem „Připravujeme“, dokud stránky nevzniknou.
-   pos = object-position pro výřez 4 : 3, aby byl notebook vidět celý (zdroje mají různý poměr stran). */
+/* href jen tam, kde existuje case study. Ostatní karty jsou bez odkazu (div) se štítkem „Připravujeme“, dokud stránky nevzniknou. */
 const items = [
   {
     title: t('Hotely si ověří svoz a poptají praní.', 'Hotels check collection areas and request a quote.'),
     meta: t('Prádelna Krkonoše · identita, web, texty', 'Prádelna Krkonoše · branding, website, copy'),
     img: pradelna,
-    alt: t('Web Prádelny Krkonoše na notebooku na skále v Krkonoších při západu slunce', 'Prádelna Krkonoše website on a laptop on a rock in the Krkonoše mountains at sunset'),
-    tone: '#2f3a36',
-    pos: '60% 50%',
+    alt: t('Web Prádelny Krkonoše na MacBooku Pro', 'Prádelna Krkonoše website on a MacBook Pro'),
     href: localeLinks('/work/pradelna-krkonose')[getLocale(Astro.currentLocale)],
   },
   {
     title: t('Úpravy webu Starobrněnského šenku', 'Website updates for Starobrněnský šenk'), // [OVĚŘIT] stav zakázky
     meta: t('Starobrněnský šenk · strategie, web, texty', 'Starobrněnský šenk · strategy, website, copy'),
     img: senk,
-    alt: t('Web Starobrněnského šenku na notebooku na dřevěném stole na zahrádce', 'Starobrněnský šenk website on a laptop on a wooden garden table'),
-    tone: '#5a3a2a',
-    pos: '80% 50%',
+    alt: t('Web Starobrněnského šenku na iPhonu', 'Starobrněnský šenk website on an iPhone'),
     href: null,
   },
   {
-    // texty podle webu projektu (kidsgarden/web: úvod, program, přihláška); koncept, ne zakázka (Jonáš, 22. 11. 2026)
-    title: t('Rodiče poznají běžný den ve školce a rovnou podají přihlášku.', 'Parents see what a typical nursery day looks like and apply straight away.'),
-    meta: t('Kids Garden · koncept redesignu', 'Kids Garden · redesign concept'),
-    img: kidsgarden,
-    alt: t('Web anglické školky Kids Garden na notebooku na stole ve třídě', 'Kids Garden English nursery website on a laptop on a classroom table'),
-    tone: '#3c4637',
-    pos: '50% 50%',
+    title: t('Mobilní tarify a domácí internet na webu ETECSA', 'Mobile plans and home internet on the ETECSA website'),
+    meta: t('ETECSA · web', 'ETECSA · website'),
+    img: etecsa,
+    alt: t('Web ETECSA na iPhonu', 'ETECSA website on an iPhone'),
     href: null,
   },
 ];
@@ -49,7 +41,7 @@ const items = [
         const Tag = it.href ? 'a' : 'div';
         return (
           <li data-reveal-item data-reveal-load>
-            <Tag class="card" href={it.href ?? undefined} style={`--tone:${it.tone}`}>
+            <Tag class="card" href={it.href ?? undefined}>
               <span class="card-media">
                 <Picture
                   class="card-img"
@@ -59,7 +51,6 @@ const items = [
                   widths={[400, 640, 820, 1080, 1200]}
                   sizes="(max-width: 700px) calc(100vw - 32px), (max-width: 1440px) 30vw, 405px"
                   quality={90}
-                  style={`object-position:${it.pos}`}
                 />
               </span>
               <span class="card-bottom">
@@ -95,33 +86,47 @@ const items = [
   .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
   .card {
     position: relative;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: end;
     height: 100%;
     border-radius: var(--radius-card);
     overflow: hidden;
-    background: var(--tone);
+    background: #161616;
     color: var(--on-dark);
     text-decoration: none;
     isolation: isolate;
   }
-  /* obrázek nahoře ve společném poměru 4 : 3 (celý notebook vidět), text pod ním na barvě karty */
-  .card-media { display: block; aspect-ratio: 4 / 3; overflow: hidden; background: color-mix(in srgb, var(--tone) 80%, #000); }
+  .card-media, .card-bottom { grid-area: 1 / 1; }
   .card-media :global(picture) { display: contents; }
   .card :global(.card-img) {
     display: block;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s var(--ease);
+    height: auto;
   }
-  .card-bottom { flex: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 22px 24px 24px; }
+  .card-bottom {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 22px 24px 24px;
+  }
+  .card-bottom::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -36px 0 0;
+    background: linear-gradient(to bottom, transparent, rgb(0 0 0 / 0.62) 42%, rgb(0 0 0 / 0.84));
+    pointer-events: none;
+  }
   /* karta bez case study: stejný štítek, ale tlumený a bez interakce */
   .is-soon { color: rgb(238 233 223 / 0.8); }
   .is-soon .card-arrow { opacity: 0.45; }
   .study-link { display: inline-flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; }
   .study-link .card-arrow { width: 32px; height: 32px; }
-  .card-text { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .card-text { display: flex; flex-direction: column; gap: 8px; }
   .card-title { font-size: 24px; line-height: 29px; font-weight: 600; text-wrap: balance; }
   .card-meta { font-size: 15px; line-height: 23px; color: rgb(238 233 223 / 0.8); }
   .card-arrow {
@@ -139,18 +144,22 @@ const items = [
   @media (hover: hover) and (pointer: fine) {
     a.card:hover .card-arrow { background: var(--accent); }
   }
-  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-    a.card:hover :global(.card-img) { transform: scale(1.04); }
-  }
   a.card:focus-visible { outline: 2px solid var(--text); outline-offset: 4px; border-radius: var(--radius-card); }
 
   @media (min-width: 701px) {
     .work { padding-top: 24px; }
     .cards { gap: clamp(14px, 2vw, 32px); }
   }
+  @media (701px <= width <= 1000px) {
+    .card-bottom { gap: 12px; padding: 14px; }
+    .card-title { font-size: 21px; line-height: 26px; }
+    .card-meta, .study-link { font-size: 14px; line-height: 20px; }
+  }
   @media (max-width: 700px) {
     .work { gap: 32px; padding-top: 0; }
     .cards { grid-template-columns: 1fr; gap: 16px; }
     .card-bottom { padding: 18px 20px 20px; }
+    /* na mobilu leží text přes obrazovku telefonu: delší a tmavší přechod, ať se čte klidně */
+    .card-bottom::before { inset: -96px 0 0; background: linear-gradient(to bottom, transparent, rgb(0 0 0 / 0.74) 36%, rgb(0 0 0 / 0.9)); }
   }
 </style>
