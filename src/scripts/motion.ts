@@ -100,13 +100,13 @@ function studyHero() {
     )
     .from(hl, { color: 'var(--text)', duration: 0.6, ease: 'power2.out' }, 0.7)
     .fromTo(sub, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: EASE }, 0.3);
-  // 404 fotku nemá. Fotka startuje spolu s popisem a metadaty (ne až po nich).
+  // 404 fotku nemá. Fotka se rozevírá zároveň s H1: stejný start i křivka, konec do 50 ms od dopadu posledního slova.
   if (cover)
     tl.fromTo(
       cover,
       { clipPath: 'inset(18% 6% 0% 6% round 24px)' },
-      { clipPath: 'inset(0% 0% 0% 0% round 24px)', duration: 1.3, ease: 'expo.out' },
-      0.3,
+      { clipPath: 'inset(0% 0% 0% 0% round 24px)', duration: 1.15, ease: 'power4.out' },
+      0,
     );
 
   const img = cover?.querySelector('img');
